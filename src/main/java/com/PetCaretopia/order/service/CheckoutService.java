@@ -49,8 +49,6 @@ public class CheckoutService {
 
         for (CartItem cartItem : cartItems) {
             Product product = cartItem.getProduct();
-            product.decreaseStock(cartItem.getQuantity());
-
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setProduct(product);
@@ -67,6 +65,7 @@ public class CheckoutService {
         cartItemRepository.deleteByCart(cart);
         return orderMapper.toDTO(orderRepository.save(order));
     }
+
 }
 
 
