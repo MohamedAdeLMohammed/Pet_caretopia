@@ -11,6 +11,7 @@ import com.PetCaretopia.user.entity.User;
 import com.PetCaretopia.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,6 +47,7 @@ public class WishlistService {
         }
     }
 
+    @Transactional
     public void removeFromWishlist(Long userId, Long productId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
