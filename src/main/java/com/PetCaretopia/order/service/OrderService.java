@@ -8,6 +8,7 @@ import com.PetCaretopia.order.repository.*;
 import com.PetCaretopia.user.entity.User;
 import com.PetCaretopia.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -90,13 +91,38 @@ public class OrderService {
 
 
     public OrderDTO cancelOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow();
-        if (order.getOrderStatus() != OrderStatus.PENDING) {
-            throw new RuntimeException("Cannot cancel processed order");
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        // ROLE FROM  SecurityContextHolder
+        String role = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getAuthorities()
+                .iterator()
+                .next()
+                .getAuthority(); //  ROLE_USER OR ROLE_ADMIN
+
+        if (role.equals("ROLE_USER") || role.equals("ROLE_PET_OWNER") || role.equals("ROLE_SERVICE_PROVIDER")) {
+            if (order.getOrderStatus() != OrderStatus.PENDING) {
+                throw new RuntimeException("You can only cancel an order in PENDING status.");
+            }
+        } else if (role.equals("ROLE_ADMIN")) {
+            if (order.getOrderStatus() == OrderStatus.DELIVERED || order.getOrderStatus() == OrderStatus.CANCELED) {
+                throw new RuntimeException("Admin cannot cancel a DELIVERED or already CANCELED order.");
+            }
         }
+
+        for (OrderItem item : order.getOrderItems()) {
+            Product product = item.getProduct();
+            product.increaseStock(item.getQuantity());
+        }
+
         order.setOrderStatus(OrderStatus.CANCELED);
+        order.setUpdatedAt(LocalDateTime.now());
+
         return orderMapper.toDTO(orderRepository.save(order));
     }
+
 
     public BigDecimal getTotalSales() {
         return orderRepository.findAll().stream()

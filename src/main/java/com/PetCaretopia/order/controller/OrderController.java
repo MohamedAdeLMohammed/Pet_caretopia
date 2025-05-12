@@ -16,31 +16,39 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
+
+    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
     @GetMapping("/{userId}")
     public List<OrderDTO> getUserOrders(@PathVariable Long userId) {
         return orderService.getUserOrders(userId);
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
     @GetMapping("/details/{orderId}")
     public OrderDTO getOrderById(@PathVariable Long orderId) {
         return orderService.getOrderById(orderId);
     }
 
+
+    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
     @PutMapping("/cancel/{orderId}")
     public OrderDTO cancelOrder(@PathVariable Long orderId) {
         return orderService.cancelOrder(orderId);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all")
     public List<OrderDTO> getAllOrders() {
         return orderService.getAllOrders();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/count")
     public long getOrderCount() {
         return orderService.getOrderCount();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     //  New: update order status with stock handling
     @PutMapping("/status")
     public OrderDTO updateOrderStatus(
