@@ -77,7 +77,6 @@ public class OrderService {
         if (newStatus == OrderStatus.PROCESSING && currentStatus == OrderStatus.PENDING) {
             for (OrderItem item : order.getOrderItems()) {
                 Product product = item.getProduct();
-                product.decreaseStock(item.getQuantity());
                 // Assuming productRepository موجود
                 productRepository.save(product);
             }
