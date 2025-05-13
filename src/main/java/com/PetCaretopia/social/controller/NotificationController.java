@@ -1,11 +1,13 @@
 package com.PetCaretopia.social.controller;
 
+import com.PetCaretopia.Security.Service.CustomUserDetails;
 import com.PetCaretopia.social.DTO.NotificationDTO;
 import com.PetCaretopia.social.Service.NotificationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,24 +16,25 @@ import java.util.List;
 @RequestMapping("/social/notifications")
 @RequiredArgsConstructor
 public class NotificationController {
+
     private final NotificationService notificationService;
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/user")
     @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
-    public ResponseEntity<List<NotificationDTO>> getUserNotifications(@PathVariable Long userId) {
-        return ResponseEntity.ok(notificationService.getUserNotifications(userId));
+    public ResponseEntity<List<NotificationDTO>> getUserNotifications(@AuthenticationPrincipal CustomUserDetails principal) {
+        return ResponseEntity.ok(notificationService.getUserNotifications(principal.getUserId()));
     }
 
-    @GetMapping("/user/{userId}/unread-count")
+    @GetMapping("/user/unread-count")
     @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
-    public ResponseEntity<Long> getUnreadNotificationCount(@PathVariable Long userId) {
-        return ResponseEntity.ok(notificationService.countUnread(userId));
+    public ResponseEntity<Long> getUnreadNotificationCount(@AuthenticationPrincipal CustomUserDetails principal) {
+        return ResponseEntity.ok(notificationService.countUnread(principal.getUserId()));
     }
 
-    @PatchMapping("/user/{userId}/read")
+    @PatchMapping("/user/read")
     @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER')")
-    public ResponseEntity<Void> markAllAsRead(@PathVariable Long userId) {
-        notificationService.markAllAsRead(userId);
+    public ResponseEntity<Void> markAllAsRead(@AuthenticationPrincipal CustomUserDetails principal) {
+        notificationService.markAllAsRead(principal.getUserId());
         return ResponseEntity.noContent().build();
     }
 

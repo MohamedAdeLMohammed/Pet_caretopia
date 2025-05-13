@@ -30,7 +30,6 @@ public class CommentMapper {
         CommentDTO dto = new CommentDTO();
         dto.setCommentId(comment.getCommentId());
         dto.setContent(comment.getContent());
-        dto.setUserId(comment.getUser().getUserID());
         dto.setPostId(comment.getPost().getPostId());
         dto.setCreatedAt(comment.getCreatedAt());
 

@@ -20,51 +20,54 @@ import java.util.stream.Collectors;
 public class ReactionService {
 
     @Autowired private ReactionRepository reactionRepository;
+    @Autowired private ReactionMapper reactionMapper;
     @Autowired private UserRepository userRepository;
     @Autowired private PostRepository postRepository;
     @Autowired private CommentRepository commentRepository;
-    @Autowired private ReactionMapper reactionMapper;
 
     @Transactional
     public ReactionDTO reactToPost(ReactionDTO dto) {
         User user = userRepository.findById(dto.getUserId()).orElseThrow();
         Post post = postRepository.findById(dto.getPostId()).orElseThrow();
+
         reactionRepository.deleteByUserUserIDAndPostPostId(user.getUserID(), post.getPostId());
-        Reaction reaction = reactionMapper.toPostEntity(dto, user, post);
+
+        Reaction reaction = new Reaction();
+        reaction.setUser(user);
+        reaction.setPost(post);
+        reaction.setType(dto.getType());
+
         return reactionMapper.toDTO(reactionRepository.save(reaction));
     }
 
     @Transactional
-    public ReactionDTO reactToComment(ReactionDTO dto, Long commentId) {
+    public ReactionDTO reactToComment(ReactionDTO dto) {
         User user = userRepository.findById(dto.getUserId()).orElseThrow();
-        Comment comment = commentRepository.findById(commentId).orElseThrow();
-        reactionRepository.deleteByUserUserIDAndCommentCommentId(user.getUserID(), commentId);
-        Reaction reaction = reactionMapper.toCommentEntity(dto, user, comment);
+        Comment comment = commentRepository.findById(dto.getCommentId()).orElseThrow();
+
+        reactionRepository.deleteByUserUserIDAndCommentCommentId(user.getUserID(), comment.getCommentId());
+
+        Reaction reaction = new Reaction();
+        reaction.setUser(user);
+        reaction.setComment(comment);
+        reaction.setPost(comment.getPost()); // fix foreign key
+        reaction.setType(dto.getType());
+
         return reactionMapper.toDTO(reactionRepository.save(reaction));
     }
 
     public List<ReactionDTO> getReactionsByPost(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow();
-        return reactionRepository.findByPost(post)
-                .stream()
+        return reactionRepository.findByPost(post).stream()
                 .map(reactionMapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     public List<ReactionDTO> getReactionsByComment(Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElseThrow();
-        return reactionRepository.findByComment(comment)
-                .stream()
+        return reactionRepository.findByComment(comment).stream()
                 .map(reactionMapper::toDTO)
                 .collect(Collectors.toList());
-    }
-
-    public void removePostReaction(Long postId, Long userId) {
-        reactionRepository.deleteByUserUserIDAndPostPostId(userId, postId);
-    }
-
-    public void removeCommentReaction(Long commentId, Long userId) {
-        reactionRepository.deleteByUserUserIDAndCommentCommentId(userId, commentId);
     }
 
     public ReactionDTO getUserReaction(Long postId, Long userId) {
@@ -75,6 +78,7 @@ public class ReactionService {
                 .map(reactionMapper::toDTO)
                 .orElse(null);
     }
+
     public ReactionDTO getUserReactionOnComment(Long commentId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
         Comment comment = commentRepository.findById(commentId).orElseThrow();
@@ -84,5 +88,13 @@ public class ReactionService {
                 .orElse(null);
     }
 
+    @Transactional
+    public void removeReactionFromPost(Long postId, Long userId) {
+        reactionRepository.deleteByUserUserIDAndPostPostId(userId, postId);
+    }
 
+    @Transactional
+    public void removeReactionFromComment(Long commentId, Long userId) {
+        reactionRepository.deleteByUserUserIDAndCommentCommentId(userId, commentId);
+    }
 }

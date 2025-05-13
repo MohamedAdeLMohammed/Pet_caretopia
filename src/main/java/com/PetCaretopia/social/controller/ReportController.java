@@ -7,10 +7,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequestMapping("/social/reports")
 @RequiredArgsConstructor
@@ -18,19 +18,29 @@ public class ReportController {
 
     private final ReportService reportService;
 
+    /**
+     * ✅ تقديم بلاغ جديد (على بوست أو كومنت)
+     */
     @PostMapping
     @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER')")
     public ResponseEntity<ReportDTO> fileReport(@Valid @RequestBody ReportDTO dto) {
         return ResponseEntity.ok(reportService.submitReport(dto));
     }
 
-    @GetMapping("/user/{userId}")
+    /**
+     * ✅ استرجاع جميع البلاغات المقدمة من المستخدم الحالي
+     */
+    @GetMapping("/user")
     @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
-    public ResponseEntity<List<ReportDTO>> getReportsByUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(reportService.getReportsByUser(userId));
+    public ResponseEntity<List<ReportDTO>> getReportsByUser(
+            @AuthenticationPrincipal com.PetCaretopia.Security.Service.CustomUserDetails principal
+    ) {
+        return ResponseEntity.ok(reportService.getReportsByUser(principal.getUserId()));
     }
 
-    // ✅ تغيير حالة البلاغ (مثلاً: RESOLVED أو DISMISSED)
+    /**
+     * ✅ تغيير حالة بلاغ (بواسطة الأدمن فقط)
+     */
     @PatchMapping("/{reportId}/status")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ReportDTO> updateStatus(
@@ -40,7 +50,9 @@ public class ReportController {
         return ResponseEntity.ok(reportService.changeReportStatus(reportId, status));
     }
 
-    // ✅ أرشفة بلاغ
+    /**
+     * ✅ أرشفة بلاغ (بواسطة الأدمن فقط)
+     */
     @PatchMapping("/{reportId}/archive")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ReportDTO> archiveReport(@PathVariable Long reportId) {

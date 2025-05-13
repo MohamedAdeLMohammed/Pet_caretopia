@@ -11,8 +11,7 @@ import java.util.List;
 public class CommentDTO {
     private Long commentId;
 
-    @NotNull
-    private Long userId;
+
 
     @NotNull
     private Long postId;
@@ -21,9 +20,6 @@ public class CommentDTO {
     private String content;
 
     private List<CommentImageDTO> commentImages;
-
     private List<ReactionDTO> reactions;
-
-
     private LocalDateTime createdAt;
 }

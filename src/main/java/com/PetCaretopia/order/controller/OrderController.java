@@ -1,10 +1,12 @@
 package com.PetCaretopia.order.controller;
 
+import com.PetCaretopia.Security.Service.CustomUserDetails;
 import com.PetCaretopia.order.DTO.OrderDTO;
 import com.PetCaretopia.order.entity.OrderStatus;
 import com.PetCaretopia.order.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,10 +20,11 @@ public class OrderController {
 
 
     @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
-    @GetMapping("/{userId}")
-    public List<OrderDTO> getUserOrders(@PathVariable Long userId) {
-        return orderService.getUserOrders(userId);
+    @GetMapping
+    public List<OrderDTO> getUserOrders(@AuthenticationPrincipal CustomUserDetails principal) {
+        return orderService.getUserOrders(principal.getUserId());
     }
+
 
     @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
     @GetMapping("/details/{orderId}")

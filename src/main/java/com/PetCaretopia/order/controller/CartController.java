@@ -1,6 +1,7 @@
 package com.PetCaretopia.order.controller;
 
 
+import com.PetCaretopia.Security.Service.CustomUserDetails;
 import jakarta.validation.constraints.Min;
 
 import com.PetCaretopia.order.DTO.CartItemDTO;
@@ -8,6 +9,7 @@ import com.PetCaretopia.order.service.CartService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -28,44 +30,47 @@ public class CartController {
 
     @PreAuthorize("hasAnyRole('USER', 'PET_OWNER')")
     @PostMapping("/add")
-    public CartItemDTO addToCart(@RequestParam Long userId,
-                                 @RequestParam Long productId,
-                                 @RequestParam @Min(1) int quantity) {
-        return cartService.addToCart(userId, productId, quantity);
+    public CartItemDTO addToCart(@RequestParam Long productId,
+                                 @RequestParam @Min(1) int quantity,
+                                 @AuthenticationPrincipal CustomUserDetails principal) {
+        return cartService.addToCart(principal.getUserId(), productId, quantity);
     }
+
 
     @PreAuthorize("hasAnyRole('USER', 'PET_OWNER')")
     @PutMapping("/update")
-    public CartItemDTO updateCartItem(@RequestParam Long userId,
-                                      @RequestParam Long productId,
-                                      @RequestParam @Min(1) int quantity) {
-        return cartService.updateCartItem(userId, productId, quantity);
+    public CartItemDTO updateCartItem(@RequestParam Long productId,
+                                      @RequestParam @Min(1) int quantity,
+                                      @AuthenticationPrincipal CustomUserDetails principal) {
+        return cartService.updateCartItem(principal.getUserId(), productId, quantity);
     }
+
 
      @PreAuthorize("hasAnyRole('USER', 'PET_OWNER')")
-    @DeleteMapping("/remove")
-    public void removeCartItem(@RequestParam Long userId,
-                               @RequestParam Long productId) {
-        cartService.removeCartItem(userId, productId);
+     @DeleteMapping("/remove")
+     public void removeCartItem(@RequestParam Long productId,
+                                @AuthenticationPrincipal CustomUserDetails principal) {
+         cartService.removeCartItem(principal.getUserId(), productId);
+     }
+
+
+    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER')")
+    @DeleteMapping("/clear")
+    public void clearCart(@AuthenticationPrincipal CustomUserDetails principal) {
+        cartService.clearCart(principal.getUserId());
     }
 
     @PreAuthorize("hasAnyRole('USER', 'PET_OWNER')")
-    @DeleteMapping("/clear/{userId}")
-    public void clearCart(@PathVariable Long userId) {
-        cartService.clearCart(userId);
-    }
-
-    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER')")
-    @GetMapping("/total/{userId}")
-    public BigDecimal getCartTotal(@PathVariable Long userId) {
-        return cartService.getCartTotal(userId);
+    @GetMapping("/total")
+    public BigDecimal getCartTotal(@AuthenticationPrincipal CustomUserDetails principal) {
+        return cartService.getCartTotal(principal.getUserId());
     }
 
    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER')")
-    @GetMapping("/count/{userId}")
-    public int getCartItemCount(@PathVariable Long userId) {
-        return cartService.getCartItemCount(userId);
-    }
+   @GetMapping("/count")
+   public int getCartItemCount(@AuthenticationPrincipal CustomUserDetails principal) {
+       return cartService.getCartItemCount(principal.getUserId());
+   }
 
     @PreAuthorize("hasAnyRole('USER', 'PET_OWNER')")
     @GetMapping("/items")

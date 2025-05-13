@@ -1,6 +1,7 @@
 package com.PetCaretopia.social.DTO;
 
 import com.PetCaretopia.social.entity.ReactionType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -10,11 +11,11 @@ import java.time.LocalDateTime;
 public class ReactionDTO {
     private Long reactionId;
 
-    @NotNull
+    @JsonIgnore
     private Long userId;
 
-    private Long postId;    //  ممكن يكون null لو التفاعل على كومنت
-    private Long commentId; //  لو التفاعل على كومنت
+    private Long postId;     // لو الريأكت على post
+    private Long commentId;  // لو الريأكت على comment
 
     @NotNull
     private ReactionType type;

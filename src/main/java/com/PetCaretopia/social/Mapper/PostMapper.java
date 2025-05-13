@@ -26,7 +26,6 @@ public class PostMapper {
     public PostDTO toDTO(Post post) {
         PostDTO dto = new PostDTO();
         dto.setPostId(post.getPostId());
-        dto.setUserId(post.getUser().getUserID());
         dto.setContent(post.getContent());
         dto.setCreatedAt(post.getCreatedAt());
 
