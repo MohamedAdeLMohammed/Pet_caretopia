@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Winky+Sans:ital,wght@0,300..900;1,300..900&display=swap');
+*{
+    font-family: "Winky Sans", sans-serif;
+}
+h1{
+    font-size: larger;
+    font-weight: bolder;
+}
+h3{
+    font-weight: bolder;
+}
+

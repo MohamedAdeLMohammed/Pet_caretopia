@@ -1,0 +1,81 @@
+body{
+  background: #e7e3e3;
+}
+
+.order-summary-header {
+  background-color: #064BB5; 
+  color: white;
+  padding: 20px;
+  text-align: center;
+  border-radius: 8px 8px 0 0;
+  font-size: 45px;
+  font-weight: bold;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+.order-summary-container {
+  margin: 40px auto;
+  max-width: 900px;
+  background-color: #f8f4f4; 
+  color: white;
+  padding: 30px;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.order-info p {
+  margin: 8px 0;
+  color: #2c3e50;
+  font-size: 25px;
+  border-bottom: 1px solid #444;
+}
+
+.order-items {
+  margin: 20px 0;
+  color: #2c3e50;
+
+}
+
+.order-item {
+  color: #2c3e50;
+  display: flex;
+  gap: 20px;
+  border-bottom: 1px solid #444;
+  padding: 15px 0;
+  font-size: 20px;
+}
+
+.order-item img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.order-total {
+  border-top: 1px solid #444;
+  padding-top: 20px;
+  font-size: 27px;
+  color: #2c3e50;
+
+}
+
+.continue-btn {
+  display: block;
+  margin: 30px auto 0;
+  padding: 10px 25px;
+  background: #064BB5;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 20px;
+  cursor: pointer;
+
+}
+
+.continue-btn:hover {
+  background: #3498db;
+}
+.order-items h4{
+font-size: 30px;
+}
