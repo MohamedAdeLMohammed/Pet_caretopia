@@ -95,8 +95,15 @@ public class ProductService {
                     return image;
                 }).collect(Collectors.toList());
 
-                product.setImages(productImages);
+                // احذف الصور القديمة لو عايز تمسحهم
+                if (product.getImages() != null) {
+                    product.getImages().clear(); // يمسح الصور القديمة ويرتبط بـ orphanRemoval
+                }
+
+                product.getImages().addAll(productImages); // أضف الجديدة بنفس الريفرنس
             }
+
+
 
             // تحديث الأسعار داخل CartItems
             List<CartItem> cartItems = cartItemRepository.findByProduct(product);
