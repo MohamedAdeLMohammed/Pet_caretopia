@@ -65,6 +65,7 @@ public class Product {
     @JsonIgnore
     private List<CartItem> cartItems;
 
+
     public void decreaseStock(int quantity) {
         if (stockQuantity - quantity < 0) {
             throw new IllegalStateException("Insufficient stock!");
