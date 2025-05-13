@@ -2,10 +2,12 @@ package com.PetCaretopia.order.service;
 
 
 import com.PetCaretopia.order.DTO.ProductDTO;
+import com.PetCaretopia.order.entity.CartItem;
 import com.PetCaretopia.order.entity.Product;
 import com.PetCaretopia.order.entity.ProductCategory;
 import com.PetCaretopia.order.entity.ProductImage;
 import com.PetCaretopia.order.mapper.ProductMapper;
+import com.PetCaretopia.order.repository.CartItemRepository;
 import com.PetCaretopia.order.repository.ProductRepository;
 import com.PetCaretopia.shared.SharedImageUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class ProductService {
 
     @Autowired
     private SharedImageUploadService sharedImageUploadService;
+
+    @Autowired
+    CartItemRepository cartItemRepository;
 
     public List<ProductDTO> getAllProducts() {
         return productRepository.findAll()
@@ -63,44 +68,63 @@ public class ProductService {
 
 
 
-//    public ProductDTO saveProduct(ProductDTO productDTO) {
-//        Product product = productMapper.toEntity(productDTO);
-//
-//        // رفع الصور (Base64 → URL) ثم حفظها كـ ProductImage
-//        if (productDTO.getBase64Images() != null && !productDTO.getBase64Images().isEmpty()) {
-//            List<ProductImage> images = productDTO.getBase64Images().stream()
-//                    .map(base64 -> {
-//                        String imageUrl = imageUploadService.uploadBase64Image(base64);
-//                        ProductImage image = new ProductImage();
-//                        image.setUrl(imageUrl);
-//                        image.setProduct(product);
-//                        return image;
-//                    }).collect(Collectors.toList());
-//
-//            product.setImages(images);
-//        }
-//
-//        return productMapper.toDTO(productRepository.save(product));
-//    }
 
     @Transactional
     public ProductDTO saveProductWithMultipart(ProductDTO productDTO, List<MultipartFile> images) {
-        Product product = productMapper.toEntity(productDTO);
+        Product product;
 
-        if (images != null && !images.isEmpty()) {
-            List<ProductImage> productImages = images.stream().map(file -> {
-                String imageUrl = sharedImageUploadService.uploadMultipartFile(file); // هنضيف دي كمان
-                ProductImage image = new ProductImage();
-                image.setUrl(imageUrl);
-                image.setProduct(product);
-                return image;
-            }).collect(Collectors.toList());
+        // حالة التعديل
+        if (productDTO.getId() != null) {
+            product = productRepository.findById(productDTO.getId())
+                    .orElseThrow(() -> new RuntimeException("Product not found"));
 
-            product.setImages(productImages);
+            // تحديث البيانات
+            product.setName(productDTO.getName());
+            product.setDescription(productDTO.getDescription());
+            product.setPrice(productDTO.getPrice());
+            product.setStockQuantity(productDTO.getStockQuantity());
+            product.setCategory(productDTO.getCategory());
+
+            // تحديث صور المنتج
+            if (images != null && !images.isEmpty()) {
+                List<ProductImage> productImages = images.stream().map(file -> {
+                    String imageUrl = sharedImageUploadService.uploadMultipartFile(file);
+                    ProductImage image = new ProductImage();
+                    image.setUrl(imageUrl);
+                    image.setProduct(product);
+                    return image;
+                }).collect(Collectors.toList());
+
+                product.setImages(productImages);
+            }
+
+            // تحديث الأسعار داخل CartItems
+            List<CartItem> cartItems = cartItemRepository.findByProduct(product);
+            for (CartItem item : cartItems) {
+                item.setPrice(product.getPrice());
+            }
+            cartItemRepository.saveAll(cartItems);
+
+        } else {
+            // حالة الإضافة الجديدة
+            product = productMapper.toEntity(productDTO);
+
+            if (images != null && !images.isEmpty()) {
+                List<ProductImage> productImages = images.stream().map(file -> {
+                    String imageUrl = sharedImageUploadService.uploadMultipartFile(file);
+                    ProductImage image = new ProductImage();
+                    image.setUrl(imageUrl);
+                    image.setProduct(product);
+                    return image;
+                }).collect(Collectors.toList());
+
+                product.setImages(productImages);
+            }
         }
 
         return productMapper.toDTO(productRepository.save(product));
     }
+
 
 
     public ProductDTO getProductById(Long id) {
