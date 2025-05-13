@@ -10,6 +10,7 @@ import com.PetCaretopia.order.repository.ProductRepository;
 import com.PetCaretopia.shared.SharedImageUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -82,6 +83,7 @@ public class ProductService {
 //        return productMapper.toDTO(productRepository.save(product));
 //    }
 
+    @Transactional
     public ProductDTO saveProductWithMultipart(ProductDTO productDTO, List<MultipartFile> images) {
         Product product = productMapper.toEntity(productDTO);
 
