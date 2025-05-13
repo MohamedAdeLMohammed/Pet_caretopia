@@ -1,0 +1,132 @@
+.pto-sb{
+    background-color: #BCFF5E;
+    width: 13%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 84.2vh;
+    padding: 1rem;
+    justify-content: space-between;
+    position: sticky;
+    left: 0;
+}
+.pto-sb p{
+    color: black;
+    font-weight: bolder;
+    font-size:18pt;
+}
+.db-btn{
+    background-color: #fff;
+    padding: 0.3rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 20px;
+    gap: 10px;
+    text-decoration: none;
+}
+.pto-sb img{
+    width: 35px;
+}
+.sign-out-btn{
+    background-color:	#D2042D;
+    color: black;
+    padding: 0.1rem;
+    border-radius: 60px;
+    border: solid #D2042D;
+}
+.main-db{
+    display: flex;
+    flex-direction: row;
+}
+.blue-text{
+    color: #064BB5;
+    font-weight: bolder;
+}
+/* bootstrap-like table styling */
+.adopt-reqs-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #BCFF5E;
+    color: #064BB5;
+    font-size: larger;
+    font-weight: bolder;
+}
+
+/* border and spacing */
+.adopt-reqs-table th,
+.adopt-reqs-table td {
+    border: 1px solid white;
+    padding: 0.75rem;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* header styling */
+/* .adopt-reqs-table thead {
+    background-color: #043d91;
+} */
+
+/* striped effect */
+/* .adopt-reqs-table tbody tr:nth-child(odd) {
+    background-color: #0753b8;
+} */
+
+/* .adopt-reqs-table tbody tr:nth-child(even) {
+    background-color: #064BB5;
+} */
+
+/* hover effect */
+.adopt-reqs-table tbody tr:hover {
+    background-color: #043d91;
+}
+
+.adopt-btn{
+    background-color: #064BB5;
+    color: #fff;
+    padding: 0.5rem;
+    border: #064BB5 solid;
+}
+.pet-card{
+    background-color: #D9D9D9;
+    height: 19.5rem;
+}
+.post-img{
+    width: 10rem;
+}
+.post{
+    width: 60rem;
+    background-color: #D9D9D9;
+    padding: 1rem;
+
+    border-radius: 1rem;
+}
+.post-foot img{
+    width: 3rem;
+}
+.main-content{
+    flex: 1;
+    overflow-y: auto;
+    height: 84.2vh;
+}
+.add-post-section{
+    width: 60rem;
+    background-color: #D9D9D9;
+    padding: 1rem;
+    border-radius: 1rem;
+}
+.upload-btn{
+    padding: 0.5rem;
+    background-color: #064BB5;
+    border: #064BB5 solid;
+    border-radius: 1rem;
+    width: 15rem;
+    color: #BCFF5E;
+}
+.analyze-btn{
+    color: #BCFF5E;
+    background-color: #064BB5;
+    border: #064BB5 solid;
+    padding: 0.25rem;
+}

@@ -8,7 +8,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public  void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("https://localhost:3000") // React dev server
+                .allowedOrigins("https://localhost:5173") // React dev server
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .allowCredentials(true);
