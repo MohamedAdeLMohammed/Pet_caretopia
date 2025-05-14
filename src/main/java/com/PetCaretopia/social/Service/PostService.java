@@ -39,8 +39,10 @@ public class PostService {
                 image.setUrl(url);
                 image.setPost(post);
                 return image;
-            }).collect(Collectors.toList());
+            }
+            ).collect(Collectors.toList());
             post.setPostImages(postImages);
+            post.setUser(user);
         }
         return postMapper.toDTO(postRepository.save(post));
     }

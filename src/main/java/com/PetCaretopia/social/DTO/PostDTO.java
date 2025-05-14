@@ -1,5 +1,6 @@
 package com.PetCaretopia.social.DTO;
 
+import com.PetCaretopia.user.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
@@ -10,12 +11,15 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
 
+// package com.PetCaretopia.social.DTO;
+import com.PetCaretopia.user.DTO.UserSummaryDTO;
+
 @Data
 public class PostDTO {
 
     private Long postId;
 
-    //userName;
+    private UserSummaryDTO user;
 
     @NotBlank
     private String content;
@@ -25,7 +29,6 @@ public class PostDTO {
     @Transient
     @JsonIgnore
     private List<MultipartFile> postImageMultipartList;
-
 
     private LocalDateTime createdAt;
 }
