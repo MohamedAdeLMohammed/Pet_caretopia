@@ -36,6 +36,7 @@ public class PostMapper {
             UserSummaryDTO userDTO = new UserSummaryDTO();
             userDTO.setUserID(user.getUserID());
             userDTO.setUsername(user.getUsername());
+            userDTO.setName(user.getName());
             userDTO.setProfileImageUrl(user.getUserProfileImage()); // تأكد أن ده موجود في كيان User
             dto.setUser(userDTO);
         }
