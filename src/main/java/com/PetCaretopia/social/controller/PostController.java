@@ -33,6 +33,7 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostsByUser(principal.getUserId()));
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
     @GetMapping("/{postId}")
     public ResponseEntity<PostDTO> getPostById(@PathVariable Long postId) {
         return ResponseEntity.ok(postService.getPostById(postId));

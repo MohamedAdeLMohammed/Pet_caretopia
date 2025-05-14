@@ -76,6 +76,7 @@ public class ReactionController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER')")
     @DeleteMapping("/comment/{commentId}")
     public ResponseEntity<Void> removeCommentReaction(
             @PathVariable Long commentId,

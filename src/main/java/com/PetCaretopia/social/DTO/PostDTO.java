@@ -15,6 +15,8 @@ public class PostDTO {
 
     private Long postId;
 
+    //userName;
+
     @NotBlank
     private String content;
 

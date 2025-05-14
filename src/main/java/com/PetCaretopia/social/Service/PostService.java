@@ -42,7 +42,6 @@ public class PostService {
             }).collect(Collectors.toList());
             post.setPostImages(postImages);
         }
-
         return postMapper.toDTO(postRepository.save(post));
     }
 

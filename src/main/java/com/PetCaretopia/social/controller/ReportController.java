@@ -18,18 +18,14 @@ public class ReportController {
 
     private final ReportService reportService;
 
-    /**
-     * ✅ تقديم بلاغ جديد (على بوست أو كومنت)
-     */
+
     @PostMapping
     @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER')")
     public ResponseEntity<ReportDTO> fileReport(@Valid @RequestBody ReportDTO dto) {
         return ResponseEntity.ok(reportService.submitReport(dto));
     }
 
-    /**
-     * ✅ استرجاع جميع البلاغات المقدمة من المستخدم الحالي
-     */
+
     @GetMapping("/user")
     @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
     public ResponseEntity<List<ReportDTO>> getReportsByUser(
@@ -38,9 +34,7 @@ public class ReportController {
         return ResponseEntity.ok(reportService.getReportsByUser(principal.getUserId()));
     }
 
-    /**
-     * ✅ تغيير حالة بلاغ (بواسطة الأدمن فقط)
-     */
+
     @PatchMapping("/{reportId}/status")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ReportDTO> updateStatus(
@@ -50,9 +44,7 @@ public class ReportController {
         return ResponseEntity.ok(reportService.changeReportStatus(reportId, status));
     }
 
-    /**
-     * ✅ أرشفة بلاغ (بواسطة الأدمن فقط)
-     */
+
     @PatchMapping("/{reportId}/archive")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ReportDTO> archiveReport(@PathVariable Long reportId) {
