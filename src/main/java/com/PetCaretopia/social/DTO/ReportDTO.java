@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class ReportDTO {
     private Long reportId;
 
-    @NotNull
+
     private Long reporterId;
 
     private Long reportedUserId;
