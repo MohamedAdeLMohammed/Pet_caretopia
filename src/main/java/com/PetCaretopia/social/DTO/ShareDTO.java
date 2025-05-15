@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public class ShareDTO {
     private Long shareId;
 
-    @NotNull
+
     private Long userId;
 
     @NotNull
