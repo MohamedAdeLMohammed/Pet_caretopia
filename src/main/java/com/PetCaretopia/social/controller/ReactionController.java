@@ -32,6 +32,34 @@ public class ReactionController {
         return ResponseEntity.ok(reactionService.reactToPost(dto));
     }
 
+    @PutMapping("/post/{postId}")
+    public ResponseEntity<ReactionDTO> updatePostReaction(
+            @PathVariable Long postId,
+            @RequestParam String type,
+            @AuthenticationPrincipal CustomUserDetails principal) {
+
+        ReactionDTO dto = new ReactionDTO();
+        dto.setUserId(principal.getUserId());
+        dto.setPostId(postId);
+        dto.setType(ReactionType.valueOf(type));
+
+        return ResponseEntity.ok(reactionService.updateReactionOnPost(dto));
+    }
+    @PutMapping("/comment/{commentId}")
+    public ResponseEntity<ReactionDTO> updateCommentReaction(
+            @PathVariable Long commentId,
+            @RequestParam String type,
+            @AuthenticationPrincipal CustomUserDetails principal) {
+
+        ReactionDTO dto = new ReactionDTO();
+        dto.setUserId(principal.getUserId());
+        dto.setCommentId(commentId);
+        dto.setType(ReactionType.valueOf(type));
+
+        return ResponseEntity.ok(reactionService.updateReactionOnComment(dto));
+    }
+
+
     @PostMapping("/comment/{commentId}")
     public ResponseEntity<ReactionDTO> reactToComment(
             @PathVariable Long commentId,

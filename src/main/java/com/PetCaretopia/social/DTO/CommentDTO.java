@@ -1,5 +1,6 @@
 package com.PetCaretopia.social.DTO;
 
+import com.PetCaretopia.user.DTO.UserSummaryDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -11,7 +12,7 @@ import java.util.List;
 public class CommentDTO {
     private Long commentId;
 
-
+    private UserSummaryDTO user;
 
     @NotNull
     private Long postId;

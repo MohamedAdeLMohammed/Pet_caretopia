@@ -5,6 +5,7 @@ import com.PetCaretopia.social.DTO.CommentImageDTO;
 import com.PetCaretopia.social.entity.Comment;
 import com.PetCaretopia.social.entity.CommentImage;
 import com.PetCaretopia.social.entity.Post;
+import com.PetCaretopia.user.DTO.UserSummaryDTO;
 import com.PetCaretopia.user.entity.User;
 import org.springframework.stereotype.Component;
 
@@ -44,6 +45,16 @@ public class CommentMapper {
             dto.setCommentImages(imageDTOs);
         }
 
+        User user = comment.getUser();
+
+        if (user != null) {
+            UserSummaryDTO userDTO = new UserSummaryDTO();
+            userDTO.setUserID(user.getUserID());
+            userDTO.setUsername(user.getUsername());
+            userDTO.setName(user.getName());
+            userDTO.setProfileImageUrl(user.getUserProfileImage()); // تأكد أن ده موجود في كيان User
+            dto.setUser(userDTO);
+        }
         // ✅ الريأكشنات
         if (comment.getReactions() != null) {
             List<ReactionDTO> reactionDTOs = comment.getReactions().stream().map(reaction -> {

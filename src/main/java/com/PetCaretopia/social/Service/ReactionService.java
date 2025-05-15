@@ -89,6 +89,37 @@ public class ReactionService {
     }
 
     @Transactional
+    public ReactionDTO updateReactionOnPost(ReactionDTO dto) {
+        User user = userRepository.findById(dto.getUserId()).orElseThrow();
+        Post post = postRepository.findById(dto.getPostId()).orElseThrow();
+
+        Reaction reaction = reactionRepository.findByUserAndPost(user, post)
+                .orElse(new Reaction());
+
+        reaction.setUser(user);
+        reaction.setPost(post);
+        reaction.setType(dto.getType());
+
+        return reactionMapper.toDTO(reactionRepository.save(reaction));
+    }
+    @Transactional
+    public ReactionDTO updateReactionOnComment(ReactionDTO dto) {
+        User user = userRepository.findById(dto.getUserId()).orElseThrow();
+        Comment comment = commentRepository.findById(dto.getCommentId()).orElseThrow();
+
+        Reaction reaction = reactionRepository.findByUserAndComment(user, comment)
+                .orElse(new Reaction());
+
+        reaction.setUser(user);
+        reaction.setComment(comment);
+        reaction.setPost(comment.getPost()); // لتجنب مشاكل الـ FK
+        reaction.setType(dto.getType());
+
+        return reactionMapper.toDTO(reactionRepository.save(reaction));
+    }
+
+
+    @Transactional
     public void removeReactionFromPost(Long postId, Long userId) {
         reactionRepository.deleteByUserUserIDAndPostPostId(userId, postId);
     }
