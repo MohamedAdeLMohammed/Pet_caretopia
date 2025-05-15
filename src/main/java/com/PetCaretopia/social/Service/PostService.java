@@ -1,5 +1,6 @@
 package com.PetCaretopia.social.Service;
 
+import com.PetCaretopia.Security.Service.CustomUserDetails;
 import com.PetCaretopia.shared.SharedImageUploadService;
 import com.PetCaretopia.social.DTO.PostDTO;
 import com.PetCaretopia.social.Mapper.PostMapper;
@@ -92,11 +93,20 @@ public class PostService {
     }
 
     @Transactional
-    public void deletePost(Long postId, Long userId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
-        if (!post.getUser().getUserID().equals(userId)) {
+    public void deletePost(Long postId, CustomUserDetails principal) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        Long userId = principal.getUserId();
+        boolean isOwner = post.getUser().getUserID().equals(userId);
+        boolean isAdmin = principal.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (!isOwner && !isAdmin) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot delete this post.");
         }
+
         postRepository.delete(post);
     }
+
 }

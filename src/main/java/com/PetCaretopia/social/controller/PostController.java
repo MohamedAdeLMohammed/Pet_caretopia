@@ -62,8 +62,9 @@ public class PostController {
     @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
     public ResponseEntity<Void> deletePost(@PathVariable Long postId,
                                            @AuthenticationPrincipal CustomUserDetails principal) {
-        postService.deletePost(postId, principal.getUserId());
+        postService.deletePost(postId, principal);
         return ResponseEntity.noContent().build();
     }
+
 }
 
