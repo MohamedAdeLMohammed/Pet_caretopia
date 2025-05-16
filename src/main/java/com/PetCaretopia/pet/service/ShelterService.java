@@ -1,0 +1,55 @@
+package com.PetCaretopia.pet.service;
+
+import com.PetCaretopia.pet.DTO.ShelterDTO;
+import com.PetCaretopia.pet.Mapper.ShelterMapper;
+import com.PetCaretopia.pet.entity.Shelter;
+import com.PetCaretopia.pet.repository.ShelterRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class ShelterService {
+
+    private final ShelterRepository shelterRepository;
+
+    public List<ShelterDTO> getAll() {
+        return shelterRepository.findAll().stream()
+                .map(ShelterMapper::toDTO)
+                .toList();
+    }
+
+    public ShelterDTO create(ShelterDTO dto) {
+        Shelter shelter = ShelterMapper.toEntity(dto);
+        return ShelterMapper.toDTO(shelterRepository.save(shelter));
+    }
+
+    public ShelterDTO getById(Long id) {
+        Shelter shelter = shelterRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Shelter not found"));
+        return ShelterMapper.toDTO(shelter);
+    }
+
+    public ShelterDTO update(Long id, ShelterDTO dto) {
+        Shelter existing = shelterRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Shelter not found"));
+
+        existing.setName(dto.getName());
+        existing.setLocation(dto.getLocation());
+        existing.setContactNumber(dto.getContactNumber());
+        existing.setEmail(dto.getEmail());
+        existing.setDescription(dto.getDescription());
+        existing.setWebsiteUrl(dto.getWebsiteUrl());
+
+        return ShelterMapper.toDTO(shelterRepository.save(existing));
+    }
+
+    public void delete(Long id) {
+        Shelter shelter = shelterRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Shelter not found"));
+        shelterRepository.delete(shelter);
+    }
+}

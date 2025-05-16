@@ -1,6 +1,7 @@
 package com.PetCaretopia.social.DTO;
 
 import com.PetCaretopia.social.entity.ReactionType;
+import com.PetCaretopia.user.DTO.UserSummaryDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -14,12 +15,15 @@ public class ReactionDTO {
     @JsonIgnore
     private Long userId;
 
-    private Long postId;     // لو الريأكت على post
-    private Long commentId;  // لو الريأكت على comment
+    private Long postId;
+    private Long commentId;
 
     @NotNull
     private ReactionType type;
 
     private LocalDateTime reactedAt;
+
+    private UserSummaryDTO user;
+
 }
 

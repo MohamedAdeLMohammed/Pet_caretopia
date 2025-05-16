@@ -1,11 +1,10 @@
 package com.PetCaretopia.pet.repository;
 
-
-import com.PetCaretopia.user.entity.PetOwner;
 import com.PetCaretopia.pet.entity.Pet;
 import com.PetCaretopia.pet.entity.PetBreed;
 import com.PetCaretopia.pet.entity.PetType;
 import com.PetCaretopia.pet.entity.Shelter;
+import com.PetCaretopia.user.entity.PetOwner;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

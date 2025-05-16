@@ -4,6 +4,7 @@ import com.PetCaretopia.social.DTO.ReactionDTO;
 import com.PetCaretopia.social.entity.Comment;
 import com.PetCaretopia.social.entity.Reaction;
 import com.PetCaretopia.social.entity.Post;
+import com.PetCaretopia.user.DTO.UserSummaryDTO;
 import com.PetCaretopia.user.entity.User;
 import org.springframework.stereotype.Component;
 
@@ -33,8 +34,20 @@ public class ReactionMapper {
         dto.setType(reaction.getType());
         dto.setReactedAt(reaction.getReactedAt());
 
+        // ✅ إضافة بيانات اليوزر
+        User user = reaction.getUser();
+        if (user != null) {
+            UserSummaryDTO userDTO = new UserSummaryDTO();
+            userDTO.setUserID(user.getUserID());
+            userDTO.setUsername(user.getUsername());
+            userDTO.setName(user.getName());
+            userDTO.setProfileImageUrl(user.getUserProfileImage());
+            dto.setUser(userDTO);
+        }
+
         return dto;
     }
+
     public Reaction toPostEntity(ReactionDTO dto, User user, Post post) {
         Reaction reaction = new Reaction();
         reaction.setUser(user);

@@ -7,6 +7,9 @@ import com.PetCaretopia.Security.Dto.AuthResponse;
 import com.PetCaretopia.Security.Dto.RegisterRequest;
 import com.PetCaretopia.Security.Dto.ResetPasswordRequest;
 import com.PetCaretopia.Security.Util.JwtUtil;
+import com.PetCaretopia.user.entity.PetOwner;
+import com.PetCaretopia.user.entity.ServiceProvider;
+import com.PetCaretopia.user.entity.ShelterAccount;
 import com.PetCaretopia.user.entity.User;
 import com.PetCaretopia.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,24 +35,49 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
 
 
-    public AuthResponse register(RegisterRequest request){
+    public AuthResponse register(RegisterRequest request) {
 
-            User user = User.builder()
-                    .name(request.getName())
-                    .userEmail(request.getEmail())
-                    .userPhoneNumber(request.getPhoneNumber())
-                    .birthDate(request.getBirthDate())
-                    .userPassword(passwordEncoder.encode(request.getPassword()))
-                    .userRole(request.getRole())
-                    .userGender(request.getGender())
-                    .userAddress(request.getAddress())
-                    .userLastLoginDate(request.getLastLoginDate())
-                    .build();
-            User savedUser = userRepository.save(user);
-            return new AuthResponse("Registered Successfully !");
+        // 1. إنشاء كائن اليوزر
+        User user = User.builder()
+                .name(request.getName())
+                .userEmail(request.getEmail())
+                .userPhoneNumber(request.getPhoneNumber())
+                .birthDate(request.getBirthDate())
+                .userPassword(passwordEncoder.encode(request.getPassword()))
+                .userRole(request.getRole())
+                .userGender(request.getGender())
+                .userAddress(request.getAddress())
+                .userLastLoginDate(request.getLastLoginDate())
+                .build();
 
+        // 2. ربط الدور المناسب بكائن مخصص
+        switch (request.getRole()) {
+            case PET_OWNER -> {
+                PetOwner petOwner = new PetOwner();
+                petOwner.setUser(user);      // الربط من جهة PetOwner
+                user.setPetOwner(petOwner);  // الربط من جهة User
+            }
+            case SERVICE_PROVIDER -> {
+                ServiceProvider serviceProvider = new ServiceProvider();
+                serviceProvider.setUser(user);         // الربط من جهة ServiceProvider
+                user.setServiceProvider(serviceProvider);     // الربط من جهة User
+            }
+            case SHELTER -> {
+                ShelterAccount shelterAccount = new ShelterAccount();
+                shelterAccount.setUser(user);              // الربط من جهة ShelterAccount
+                shelterAccount.setShelterName("My Shelter"); // تقدر تستقبلها من الريكوست
+                user.setShelterAccount(shelterAccount);       // الربط من جهة User
+            }
+            default -> {
+            }
+        }
 
+        userRepository.save(user);
+
+        return new AuthResponse("Registered Successfully!");
     }
+
+
 
     public AuthResponse login(AuthRequest request){
 

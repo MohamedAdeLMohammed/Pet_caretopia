@@ -1,30 +1,21 @@
 package com.PetCaretopia.user.controller;
 
-
-
-import com.PetCaretopia.user.entity.PetOwner;
+import com.PetCaretopia.user.DTO.PetOwnerDTO;
 import com.PetCaretopia.user.service.PetOwnerService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
-
 @RestController
-@RequestMapping("/petOwners")
+@RequestMapping("/owners")
+@RequiredArgsConstructor
 public class PetOwnerController {
 
-    private final PetOwnerService petOwnerService;
+    private final PetOwnerService service;
 
-    public PetOwnerController(PetOwnerService petOwnerService) {
-        this.petOwnerService = petOwnerService;
-    }
-
-    @PostMapping("/register")
-    public PetOwner registerPetOwner(@RequestBody PetOwner petOwner) {
-        return petOwnerService.savePetOwner(petOwner);
-    }
-
-    @GetMapping("/user/{userID}")
-    public Optional<PetOwner> getPetOwnerByUserId(@PathVariable Long userID) {
-        return petOwnerService.getPetOwnerByUserId(userID);
+    @PostMapping
+    public ResponseEntity<PetOwnerDTO> create(@RequestBody @Valid PetOwnerDTO dto) {
+        return ResponseEntity.ok(service.create(dto));
     }
 }

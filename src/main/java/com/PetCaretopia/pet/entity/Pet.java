@@ -33,6 +33,9 @@ public class Pet {
     @JoinColumn(name = "pet_breed_id", nullable = false)
     private PetBreed petBreed;
 
+    @Column(length = 500)
+    private String imageUrl;
+
     public void adopt(PetOwner newOwner) {
         this.owner = newOwner; //Update owner when adopted
         this.shelter = null; //If it was in a shelter, remove it
