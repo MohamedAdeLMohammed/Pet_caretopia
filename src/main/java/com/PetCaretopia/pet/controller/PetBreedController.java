@@ -17,19 +17,19 @@ public class PetBreedController {
 
     private final PetBreedService service;
 
-    @PreAuthorize("hasAnyRole('USER', 'SHELTER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SERVICE_PROVIDER', 'USER','PET_OWNER')")
     @GetMapping
     public ResponseEntity<List<PetBreedDTO>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 
-    @PreAuthorize("hasAnyRole('USER', 'SHELTER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SERVICE_PROVIDER', 'USER','PET_OWNER')")
     @GetMapping("/{id}")
     public ResponseEntity<PetBreedDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    @PreAuthorize("hasAnyRole('USER', 'SHELTER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SERVICE_PROVIDER', 'USER','PET_OWNER')")
     @GetMapping("/by-type")
     public ResponseEntity<List<PetBreedDTO>> getByType(@RequestParam String type) {
         return ResponseEntity.ok(service.getByType(type));

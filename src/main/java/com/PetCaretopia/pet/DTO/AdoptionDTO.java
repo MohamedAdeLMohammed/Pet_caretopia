@@ -1,9 +1,11 @@
 package com.PetCaretopia.pet.DTO;
 
+import com.PetCaretopia.pet.entity.AdoptionStatus;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class AdoptionDTO {
@@ -12,14 +14,16 @@ public class AdoptionDTO {
     @NotNull(message = "Pet ID is required")
     private Long petId;
 
-    @NotNull(message = "Adopter ID is required")
     private Long adopterId;
 
     private Long previousOwnerId;
     private Long shelterId;
 
-    @NotNull(message = "Adoption date is required")
     private LocalDate adoptionDate;
 
-    private Boolean isApproved = false;
+    private AdoptionStatus status;
+    private String message;
+    private LocalDateTime createdAt;
+    private Long requesterUserId;
+
 }

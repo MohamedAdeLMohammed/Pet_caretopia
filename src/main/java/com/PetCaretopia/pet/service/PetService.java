@@ -1,17 +1,22 @@
 package com.PetCaretopia.pet.service;
 
+import com.PetCaretopia.Security.Service.CustomUserDetails;
 import com.PetCaretopia.pet.DTO.PetDTO;
 import com.PetCaretopia.pet.Mapper.PetMapper;
 import com.PetCaretopia.pet.entity.*;
 import com.PetCaretopia.pet.repository.*;
 import com.PetCaretopia.shared.SharedImageUploadService;
 import com.PetCaretopia.user.entity.PetOwner;
+import com.PetCaretopia.user.entity.User;
 import com.PetCaretopia.user.repository.PetOwnerRepository;
+import com.PetCaretopia.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.persistence.EntityNotFoundException;
+
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @Service
@@ -24,41 +29,50 @@ public class PetService {
     private final PetOwnerRepository petOwnerRepository;
     private final ShelterRepository shelterRepository;
     private final SharedImageUploadService imageUploadService;
-
+    private final UserRepository userRepository;
+    private final PetMapper petMapper;
     public PetDTO createPet(PetDTO dto, MultipartFile imageFile) {
-
-        // ✅ التحقق من نوع الحيوان
         PetType type = petTypeRepository.findByTypeName(dto.getPetTypeName())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid pet type"));
 
-        // ✅ التحقق من السلالة
         PetBreed breed = petBreedRepository.findByBreedNameAndPetType(dto.getPetBreedName(), type)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid pet breed"));
 
-        // ✅ جلب المالك إن وُجد
         PetOwner owner = null;
+        Shelter shelter = null;
+
         if (dto.getOwnerId() != null) {
-            owner = petOwnerRepository.findById(dto.getOwnerId())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid owner ID"));
+            owner = petOwnerRepository.findById(dto.getOwnerId()).orElse(null);
+            if (owner == null) {
+                User user = userRepository.findById(dto.getOwnerId())
+                        .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                if (user.getUserRole() != User.Role.PET_OWNER) {
+                    user.setUserRole(User.Role.PET_OWNER);
+                }
+                owner = new PetOwner();
+                owner.setUser(user);
+                user.setPetOwner(owner);
+                userRepository.save(user);
+            }
         }
 
-        // ✅ جلب الملجأ إن وُجد
-        Shelter shelter = null;
         if (dto.getShelterId() != null) {
             shelter = shelterRepository.findById(dto.getShelterId())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid shelter ID"));
+                    .orElseThrow(() -> new IllegalArgumentException("Shelter not found"));
         }
 
-        // ✅ إنشاء الكيان
+        // 🛑 تأكد إن مش الاتنين متحددين
+        if (owner != null && shelter != null) {
+            throw new IllegalArgumentException("Pet cannot have both owner and shelter.");
+        }
+
         Pet pet = PetMapper.toEntity(dto, type, breed, owner, shelter);
 
-        // ✅ رفع الصورة إن وُجدت
         if (imageFile != null && !imageFile.isEmpty()) {
             String imageUrl = imageUploadService.uploadMultipartFile(imageFile);
             pet.setImageUrl(imageUrl);
         }
 
-        // ✅ حفظ وإرجاع الـ DTO
         return PetMapper.toDTO(petRepository.save(pet));
     }
 
@@ -68,9 +82,17 @@ public class PetService {
                 .toList();
     }
 
-    public PetDTO updatePet(Long id, PetDTO dto, MultipartFile imageFile) {
-        Pet existingPet = petRepository.findById(id).orElseThrow();
+    public PetDTO updatePet(Long id, PetDTO dto, MultipartFile imageFile, CustomUserDetails principal) throws AccessDeniedException {
+        Pet existingPet = petRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Pet not found"));
 
+        boolean isAdmin = principal.getRole().equals("ADMIN");
+
+        if (!isAdmin) {
+            if (existingPet.getOwner() == null || !existingPet.getOwner().getPetOwnerId().equals(dto.getOwnerId())) {
+                throw new AccessDeniedException("You are not allowed to edit this pet.");
+            }
+        }
         PetType type = petTypeRepository.findByTypeName(dto.getPetTypeName())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid type"));
 
@@ -79,6 +101,7 @@ public class PetService {
 
         PetOwner owner = dto.getOwnerId() != null ? petOwnerRepository.findById(dto.getOwnerId()).orElse(null) : null;
         Shelter shelter = dto.getShelterId() != null ? shelterRepository.findById(dto.getShelterId()).orElse(null) : null;
+
 
         existingPet.setPetName(dto.getPetName());
         existingPet.setPetType(type);
@@ -91,6 +114,7 @@ public class PetService {
             existingPet.setImageUrl(imageUrl);
         }
 
+
         return PetMapper.toDTO(petRepository.save(existingPet));
     }
 
@@ -99,10 +123,31 @@ public class PetService {
                 .orElseThrow(() -> new EntityNotFoundException("Pet not found"));
         return PetMapper.toDTO(pet);
     }
-    public void deletePet(Long id) {
-        Pet pet = petRepository.findById(id).orElseThrow();
+
+    public void deletePet(Long id, CustomUserDetails principal) throws AccessDeniedException {
+        Pet pet = petRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Pet not found"));
+
+        boolean isAdmin = "ADMIN".equals(principal.getRole());
+
+        if (!isAdmin) {
+            PetOwner owner = petOwnerRepository.findByUser_UserID(principal.getUserId())
+                    .orElseThrow(() -> new AccessDeniedException("You are not a PetOwner"));
+
+            if (pet.getOwner() == null || !pet.getOwner().getPetOwnerId().equals(owner.getPetOwnerId())) {
+                throw new AccessDeniedException("You are not allowed to delete this pet.");
+            }
+        }
+
         petRepository.delete(pet);
     }
+    public List<PetDTO> getMyPets(Long userId) {
+        return petRepository.findByOwner_User_UserID(userId).stream()
+                .map(p -> petMapper.toDTO(p))
+                .toList();
+    }
+
+
     public List<PetDTO> getPetsByType(String typeName) {
         PetType type = petTypeRepository.findByTypeName(typeName)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid type"));

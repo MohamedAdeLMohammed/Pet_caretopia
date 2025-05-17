@@ -17,13 +17,13 @@ public class PetTypeController {
 
     private final PetTypeService service;
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'SHELTER', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SERVICE_PROVIDER', 'USER','PET_OWNER')")
     @GetMapping
     public ResponseEntity<List<PetTypeDTO>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'SHELTER', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SERVICE_PROVIDER', 'USER','PET_OWNER')")
     @GetMapping("/{id}")
     public ResponseEntity<PetTypeDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.getById(id));

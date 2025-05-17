@@ -12,6 +12,7 @@ public class Pet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "pet_id")
     private Long petID;
 
     @Column(nullable = false)
@@ -32,6 +33,8 @@ public class Pet {
     @ManyToOne
     @JoinColumn(name = "pet_breed_id", nullable = false)
     private PetBreed petBreed;
+
+
 
     @Column(length = 500)
     private String imageUrl;

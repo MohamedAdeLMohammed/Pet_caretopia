@@ -37,7 +37,10 @@ public class AuthService {
 
     public AuthResponse register(RegisterRequest request) {
 
-        // 1. إنشاء كائن اليوزر
+        if (!(request.getRole() == User.Role.USER || request.getRole() == User.Role.SERVICE_PROVIDER)) {
+            throw new IllegalArgumentException("Invalid role! Only USER and SERVICE_PROVIDER are allowed.");
+        }
+
         User user = User.builder()
                 .name(request.getName())
                 .userEmail(request.getEmail())
@@ -50,30 +53,18 @@ public class AuthService {
                 .userLastLoginDate(request.getLastLoginDate())
                 .build();
 
-        // 2. ربط الدور المناسب بكائن مخصص
         switch (request.getRole()) {
-            case PET_OWNER -> {
-                PetOwner petOwner = new PetOwner();
-                petOwner.setUser(user);      // الربط من جهة PetOwner
-                user.setPetOwner(petOwner);  // الربط من جهة User
-            }
             case SERVICE_PROVIDER -> {
                 ServiceProvider serviceProvider = new ServiceProvider();
-                serviceProvider.setUser(user);         // الربط من جهة ServiceProvider
-                user.setServiceProvider(serviceProvider);     // الربط من جهة User
+                serviceProvider.setUser(user);
+                user.setServiceProvider(serviceProvider);
             }
-            case SHELTER -> {
-                ShelterAccount shelterAccount = new ShelterAccount();
-                shelterAccount.setUser(user);              // الربط من جهة ShelterAccount
-                shelterAccount.setShelterName("My Shelter"); // تقدر تستقبلها من الريكوست
-                user.setShelterAccount(shelterAccount);       // الربط من جهة User
-            }
-            default -> {
+
+            case USER -> {
             }
         }
 
         userRepository.save(user);
-
         return new AuthResponse("Registered Successfully!");
     }
 

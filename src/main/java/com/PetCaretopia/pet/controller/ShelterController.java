@@ -1,5 +1,7 @@
 package com.PetCaretopia.pet.controller;
 
+import com.PetCaretopia.pet.DTO.AdoptionDTO;
+import com.PetCaretopia.pet.DTO.PetDTO;
 import com.PetCaretopia.pet.DTO.ShelterDTO;
 import com.PetCaretopia.pet.service.ShelterService;
 import jakarta.validation.Valid;
@@ -17,13 +19,26 @@ public class ShelterController {
 
     private final ShelterService shelterService;
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'SHELTER', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PET_OWNER', 'USER')")
     @GetMapping
     public ResponseEntity<List<ShelterDTO>> getAll() {
         return ResponseEntity.ok(shelterService.getAll());
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'SHELTER', 'USER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PET_OWNER', 'USER')")
+    @GetMapping("/{shelterId}/pets")
+    public ResponseEntity<List<PetDTO>> getPetsByShelter(@PathVariable Long shelterId) {
+        return ResponseEntity.ok(shelterService.getPetsByShelter(shelterId));
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @GetMapping("/{shelterId}/adoptions")
+    public ResponseEntity<List<AdoptionDTO>> getAdoptionsByShelter(@PathVariable Long shelterId) {
+        return ResponseEntity.ok(shelterService.getAdoptionsByShelter(shelterId));
+    }
+
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'PET_OWNER', 'USER')")
     @GetMapping("/{id}")
     public ResponseEntity<ShelterDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(shelterService.getById(id));

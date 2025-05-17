@@ -3,7 +3,9 @@ package com.PetCaretopia.pet.Mapper;
 import com.PetCaretopia.pet.DTO.PetDTO;
 import com.PetCaretopia.pet.entity.*;
 import com.PetCaretopia.user.entity.PetOwner;
+import org.springframework.stereotype.Component;
 
+@Component
 public class PetMapper {
     public static PetDTO toDTO(Pet pet) {
         PetDTO dto = new PetDTO();

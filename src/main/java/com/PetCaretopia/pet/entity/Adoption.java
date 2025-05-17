@@ -1,13 +1,14 @@
 package com.PetCaretopia.pet.entity;
 
-
 import com.PetCaretopia.user.entity.PetOwner;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "adoptions")
@@ -25,22 +26,39 @@ public class Adoption {
     @JoinColumn(name = "pet_id", nullable = false)
     private Pet pet;
 
-    @ManyToOne
-    @JoinColumn(name = "adopter_id", nullable = false)
-    private PetOwner adopter;
-
-
-    @ManyToOne
-    @JoinColumn(name = "previous_owner_id", nullable = true)
-    private PetOwner previousOwner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shelter_id", nullable = true)
+    @JoinColumn(name = "shelter_id")
     private Shelter shelter;
 
     @Column(nullable = false)
     private LocalDate adoptionDate;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    private AdoptionStatus status;
+
+    private String message;
+
+    @Column(name = "is_approved", nullable = false)
     private Boolean isApproved = false;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "adopter_id")
+    private PetOwner adopter;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "previous_owner_id")
+    private PetOwner previousOwner;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "requester_user_id", nullable = false)
+    private Long requesterUserId;
+
+    @Column(name = "created_by", nullable = false)
+    private Long createdBy;
+
+
 }
