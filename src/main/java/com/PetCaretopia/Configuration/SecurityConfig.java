@@ -58,7 +58,6 @@ public class SecurityConfig {
 
                                 ).permitAll()
 
-                                // ✅ APIs الخاصة بـ Social Module
                                 .requestMatchers(
                                         "/social/posts/**",
                                         "/social/comments/**",
@@ -68,14 +67,18 @@ public class SecurityConfig {
                                         "/social/notifications/**"
                                 ).authenticated()
 
-                        // ✅ APIs الخاصة بـ Order Module
                         .requestMatchers(
                                 "/cart/**",
                                 "/checkout/**",
                                 "/orders/**",
                                 "/inventory/**",
                                 "/products/**",
-                                "/wishlist/**"
+                                "/wishlist/**",
+                                "pets/**",
+                                "pet-types/**",
+                                "pet-breeds/**",
+                                "adoptions/**",
+                                "shelters/**"
                         ).authenticated()
 
                                 // ✅ أي شيء آخر يحتاج توثيق
