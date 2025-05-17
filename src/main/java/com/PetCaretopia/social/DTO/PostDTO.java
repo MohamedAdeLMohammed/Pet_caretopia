@@ -33,4 +33,5 @@ public class PostDTO {
 
     // ✅ قائمة الريأكتس المرتبطة بالبوست
     private List<ReactionDTO> reactions;
+    private List<ShareDTO> shares;
 }
