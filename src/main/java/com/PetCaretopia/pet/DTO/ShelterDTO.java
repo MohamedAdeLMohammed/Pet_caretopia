@@ -21,6 +21,8 @@ public class ShelterDTO {
     @Email(message = "Invalid email format")
     private String email;
 
+    private Long createdBy;
+
     private String description;
     private String websiteUrl;
 }

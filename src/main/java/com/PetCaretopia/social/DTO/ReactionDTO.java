@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 public class ReactionDTO {
     private Long reactionId;
 
-    @JsonIgnore
     private Long userId;
 
     private Long postId;

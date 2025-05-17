@@ -3,7 +3,7 @@ package com.PetCaretopia.pet.Mapper;
 import com.PetCaretopia.pet.DTO.ShelterDTO;
 import com.PetCaretopia.pet.entity.Shelter;
 
-public class ShelterMapper {
+public class        ShelterMapper {
     public static ShelterDTO toDTO(Shelter entity) {
         ShelterDTO dto = new ShelterDTO();
         dto.setId(entity.getId());
@@ -13,6 +13,8 @@ public class ShelterMapper {
         dto.setEmail(entity.getEmail());
         dto.setDescription(entity.getDescription());
         dto.setWebsiteUrl(entity.getWebsiteUrl());
+        dto.setCreatedBy(entity.getCreatedBy()); // ✅ أضف السطر ده
+
         return dto;
     }
     public static Shelter toEntity(ShelterDTO dto) {

@@ -1,5 +1,6 @@
 package com.PetCaretopia.pet.service;
 
+import com.PetCaretopia.Security.Service.CustomUserDetails;
 import com.PetCaretopia.pet.DTO.AdoptionDTO;
 import com.PetCaretopia.pet.DTO.PetDTO;
 import com.PetCaretopia.pet.DTO.ShelterDTO;
@@ -29,11 +30,12 @@ public class ShelterService {
                 .map(ShelterMapper::toDTO)
                 .toList();
     }
-
-    public ShelterDTO create(ShelterDTO dto) {
+    public ShelterDTO create(ShelterDTO dto, CustomUserDetails principal) {
         Shelter shelter = ShelterMapper.toEntity(dto);
+        shelter.setCreatedBy(principal.getUserId()); // ✅ حل المشكلة
         return ShelterMapper.toDTO(shelterRepository.save(shelter));
     }
+
 
     public ShelterDTO getById(Long id) {
         Shelter shelter = shelterRepository.findById(id)

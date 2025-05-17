@@ -1,5 +1,6 @@
 package com.PetCaretopia.pet.controller;
 
+import com.PetCaretopia.Security.Service.CustomUserDetails;
 import com.PetCaretopia.pet.DTO.AdoptionDTO;
 import com.PetCaretopia.pet.DTO.PetDTO;
 import com.PetCaretopia.pet.DTO.ShelterDTO;
@@ -8,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,11 +46,15 @@ public class ShelterController {
         return ResponseEntity.ok(shelterService.getById(id));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<ShelterDTO> create(@RequestBody @Valid ShelterDTO dto) {
-        return ResponseEntity.ok(shelterService.create(dto));
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ShelterDTO> create(
+            @RequestBody @Valid ShelterDTO dto,
+            @AuthenticationPrincipal CustomUserDetails principal
+    ) {
+        return ResponseEntity.ok(shelterService.create(dto, principal));
     }
+
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
