@@ -65,6 +65,5 @@ public class PostController {
         postService.deletePost(postId, principal);
         return ResponseEntity.noContent().build();
     }
-
 }
 

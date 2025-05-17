@@ -154,4 +154,29 @@ public class PetService {
         return petRepository.findByPetType(type).stream().map(PetMapper::toDTO).toList();
     }
 
+    public void offerForAdoption(Long petId, CustomUserDetails principal) throws AccessDeniedException {
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(() -> new EntityNotFoundException("Pet not found"));
+
+        // تحقق إن المستخدم يملك الحيوان ده
+        boolean isOwner = pet.getOwner() != null &&
+                pet.getOwner().getUser().getUserID().equals(principal.getUserId());
+
+        boolean isShelter = pet.getShelter() != null &&
+                pet.getShelter().getCreatedBy().equals(principal.getUserId());
+
+        if (!isOwner && !isShelter && !principal.getRole().equals("ADMIN")) {
+            throw new AccessDeniedException("You are not allowed to offer this pet for adoption");
+        }
+
+        pet.setAvailableForAdoption(true);
+        petRepository.save(pet);
+    }
+    public List<PetDTO> getAvailableForAdoption() {
+        return petRepository.findByIsAvailableForAdoptionTrue().stream()
+                .map(PetMapper::toDTO)
+                .toList();
+    }
+
+
 }

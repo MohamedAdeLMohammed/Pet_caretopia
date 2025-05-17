@@ -2,8 +2,11 @@ package com.PetCaretopia.pet.controller;
 
 import com.PetCaretopia.Security.Service.CustomUserDetails;
 import com.PetCaretopia.pet.DTO.AdoptionDTO;
+import com.PetCaretopia.pet.DTO.AdoptionOfferDTO;
+import com.PetCaretopia.pet.DTO.PetDTO;
 import com.PetCaretopia.pet.entity.AdoptionStatus;
 import com.PetCaretopia.pet.service.AdoptionService;
+import com.PetCaretopia.pet.service.PetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +22,21 @@ import java.util.List;
 public class AdoptionController {
 
     private final AdoptionService adoptionService;
-
+    private final PetService petService;
     @PreAuthorize("hasAnyRole('USER', 'PET_OWNER')")
     @PostMapping
     public ResponseEntity<AdoptionDTO> submit(@RequestBody @Valid AdoptionDTO dto,
                                               @AuthenticationPrincipal CustomUserDetails principal) {
         return ResponseEntity.ok(adoptionService.submitRequest(dto, principal));
+    }
+
+    @PreAuthorize("hasAnyRole('PET_OWNER', 'ADMIN')")
+    @PostMapping("/offer")
+    public ResponseEntity<AdoptionDTO> offerAdoption(
+            @RequestBody @Valid AdoptionOfferDTO dto,
+            @AuthenticationPrincipal CustomUserDetails principal
+    ) {
+        return ResponseEntity.ok(adoptionService.offerAdoption(dto, principal));
     }
 
     @PreAuthorize("hasAnyRole('ADMIN')")
@@ -84,6 +96,12 @@ public class AdoptionController {
             @RequestParam(value = "status", required = false) AdoptionStatus status
     ) {
         return ResponseEntity.ok(adoptionService.getMyRequests(principal.getUserId(), status));
+    }
+
+    @GetMapping("/available-for-adoption")
+    public ResponseEntity<List<PetDTO>> getAvailablePets() {
+        List<PetDTO> pets = petService.getAvailableForAdoption();
+        return ResponseEntity.ok(pets);
     }
 
 }

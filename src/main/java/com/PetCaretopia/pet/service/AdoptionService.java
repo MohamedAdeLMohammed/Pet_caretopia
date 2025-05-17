@@ -2,6 +2,7 @@ package com.PetCaretopia.pet.service;
 
 import com.PetCaretopia.Security.Service.CustomUserDetails;
 import com.PetCaretopia.pet.DTO.AdoptionDTO;
+import com.PetCaretopia.pet.DTO.AdoptionOfferDTO;
 import com.PetCaretopia.pet.Mapper.AdoptionMapper;
 import com.PetCaretopia.pet.entity.Adoption;
 import com.PetCaretopia.pet.entity.AdoptionStatus;
@@ -16,6 +17,7 @@ import com.PetCaretopia.user.entity.User;
 import com.PetCaretopia.user.repository.PetOwnerRepository;
 import com.PetCaretopia.user.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -213,6 +215,29 @@ public class AdoptionService {
         return adoptions.stream()
                 .map(AdoptionMapper::toDTO)
                 .toList();
+    }
+
+    public AdoptionDTO offerAdoption(AdoptionOfferDTO dto, CustomUserDetails principal) {
+        Pet pet = petRepository.findById(dto.getPetId())
+                .orElseThrow(() -> new EntityNotFoundException("Pet not found"));
+
+        if (pet.getOwner() == null || !pet.getOwner().getUser().getUserID().equals(principal.getUserId())) {
+            throw new AccessDeniedException("You can only offer adoption for your own pets.");
+        }
+
+        User targetUser = userRepository.findById(dto.getTargetUserId())
+                .orElseThrow(() -> new EntityNotFoundException("Target user not found"));
+
+        Adoption adoption = new Adoption();
+        adoption.setPet(pet);
+        adoption.setRequesterUserId(principal.getUserId());
+        adoption.setCreatedBy(principal.getUserId());
+        adoption.setMessage(dto.getMessage());
+        adoption.setAdoptionDate(LocalDate.now());
+        adoption.setCreatedAt(LocalDateTime.now());
+        adoption.setStatus(AdoptionStatus.PENDING);
+
+        return AdoptionMapper.toDTO(adoptionRepository.save(adoption));
     }
 
 }

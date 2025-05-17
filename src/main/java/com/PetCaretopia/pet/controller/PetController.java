@@ -115,4 +115,14 @@ public class PetController {
         return ResponseEntity.ok(petService.getMyPets(principal.getUserId()));
     }
 
+
+    @PreAuthorize("hasAnyRole('PET_OWNER','ADMIN')")
+    @PutMapping("/{petId}/offer-for-adoption")
+    public ResponseEntity<Void> offerForAdoption(@PathVariable Long petId,
+                                                 @AuthenticationPrincipal CustomUserDetails principal) throws AccessDeniedException {
+        petService.offerForAdoption(petId, principal);
+        return ResponseEntity.ok().build();
+    }
+
+
 }

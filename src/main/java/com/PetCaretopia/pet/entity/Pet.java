@@ -34,6 +34,8 @@ public class Pet {
     @JoinColumn(name = "pet_breed_id", nullable = false)
     private PetBreed petBreed;
 
+    @Column(name = "is_available_for_adoption", nullable = false)
+    private boolean isAvailableForAdoption = false;
 
 
     @Column(length = 500)

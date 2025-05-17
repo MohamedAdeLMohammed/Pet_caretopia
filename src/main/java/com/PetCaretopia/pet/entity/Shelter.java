@@ -39,6 +39,12 @@ public class Shelter {
     @Column(nullable = true)
     private String websiteUrl;
 
+    @Column(name = "created_by", nullable = false)
+    private Long createdBy;
+
+
     @OneToMany(mappedBy = "shelter", cascade = CascadeType.ALL, orphanRemoval = false)
     private List<Pet> pets;
+
+
 }
