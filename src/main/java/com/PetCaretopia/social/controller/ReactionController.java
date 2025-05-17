@@ -20,6 +20,7 @@ public class ReactionController {
 
     private final ReactionService reactionService;
 
+    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER')")
     @PostMapping("/post/{postId}")
     public ResponseEntity<ReactionDTO> reactToPost(
             @PathVariable Long postId,
@@ -32,6 +33,7 @@ public class ReactionController {
         return ResponseEntity.ok(reactionService.reactToPost(dto));
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER')")
     @PutMapping("/post/{postId}")
     public ResponseEntity<ReactionDTO> updatePostReaction(
             @PathVariable Long postId,
@@ -45,6 +47,8 @@ public class ReactionController {
 
         return ResponseEntity.ok(reactionService.updateReactionOnPost(dto));
     }
+
+    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER')")
     @PutMapping("/comment/{commentId}")
     public ResponseEntity<ReactionDTO> updateCommentReaction(
             @PathVariable Long commentId,
@@ -60,6 +64,7 @@ public class ReactionController {
     }
 
 
+    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER')")
     @PostMapping("/comment/{commentId}")
     public ResponseEntity<ReactionDTO> reactToComment(
             @PathVariable Long commentId,
@@ -72,16 +77,19 @@ public class ReactionController {
         return ResponseEntity.ok(reactionService.reactToComment(dto));
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/post/{postId}")
     public ResponseEntity<List<ReactionDTO>> getReactionsByPost(@PathVariable Long postId) {
         return ResponseEntity.ok(reactionService.getReactionsByPost(postId));
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/comment/{commentId}")
     public ResponseEntity<List<ReactionDTO>> getReactionsByComment(@PathVariable Long commentId) {
         return ResponseEntity.ok(reactionService.getReactionsByComment(commentId));
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/post/{postId}/user")
     public ResponseEntity<ReactionDTO> getUserReactionOnPost(
             @PathVariable Long postId,
@@ -89,6 +97,7 @@ public class ReactionController {
         return ResponseEntity.ok(reactionService.getUserReaction(postId, principal.getUserId()));
     }
 
+    @PreAuthorize("permitAll()")
     @GetMapping("/comment/{commentId}/user")
     public ResponseEntity<ReactionDTO> getUserReactionOnComment(
             @PathVariable Long commentId,
@@ -96,6 +105,7 @@ public class ReactionController {
         return ResponseEntity.ok(reactionService.getUserReactionOnComment(commentId, principal.getUserId()));
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER')")
     @DeleteMapping("/post/{postId}")
     public ResponseEntity<Void> removePostReaction(
             @PathVariable Long postId,
