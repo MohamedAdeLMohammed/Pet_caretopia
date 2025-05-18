@@ -1,8 +1,11 @@
 package com.PetCaretopia.pet.entity;
+import com.PetCaretopia.health.entity.PetVaccine;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import com.PetCaretopia.user.entity.PetOwner;
+
+import java.util.List;
 
 @Entity
 @Table(name = "pets")
@@ -37,12 +40,14 @@ public class Pet {
     @Column(name = "is_available_for_adoption", nullable = false)
     private boolean isAvailableForAdoption = false;
 
+    @OneToMany(mappedBy = "pet",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+    private List<PetVaccine> petVaccines;
 
     @Column(length = 500)
     private String imageUrl;
 
     public void adopt(PetOwner newOwner) {
-        this.owner = newOwner; //Update owner when adopted
-        this.shelter = null; //If it was in a shelter, remove it
+        this.owner = newOwner;
+        this.shelter = null;
     }
 }
