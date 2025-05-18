@@ -18,7 +18,7 @@ import java.util.Date;
 public class JwtUtil {
     private final JwtConfig jwtConfig;
 
-    public String generateToken(Long userId,String name,String age,String username,String role){
+    public String generateToken(Long userId,String name,String age,String username,String role,String phoneNumber){
         long expirationTime =  jwtConfig.getExpiration();
        try {
             String token = Jwts.builder()
@@ -27,6 +27,7 @@ public class JwtUtil {
                     .claim("name", name)
                     .claim("age",age)
                     .claim("role", role)
+                    .claim("phoneNumber",phoneNumber)
                     .setIssuedAt(new Date())
                     .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
                     .signWith(getSigningKey(),SignatureAlgorithm.HS512) // FIXED: Use bytes

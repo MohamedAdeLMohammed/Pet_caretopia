@@ -6,11 +6,11 @@ import com.PetCaretopia.Security.Dto.AuthRequest;
 import com.PetCaretopia.Security.Dto.AuthResponse;
 import com.PetCaretopia.Security.Dto.RegisterRequest;
 import com.PetCaretopia.Security.Dto.ResetPasswordRequest;
+import com.PetCaretopia.Security.Util.GetAgeUtil;
 import com.PetCaretopia.Security.Util.JwtUtil;
-import com.PetCaretopia.user.entity.PetOwner;
 import com.PetCaretopia.user.entity.ServiceProvider;
-import com.PetCaretopia.user.entity.ShelterAccount;
 import com.PetCaretopia.user.entity.User;
+import com.PetCaretopia.user.repository.ServiceProviderRepository;
 import com.PetCaretopia.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +18,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -28,47 +29,46 @@ public class AuthService {
 
     private final UserRepository userRepository;
 
-    public final AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+
+    private final ServiceProviderRepository serviceProviderRepository;
 
     private final JwtUtil jwtUtil;
 
     private final PasswordEncoder passwordEncoder;
+    private final GetAgeUtil getAgeUtil;
 
 
-    public AuthResponse register(RegisterRequest request) {
+    public AuthResponse register(RegisterRequest request){
 
-        if (!(request.getRole() == User.Role.USER || request.getRole() == User.Role.SERVICE_PROVIDER)) {
-            throw new IllegalArgumentException("Invalid role! Only USER and SERVICE_PROVIDER are allowed.");
-        }
-
-        User user = User.builder()
-                .name(request.getName())
-                .userEmail(request.getEmail())
-                .userPhoneNumber(request.getPhoneNumber())
-                .birthDate(request.getBirthDate())
-                .userPassword(passwordEncoder.encode(request.getPassword()))
-                .userRole(request.getRole())
-                .userGender(request.getGender())
-                .userAddress(request.getAddress())
-                .userLastLoginDate(request.getLastLoginDate())
-                .build();
-
-        switch (request.getRole()) {
-            case SERVICE_PROVIDER -> {
-                ServiceProvider serviceProvider = new ServiceProvider();
-                serviceProvider.setUser(user);
-                user.setServiceProvider(serviceProvider);
+            User newUser = User.builder()
+                    .name(request.getName())
+                    .userEmail(request.getEmail())
+                    .userPhoneNumber(request.getPhoneNumber())
+                    .birthDate(request.getBirthDate())
+                    .userPassword(passwordEncoder.encode(request.getPassword()))
+                    .userRole(request.getRole())
+                    .userGender(request.getGender())
+                    .userAddress(request.getAddress())
+                    .userLastLoginDate(request.getLastLoginDate())
+                    .userStatus(User.Status.ACTIVE)
+                    .userCreationalDate(LocalDateTime.now())
+                    .build();
+            User savedUser = userRepository.save(newUser);
+            if(newUser.getUserRole() == User.Role.SERVICE_PROVIDER){
+                ServiceProvider serviceProvider = ServiceProvider.builder()
+                        .user(newUser)
+                        .serviceProviderType(ServiceProvider.ServiceProviderType.OTHER)
+                        .serviceProviderSalary(BigDecimal.valueOf(0))
+                        .serviceProviderExperience(0)
+                        .creationalDate(LocalDateTime.now())
+                        .build();
+                serviceProviderRepository.save(serviceProvider);
             }
+            return new AuthResponse("Registered Successfully !");
 
-            case USER -> {
-            }
-        }
 
-        userRepository.save(user);
-        return new AuthResponse("Registered Successfully!");
     }
-
-
 
     public AuthResponse login(AuthRequest request){
 
@@ -79,7 +79,7 @@ public class AuthService {
             );
 
             User user = userRepository.findByUserEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
-            String token = jwtUtil.generateToken(user.getUserID(), user.getName(),getAge(user.getBirthDate()) ,user.getUserEmail(),user.getUserRole().name());
+            String token = jwtUtil.generateToken(user.getUserID(), user.getName(),getAgeUtil.getAge(user.getBirthDate()) ,user.getUserEmail(),user.getUserRole().name(),user.getUserPhoneNumber());
             user.setUserLastLoginDate(LocalDateTime.now());
             userRepository.save(user);
            return new AuthResponse(token);
@@ -108,21 +108,7 @@ public class AuthService {
             return false;
 
     }
-    private String getAge(LocalDate birthDate) {
-        if (birthDate == null) {
-            return "Unknown";
-        }
-
-        LocalDate now = LocalDate.now();
-        Period period = Period.between(birthDate, now);
-
-        if (period.getYears() > 0) {
-            return period.getYears() + (period.getYears() == 1 ? " Year" : " Years");
-        } else if (period.getMonths() > 0) {
-            return period.getMonths() + (period.getMonths() == 1 ? " Month" : " Months");
-        } else {
-            return period.getDays() + (period.getDays() == 1 ? " Day" : " Days");
-        }
-    }
+//
+//    }
 
 }

@@ -29,4 +29,9 @@ public class TestController {
     public ResponseEntity<String> testServiceProvider(){
         return ResponseEntity.ok("Hello Service Provider From Spring Security!");
     }
+    @PreAuthorize("permitAll()")
+    @GetMapping("/login-user")
+    public ResponseEntity<String> testLogin(){
+        return ResponseEntity.ok("Hello login user");
+    }
 }
