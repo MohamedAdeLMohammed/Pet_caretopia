@@ -1,8 +1,7 @@
 package com.PetCaretopia.health.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import com.PetCaretopia.pet.entity.Pet;
 
 import java.time.LocalDate;
@@ -16,6 +15,9 @@ import java.time.LocalDateTime;
         })
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class PetVaccine {
 
     @Id

@@ -1,14 +1,18 @@
 package  com.PetCaretopia.user.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "feedback")
 @Getter
 @Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Feedback {
 
     @Id
@@ -27,5 +31,5 @@ public class Feedback {
     private String feedbackContent;
 
     @Column(nullable = false)
-    private LocalDate createdAt = LocalDate.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

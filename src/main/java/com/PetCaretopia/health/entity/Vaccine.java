@@ -1,8 +1,7 @@
 package com.PetCaretopia.health.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +10,9 @@ import java.time.LocalDateTime;
         indexes = {@Index(name = "idx_vaccine_name", columnList = "name")})
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Vaccine {
 
     @Id
@@ -20,7 +22,7 @@ public class Vaccine {
     @Column(nullable = false, unique = true, length = 255)
     private String name; //   Vaccine Name (e.g., Rabies, Parvovirus)
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "type_id", nullable = false)
     private VaccineType type; //   Linked to VaccineType
 

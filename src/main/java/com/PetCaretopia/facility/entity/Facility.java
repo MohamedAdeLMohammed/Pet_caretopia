@@ -1,10 +1,12 @@
 package com.PetCaretopia.facility.entity;
 
+import com.PetCaretopia.user.entity.ServiceProvider;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -15,6 +17,9 @@ import java.util.List;
         })
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Facility {
 
     @Id
@@ -42,15 +47,26 @@ public class Facility {
 
     @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Appointment> appointments;
+    @ManyToMany(mappedBy = "facilities",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<ServiceProvider> serviceProviders;
+    @Column(nullable = false)
+    private FacilityType facilityType;
+    @Column(name = "opening_time", nullable = false)
+    private LocalTime openingTime;
+    @Column(name = "closing_time", nullable = false)
+    private LocalTime closingTime;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
         updatedAt = LocalDateTime.now();
     }
-
+    public enum FacilityType{
+        VETERINARY_CLINIC,PET_HOTEL,TRAINING_CENTER
+    }
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
 }
+

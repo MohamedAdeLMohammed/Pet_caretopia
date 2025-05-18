@@ -30,7 +30,7 @@ public class FacilityNotification {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private FacilityNotificationType type;
+    private NotificationType type;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

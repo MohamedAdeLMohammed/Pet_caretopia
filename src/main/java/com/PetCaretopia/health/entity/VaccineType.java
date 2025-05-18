@@ -1,8 +1,7 @@
 package com.PetCaretopia.health.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +10,9 @@ import java.time.LocalDateTime;
         indexes = {@Index(name = "idx_vaccine_type_name", columnList = "name")})
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class VaccineType {
 
     @Id

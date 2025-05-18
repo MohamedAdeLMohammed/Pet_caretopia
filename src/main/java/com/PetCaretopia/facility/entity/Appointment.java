@@ -1,5 +1,6 @@
 package com.PetCaretopia.facility.entity;
 
+import com.PetCaretopia.user.entity.ServiceProvider;
 import com.PetCaretopia.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -27,13 +28,16 @@ public class Appointment {
     @ManyToOne
     @JoinColumn(name = "facility_id", nullable = false)
     private Facility facility; //  Linked to a Facility
+    @ManyToOne
+    @JoinColumn(name = "serviceProvider_id")
+    private ServiceProvider serviceProvider;
 
     @Column(nullable = false)
     private LocalDateTime appointmentTime;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private AppointmentStatus status = AppointmentStatus.PENDING; //  PENDING, CONFIRMED, CANCELED
+    private AppointmentStatus appointmentStatus ;
 
     @Column(nullable = true)
     private String reason; //  Allows users to specify a reason
@@ -47,5 +51,8 @@ public class Appointment {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
+    }
+    public enum AppointmentStatus{
+        TREATED,NOT_TREATED
     }
 }

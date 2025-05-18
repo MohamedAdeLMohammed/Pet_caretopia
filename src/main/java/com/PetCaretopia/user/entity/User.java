@@ -1,22 +1,29 @@
-package com.PetCaretopia.user.entity;
+package  com.PetCaretopia.user.entity;
+
 
 import com.PetCaretopia.order.entity.Cart;
 import com.PetCaretopia.order.entity.Order;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+
+
+import lombok.Builder;
 import lombok.*;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @Builder
 @Entity
+
 @Table(name = "users")
 @Getter
 @Setter
@@ -24,12 +31,13 @@ import java.util.*;
 @AllArgsConstructor
 public class User implements UserDetails {
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userID;
 
     @NotBlank(message = "Username is required")
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String name;
 
     @NotBlank(message = "Email is required")
@@ -43,46 +51,50 @@ public class User implements UserDetails {
     private String userPassword;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Role userRole;
 
     @Past(message = "Birth date must be in the past")
+    @Column(nullable = true)
     private LocalDate birthDate;
 
+    @NotBlank(message = "Address is required")
+    @Column(nullable = true)
     private String userAddress;
 
     @Pattern(regexp = "^\\+?[0-9]{10,15}$", message = "Invalid phone number")
-    @Column(unique = true)
+    @Column(nullable = true, unique = true)
     private String userPhoneNumber;
 
+    @Column(nullable = true)
     private String userProfileImage;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
     private Gender userGender;
 
-    @Column(length = 1000)
-    private String userDetails; // Additional info
+    @Column(nullable = true, length = 1000)
+    private String userDetails; // Additional user details
 
-    private LocalDate userCreationalDate = LocalDate.now();
+    @Column(nullable = true)
+    private LocalDateTime userCreationalDate = LocalDateTime.now();
+
+    @Column(nullable = true)
     private LocalDateTime userLastLoginDate;
 
+    @Column(nullable = true)
     private String billingAddress;
+
+    @Column(nullable = true)
     private String shippingAddress;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = true)
     private Status userStatus = Status.ACTIVE;
 
-    // ✅ One-to-One Relationships with role-specific entities
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private PetOwner petOwner;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private ServiceProvider serviceProvider;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private ShelterAccount shelterAccount;
-
-    // ✅ Existing relations
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Order> orders;
@@ -91,9 +103,11 @@ public class User implements UserDetails {
     @JsonIgnore
     private Cart cart;
 
-    // ✅ Enum Definitions
+
+
+
     public enum Role {
-        ADMIN, SERVICE_PROVIDER, PET_OWNER, USER, SHELTER
+        ADMIN, SERVICE_PROVIDER, PET_OWNER, USER
     }
 
     public enum Gender {
@@ -104,7 +118,6 @@ public class User implements UserDetails {
         ACTIVE, INACTIVE, BANNED
     }
 
-    // ✅ Spring Security Implementation
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + userRole.name()));
@@ -120,8 +133,24 @@ public class User implements UserDetails {
         return userPassword;
     }
 
-    @Override public boolean isAccountNonExpired() { return true; }
-    @Override public boolean isAccountNonLocked() { return true; }
-    @Override public boolean isCredentialsNonExpired() { return true; }
-    @Override public boolean isEnabled() { return true; }
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
 }
