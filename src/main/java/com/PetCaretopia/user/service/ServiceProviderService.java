@@ -8,17 +8,16 @@ import com.PetCaretopia.facility.mapper.FacilityMapper;
 import com.PetCaretopia.facility.repository.FacilityRepository;
 import com.PetCaretopia.shared.SharedImageUploadService;
 import com.PetCaretopia.user.DTO.ServiceProviderDTO;
-import com.PetCaretopia.user.DTO.ServiceProviderSimpleDTO;
 import com.PetCaretopia.user.entity.ServiceProvider;
-import com.PetCaretopia.user.mapper.ServiceProviderMapper;
+import com.PetCaretopia.user.Mapper.ServiceProviderMapper;
 import com.PetCaretopia.user.repository.ServiceProviderRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Service
 public class ServiceProviderService {

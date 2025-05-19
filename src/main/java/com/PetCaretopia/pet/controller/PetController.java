@@ -47,8 +47,9 @@ public class PetController {
                 owner = new PetOwner();
                 owner.setUser(user);
                 user.setPetOwner(owner);
-                user.setUserRole(User.Role.PET_OWNER);
-
+                if(user.getUserRole().equals(User.Role.USER)) {
+                    user.setUserRole(User.Role.PET_OWNER);
+                }
                 user = userRepository.save(user); // يعيد النسخة المحدثة من اليوزر
                 owner = user.getPetOwner();
             }

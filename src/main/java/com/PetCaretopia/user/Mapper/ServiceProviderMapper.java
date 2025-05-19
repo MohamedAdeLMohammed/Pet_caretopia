@@ -1,4 +1,4 @@
-package com.PetCaretopia.user.mapper;
+package com.PetCaretopia.user.Mapper;
 
 import com.PetCaretopia.Security.Util.GetAgeUtil;
 import com.PetCaretopia.facility.mapper.FacilityMapper;
