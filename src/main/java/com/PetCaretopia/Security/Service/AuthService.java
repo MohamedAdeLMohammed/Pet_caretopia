@@ -12,6 +12,7 @@ import com.PetCaretopia.user.entity.ServiceProvider;
 import com.PetCaretopia.user.entity.User;
 import com.PetCaretopia.user.repository.ServiceProviderRepository;
 import com.PetCaretopia.user.repository.UserRepository;
+import com.PetCaretopia.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,7 +35,7 @@ public class AuthService {
     private final ServiceProviderRepository serviceProviderRepository;
 
     private final JwtUtil jwtUtil;
-
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final GetAgeUtil getAgeUtil;
 
@@ -54,7 +55,7 @@ public class AuthService {
                     .userStatus(User.Status.ACTIVE)
                     .userCreationalDate(LocalDateTime.now())
                     .build();
-            User savedUser = userRepository.save(newUser);
+            User savedUser = userService.saveUser(newUser);
             if(newUser.getUserRole() == User.Role.SERVICE_PROVIDER){
                 ServiceProvider serviceProvider = ServiceProvider.builder()
                         .user(newUser)

@@ -26,7 +26,7 @@ public class AccountService implements UserDetailsService {
 
     public Account findAccountByUsername(String username) {
         System.out.println(username+" Found !");
-        return accountRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("Account not found"));
+        return accountRepository.findByUsername(username).orElseThrow(() -> new IllegalArgumentException("Account not found"));
     }
 
     @Override
@@ -50,7 +50,7 @@ public class AccountService implements UserDetailsService {
 
     public Account registerAccount(String username, String password) {
         if (accountRepository.findByUsername(username).isPresent()) {
-            throw new RuntimeException("Username already exists");
+            throw new IllegalArgumentException("Username already exists");
         }
 
         Account account = new Account();
