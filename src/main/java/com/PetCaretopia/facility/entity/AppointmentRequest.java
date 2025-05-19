@@ -3,8 +3,7 @@ package com.PetCaretopia.facility.entity;
 import com.PetCaretopia.user.entity.ServiceProvider;
 import com.PetCaretopia.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -17,6 +16,9 @@ import java.time.LocalDateTime;
         })
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class AppointmentRequest {
 
     @Id
@@ -35,8 +37,8 @@ public class AppointmentRequest {
     @JoinColumn(name = "serviceProvider_id" , nullable = false)
     private ServiceProvider serviceProvider;
 
-//    @Column(nullable = false)
-//    private LocalDateTime requestedTime;
+    @Column(nullable = false)
+    private LocalDateTime requestedTime;
 
     @Column(columnDefinition = "TEXT")
     private String reason; //   Allows long request reason
@@ -61,6 +63,6 @@ public class AppointmentRequest {
         updatedAt = LocalDateTime.now();
     }
     public enum AppointmentRequestStatus{
-        PENDING,ACCEPTED,REJECTED
+        PENDING,ACCEPTED,REJECTED,CANCELED
     }
 }

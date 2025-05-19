@@ -3,8 +3,7 @@ package com.PetCaretopia.facility.entity;
 import com.PetCaretopia.user.entity.ServiceProvider;
 import com.PetCaretopia.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -15,6 +14,9 @@ import java.time.LocalDateTime;
         })
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Appointment {
 
     @Id
