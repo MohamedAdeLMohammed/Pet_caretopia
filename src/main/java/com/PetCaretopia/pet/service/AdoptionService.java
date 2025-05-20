@@ -55,7 +55,7 @@ public class AdoptionService {
 
         dto.setRequesterUserId(principal.getUserId());
 
-        dto.setRequesterUserName(principal.getUsername());
+
 
         Adoption adoption = AdoptionMapper.toEntity(dto, pet, null, null, null);
         adoption.setStatus(AdoptionStatus.PENDING);

@@ -48,6 +48,7 @@ public class AdoptionMapper {
         entity.setCreatedBy(dto.getRequesterUserId());
         entity.setCreatedAt(dto.getCreatedAt() != null ? dto.getCreatedAt() : LocalDateTime.now());
         entity.setRequesterUserId(dto.getRequesterUserId());
+        dto.setRequesterUserName(entity.getRequesterUser() != null ? entity.getRequesterUser().getName() : null);
         return entity;
     }
 

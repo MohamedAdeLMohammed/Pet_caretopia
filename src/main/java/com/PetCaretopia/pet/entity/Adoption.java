@@ -1,6 +1,7 @@
 package com.PetCaretopia.pet.entity;
 
 import com.PetCaretopia.user.entity.PetOwner;
+import com.PetCaretopia.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -61,4 +62,7 @@ public class Adoption {
     private Long createdBy;
 
 
+    @ManyToOne
+    @JoinColumn(name = "requester_user_id", insertable = false, updatable = false)
+    private User requesterUser;
 }
