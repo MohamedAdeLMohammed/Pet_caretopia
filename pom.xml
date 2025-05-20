@@ -17,7 +17,7 @@
     <description>Demo project for Spring Boot</description>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>17</java.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
     </properties>
 
@@ -56,6 +56,10 @@
             <artifactId>spring-boot-devtools</artifactId>
             <scope>runtime</scope>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
 
         <!-- MySQL -->

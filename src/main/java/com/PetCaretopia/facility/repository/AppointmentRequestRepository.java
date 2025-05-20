@@ -10,9 +10,8 @@ import java.util.List;
 @Repository
 public interface AppointmentRequestRepository extends JpaRepository<AppointmentRequest, Long> {
 
-    List<AppointmentRequest> findByUser(User user); // Get requests by user
-
-    List<AppointmentRequest> findByFacilityId(Long facilityId); // Get requests by facility
-
-    List<AppointmentRequest> findByStatus(AppointmentRequest.AppointmentRequestStatus status); // Get requests by status
+    List<AppointmentRequest> findByUser_UserID(Long UserId);
+    List<AppointmentRequest> findByFacility_Id(Long facilityId);
+    List<AppointmentRequest> findByServiceProvider_ServiceProviderID(Long serviceProviderId);
+    List<AppointmentRequest> findByStatus(AppointmentRequest.AppointmentRequestStatus status);
 }

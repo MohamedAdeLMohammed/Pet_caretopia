@@ -1,5 +1,6 @@
 package com.PetCaretopia;
 
+import com.PetCaretopia.Chat.Service.AccountService;
 import com.PetCaretopia.user.entity.User;
 import com.PetCaretopia.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,11 @@ public class AdminBootstrap {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AccountService accountService;
 
 
     @Bean
-    public CommandLineRunner createAdmin(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner createAdmin(UserRepository userRepository, PasswordEncoder passwordEncoder,AccountService accountService) {
         return args -> {
             String adminEmail = "admin@petcaretopia.com";
 
@@ -37,7 +39,7 @@ public class AdminBootstrap {
                         .userAddress("HQ")
                         .userLastLoginDate(LocalDate.now().atStartOfDay())
                         .build();
-
+                accountService.registerAccount(admin.getUserEmail(),admin.getUserPhoneNumber());
                 userRepository.save(admin);
                 System.out.println("✅ Admin user created: " + adminEmail);
             } else {
