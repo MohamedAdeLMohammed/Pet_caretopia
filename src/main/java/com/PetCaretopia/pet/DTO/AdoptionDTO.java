@@ -13,17 +13,24 @@ public class AdoptionDTO {
 
     @NotNull(message = "Pet ID is required")
     private Long petId;
+    private String petName;
 
     private Long adopterId;
 
     private Long previousOwnerId;
+
     private Long shelterId;
 
     private LocalDate adoptionDate;
 
     private AdoptionStatus status;
+
     private String message;
+
     private LocalDateTime createdAt;
+
     private Long requesterUserId;
+
+    private String requesterUserName;
 
 }

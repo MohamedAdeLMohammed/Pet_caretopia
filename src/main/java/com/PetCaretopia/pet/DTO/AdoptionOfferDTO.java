@@ -10,7 +10,7 @@ public class AdoptionOfferDTO {
 
     @NotNull
     private Long targetUserId;
-
+    
     private String message;
 }
 

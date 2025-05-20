@@ -20,9 +20,10 @@ public class AdoptionMapper {
         dto.setShelterId(entity.getShelter() != null ? entity.getShelter().getId() : null);
         dto.setAdoptionDate(entity.getAdoptionDate());
         dto.setStatus(entity.getStatus());
+        dto.setPetName(entity.getPet().getPetName());
         dto.setMessage(entity.getMessage());
         dto.setCreatedAt(entity.getCreatedAt());
-        dto.setRequesterUserId(entity.getRequesterUserId()); // ✅
+        dto.setRequesterUserId(entity.getRequesterUserId());
         return dto;
     }
 
@@ -46,7 +47,7 @@ public class AdoptionMapper {
         entity.setMessage(dto.getMessage());
         entity.setCreatedBy(dto.getRequesterUserId());
         entity.setCreatedAt(dto.getCreatedAt() != null ? dto.getCreatedAt() : LocalDateTime.now());
-        entity.setRequesterUserId(dto.getRequesterUserId()); // ✅
+        entity.setRequesterUserId(dto.getRequesterUserId());
         return entity;
     }
 
