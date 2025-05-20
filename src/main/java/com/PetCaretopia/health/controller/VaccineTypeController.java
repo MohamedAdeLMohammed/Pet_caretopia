@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/vaccineTypes")
+    @RequestMapping("/vaccineTypes")
 @RequiredArgsConstructor
 public class VaccineTypeController {
     private final VaccineTypeService vaccineTypeService;

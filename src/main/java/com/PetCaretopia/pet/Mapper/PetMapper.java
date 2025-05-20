@@ -11,7 +11,10 @@ public class PetMapper {
         PetDTO dto = new PetDTO();
         dto.setPetID(pet.getPetID());
         dto.setPetName(pet.getPetName());
-        dto.setOwnerId(pet.getOwner() != null ? pet.getOwner().getPetOwnerId() : null);
+        dto.setOwnerId(pet.getOwner() != null && pet.getOwner().getUser() != null
+                ? pet.getOwner().getUser().getUserID()
+                : null);
+
         dto.setShelterId(pet.getShelter() != null ? pet.getShelter().getId() : null);
         dto.setPetTypeName(pet.getPetType().getTypeName());
         dto.setPetBreedName(pet.getPetBreed().getBreedName());
