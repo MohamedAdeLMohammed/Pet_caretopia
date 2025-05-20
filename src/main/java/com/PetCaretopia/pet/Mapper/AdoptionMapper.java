@@ -23,7 +23,7 @@ public class AdoptionMapper {
         dto.setPetName(entity.getPet().getPetName());
         dto.setMessage(entity.getMessage());
         dto.setCreatedAt(entity.getCreatedAt());
-        dto.setRequesterUserName(entity.getRequesterUser() != null ? entity.getRequesterUser().getUsername() : null);
+        dto.setRequesterUserName(entity.getRequesterUser().getName());
         dto.setRequesterUserId(entity.getRequesterUserId());
         return dto;
     }
