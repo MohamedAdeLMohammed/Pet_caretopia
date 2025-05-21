@@ -124,6 +124,7 @@ public class AdoptionService {
 
 
         pet.adopt(adopter);
+        pet.setAvailableForAdoption(false);
         adoption.setAdopter(adopter);
         adoption.setStatus(AdoptionStatus.APPROVED);
         adoption.setPreviousOwner(pet.getOwner());
