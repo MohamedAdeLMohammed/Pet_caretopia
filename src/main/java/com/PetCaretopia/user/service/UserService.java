@@ -126,5 +126,17 @@ public class UserService {
         userRepository.save(user);
         return "User Status is : "+status.getUserStatus().name();
     }
+    public String upgradeToAdmin(Long userId){
+        var user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("User Not Found !"));
+        if(user.getUserRole().equals(User.Role.ADMIN)){
+            throw new IllegalArgumentException("This user is already Admin !");
+        }
+        if(!user.getUserRole().equals(User.Role.USER)){
+            throw new IllegalArgumentException("Only User can became Admin !");
+        }
+        user.setUserRole(User.Role.ADMIN);
+        userRepository.save(user);
+        return "This user became new Admin !";
+    }
 
 }

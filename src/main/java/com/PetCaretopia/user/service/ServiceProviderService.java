@@ -29,16 +29,14 @@ public class ServiceProviderService {
     private final UserService userService;
     private final ServiceProviderMapper serviceProviderMapper;
     private final SharedImageUploadService imageUploadService;
-    private final FacilityMapper facilityMapper;
     private final FacilityRepository facilityRepository;
-    public ServiceProviderService(ServiceProviderRepository serviceProviderRepository, PasswordEncoder passwordEncoder, AccountRepository accountRepository, UserService userService, ServiceProviderMapper serviceProviderMapper, SharedImageUploadService imageUploadService, FacilityMapper facilityMapper, FacilityRepository facilityRepository) {
+    public ServiceProviderService(ServiceProviderRepository serviceProviderRepository, PasswordEncoder passwordEncoder, AccountRepository accountRepository, UserService userService, ServiceProviderMapper serviceProviderMapper, SharedImageUploadService imageUploadService, FacilityRepository facilityRepository) {
         this.serviceProviderRepository = serviceProviderRepository;
         this.passwordEncoder = passwordEncoder;
         this.accountRepository = accountRepository;
         this.userService = userService;
         this.serviceProviderMapper = serviceProviderMapper;
         this.imageUploadService = imageUploadService;
-        this.facilityMapper = facilityMapper;
         this.facilityRepository = facilityRepository;
     }
 
@@ -96,10 +94,32 @@ public class ServiceProviderService {
             existingServiceProvider.setServiceProviderSalary(dto.getServiceProviderSalary());
         }
         if (dto.getFacilities() != null) {
+
+            if (ServiceProvider.ServiceProviderType.OTHER.equals(dto.getServiceProviderType())) {
+                throw new IllegalArgumentException("You must be TRAINER, VET, or SITTER to work at a facility!");
+            }
+
             List<Facility> managedFacilities = dto.getFacilities().stream()
                     .map(fDto -> facilityRepository.findById(fDto.getFacilityId())
                             .orElseThrow(() -> new IllegalArgumentException("Facility not found: " + fDto.getFacilityId())))
                     .collect(Collectors.toList());
+
+            var facilitiesType = managedFacilities.stream().map(Facility::getFacilityType).toList();
+
+            if (dto.getServiceProviderType().equals(ServiceProvider.ServiceProviderType.TRAINER) &&
+                    !facilitiesType.stream().allMatch(type -> type == Facility.FacilityType.TRAINING_CENTER)) {
+                throw new IllegalArgumentException("Trainer can only work at Training Center!");
+            }
+
+            if (dto.getServiceProviderType().equals(ServiceProvider.ServiceProviderType.VET) &&
+                    !facilitiesType.stream().allMatch(type -> type == Facility.FacilityType.VETERINARY_CLINIC)) {
+                throw new IllegalArgumentException("Vet can only work at Veterinary Clinic!");
+            }
+
+            if (dto.getServiceProviderType().equals(ServiceProvider.ServiceProviderType.SITTER) &&
+                    !facilitiesType.stream().allMatch(type -> type == Facility.FacilityType.PET_HOTEL)) {
+                throw new IllegalArgumentException("Sitter can only work at Pet Hotel!");
+            }
 
             existingServiceProvider.setFacilities(managedFacilities);
         }

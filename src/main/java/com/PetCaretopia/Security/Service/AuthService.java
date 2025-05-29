@@ -2,6 +2,7 @@ package com.PetCaretopia.Security.Service;
 
 
 
+import com.PetCaretopia.Chat.Service.AccountService;
 import com.PetCaretopia.Security.Dto.AuthRequest;
 import com.PetCaretopia.Security.Dto.AuthResponse;
 import com.PetCaretopia.Security.Dto.RegisterRequest;
@@ -33,6 +34,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     private final ServiceProviderRepository serviceProviderRepository;
+    private final AccountService accountService;
 
     private final JwtUtil jwtUtil;
     private final UserService userService;
@@ -56,7 +58,8 @@ public class AuthService {
                     .userCreationalDate(LocalDateTime.now())
                     .build();
             User savedUser = userService.saveUser(newUser);
-            if(newUser.getUserRole() == User.Role.SERVICE_PROVIDER){
+        accountService.registerAccount(savedUser.getUserEmail(),savedUser.getUserPhoneNumber());
+        if(newUser.getUserRole() == User.Role.SERVICE_PROVIDER){
                 ServiceProvider serviceProvider = ServiceProvider.builder()
                         .user(newUser)
                         .serviceProviderType(ServiceProvider.ServiceProviderType.OTHER)

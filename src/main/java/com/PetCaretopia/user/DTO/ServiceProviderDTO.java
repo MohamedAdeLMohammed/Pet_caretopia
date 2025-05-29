@@ -16,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class ServiceProviderDTO {
+    private Long userId;
     private Long serviceProviderId;
     private String name;
     private String userEmail;

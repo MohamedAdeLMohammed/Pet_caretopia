@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class ServiceProviderSimpleDTO {
+    private Long userId;
     private Long serviceProviderId;
     private String name;
     private String userEmail;

@@ -8,109 +8,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #fdfcfb, #e2d1c3);
-            background-size: 300% 300%;
-            animation: gradientBG 10s ease infinite;
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: none;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
 
-        .navbar-custom {
-            background-color: #6fb98f;
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 1000;
-            padding: 0.75rem 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar-brand {
-            font-size: 1.5rem;
-            color: #fff !important;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .navbar-brand i {
-            font-size: 1.4rem;
-        }
-
-        .container {
-            max-width: 420px;
-            padding: 35px;
-            background: #fff;
-            border-radius: 20px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-            text-align: center;
-        }
-
-        .container h2 {
-            color: #6fb98f;
-            font-weight: bold;
-            margin-bottom: 25px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .form-group label {
-            color: #555;
-            font-weight: 600;
-        }
-
-        .form-group input {
-            border-radius: 10px;
-            border: 1px solid #ccc;
-            padding: 10px;
-        }
-
-        .btn {
-            background-color: #6fb98f;
-            border: none;
-            color: white;
-            font-weight: bold;
-            border-radius: 10px;
-            padding: 10px 20px;
-            width: 100%;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn:hover {
-            background-color: #4e8975;
-        }
-
-        .footer {
-            background-color: #6fb98f;
-            color: white;
-            padding: 12px 0;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        i {
-            font-size: 24px;
-        }
     </style>
 </head>
 <body>
@@ -123,16 +24,16 @@
 
 <div class="container">
     <h2><i class="fas fa-user-circle"></i> Login to Your Account</h2>
-    <form method="post" action="/connect-chat/connect">
+    <form id="receiverForm" method="post" action="/connect-chat/connect">
         <div class="form-group">
             <label for="username">Email:</label>
-            <input id="username" type="email" class="form-control" name="username" required />
+            <input id="username" type="text" class="form-control" name="username"  />
         </div>
         <div class="form-group">
             <label for="password">Phone Number:</label>
-            <input id="password" type="tel" class="form-control" name="password" required />
+            <input id="password" type="text" class="form-control" name="password"  />
         </div>
-        <button type="submit" class="btn">Login</button>
+        <button type="submit" class="btn" id="goButton">Login</button>
     </form>
 
     <div th:if="${param.error}" class="alert alert-danger mt-3 text-center">
@@ -143,6 +44,36 @@
 <footer class="footer">
     &copy; 2025 Pet Caretopia 🐶🐾 All rights reserved.
 </footer>
+<script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
 
+    const token = getQueryParam("token");
+
+    function parseJwt(token) {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    }
+
+    if (token) {
+      const userData = parseJwt(token);
+      document.getElementById("username").value = userData.sub;
+      document.getElementById("password").value = userData.phoneNumber;
+      console.log(userData.sub);
+      console.log(userData.phoneNumber);
+
+      window.onload = () => {
+        document.getElementById("receiverForm").submit();
+      };
+    } else {
+      alert("No token found in URL!");
+    }
+</script>
 </body>
 </html>

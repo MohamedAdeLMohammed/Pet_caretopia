@@ -20,10 +20,9 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-    private final AccountService accountService;
+
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request){
-        accountService.registerAccount(request.getEmail(),request.getPhoneNumber());
         return ResponseEntity.ok(authService.register(request));
     }
     @PostMapping("/login")

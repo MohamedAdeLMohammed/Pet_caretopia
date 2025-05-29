@@ -36,6 +36,8 @@ public class AdminBootstrap {
                         .userPassword(passwordEncoder.encode("admin123")) // 👈 choose a secure password
                         .userRole(User.Role.ADMIN)
                         .userGender(MALE)
+                        .userStatus(User.Status.ACTIVE)
+                        .userDetails("Main Admin")
                         .userAddress("HQ")
                         .userLastLoginDate(LocalDate.now().atStartOfDay())
                         .build();

@@ -54,12 +54,13 @@ public class UserController {
     }
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/user/{id}")
-    public ResponseEntity<String> changeUserStatus(@PathVariable Long id , @RequestBody UserDTO status,@AuthenticationPrincipal CustomUserDetails userDetails){
-        Long authId = userDetails.getUserId();
-        if(!authId.equals(id)){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+    public ResponseEntity<String> changeUserStatus(@PathVariable Long id , @RequestBody UserDTO status){
         return ResponseEntity.ok(userService.changeUserStatus(id,status));
     }
+    @PreAuthorize("hasRole('ADMIN')")
+    @PatchMapping("/toAdmin/user/{id}")
+    public ResponseEntity<String> upgradeUserToAdmin(@PathVariable Long id,@AuthenticationPrincipal CustomUserDetails userDetails){
+        return ResponseEntity.ok(userService.upgradeToAdmin(id));
     }
+}
 

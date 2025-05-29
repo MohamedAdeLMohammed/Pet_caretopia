@@ -20,6 +20,7 @@ public class ServiceProviderMapper {
     }
     public ServiceProviderDTO toServiceProviderDTO(ServiceProvider serviceProvider){
         return new ServiceProviderDTO(
+                serviceProvider.getUser().getUserID(),
                 serviceProvider.getServiceProviderID(),
                 serviceProvider.getUser().getName(),
                 serviceProvider.getUser().getUserEmail(),
@@ -39,6 +40,7 @@ public class ServiceProviderMapper {
     }
     public ServiceProviderSimpleDTO toServiceProviderSimpleDTO(ServiceProvider serviceProvider){
         return new ServiceProviderSimpleDTO(
+                serviceProvider.getUser().getUserID(),
                 serviceProvider.getServiceProviderID(),
                 serviceProvider.getUser().getName(),
                 serviceProvider.getUser().getUserEmail(),

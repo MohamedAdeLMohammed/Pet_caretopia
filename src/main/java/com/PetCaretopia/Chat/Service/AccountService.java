@@ -50,7 +50,7 @@ public class AccountService implements UserDetailsService {
 
     public Account registerAccount(String username, String password) {
         if (accountRepository.findByUsername(username).isPresent()) {
-            throw new IllegalArgumentException("Username already exists");
+            throw new IllegalArgumentException("Email already exists");
         }
 
         Account account = new Account();
