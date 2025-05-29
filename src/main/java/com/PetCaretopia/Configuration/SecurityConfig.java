@@ -81,7 +81,6 @@ public class SecurityConfig {
                                 "shelters/**"
                         ).authenticated()
 
-                                // ✅ أي شيء آخر يحتاج توثيق
                                 .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

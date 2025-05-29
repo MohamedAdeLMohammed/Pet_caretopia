@@ -30,7 +30,7 @@ public class AdoptionController {
         return ResponseEntity.ok(adoptionService.submitRequest(dto, principal));
     }
 
-    @PreAuthorize("hasAnyRole('PET_OWNER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('PET_OWNER', 'ADMIN','USER')")
     @PostMapping("/offer")
     public ResponseEntity<AdoptionDTO> offerAdoption(
             @RequestBody @Valid AdoptionOfferDTO dto,

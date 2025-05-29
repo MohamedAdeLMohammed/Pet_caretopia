@@ -55,6 +55,8 @@ public class AdoptionService {
 
         dto.setRequesterUserId(principal.getUserId());
 
+
+
         Adoption adoption = AdoptionMapper.toEntity(dto, pet, null, null, null);
         adoption.setStatus(AdoptionStatus.PENDING);
         adoption.setAdoptionDate(dto.getAdoptionDate() != null ? dto.getAdoptionDate() : LocalDate.now());
@@ -122,6 +124,7 @@ public class AdoptionService {
 
 
         pet.adopt(adopter);
+        pet.setAvailableForAdoption(false);
         adoption.setAdopter(adopter);
         adoption.setStatus(AdoptionStatus.APPROVED);
         adoption.setPreviousOwner(pet.getOwner());
