@@ -24,15 +24,13 @@ public class ServiceProviderService {
 
     private final ServiceProviderRepository serviceProviderRepository;
 
-    private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
     private final UserService userService;
     private final ServiceProviderMapper serviceProviderMapper;
     private final SharedImageUploadService imageUploadService;
     private final FacilityRepository facilityRepository;
-    public ServiceProviderService(ServiceProviderRepository serviceProviderRepository, PasswordEncoder passwordEncoder, AccountRepository accountRepository, UserService userService, ServiceProviderMapper serviceProviderMapper, SharedImageUploadService imageUploadService, FacilityRepository facilityRepository) {
+    public ServiceProviderService(ServiceProviderRepository serviceProviderRepository,  AccountRepository accountRepository, UserService userService, ServiceProviderMapper serviceProviderMapper, SharedImageUploadService imageUploadService, FacilityRepository facilityRepository) {
         this.serviceProviderRepository = serviceProviderRepository;
-        this.passwordEncoder = passwordEncoder;
         this.accountRepository = accountRepository;
         this.userService = userService;
         this.serviceProviderMapper = serviceProviderMapper;
@@ -51,16 +49,10 @@ public class ServiceProviderService {
     @Transactional
     public ServiceProviderDTO updateServiceProvider(Long userId, ServiceProviderDTO dto, MultipartFile image){
         var existingServiceProvider = serviceProviderRepository.findByUser_UserID(userId).orElseThrow(()->new IllegalArgumentException("I can Not Found service provider with userId : !"+userId));
-        var account = accountRepository.findByUsername(existingServiceProvider.getUser().getUserEmail()).orElseThrow(()->new IllegalArgumentException("Not Found !"));
         var user = existingServiceProvider.getUser();
         if(dto != null){
             if(dto.getName() != null){
                 user.setName(dto.getName());
-            }
-
-            if(dto.getUserPhoneNumber() != null){
-                user.setUserPhoneNumber(dto.getUserPhoneNumber());
-                account.setPassword(passwordEncoder.encode(dto.getUserPhoneNumber()));
             }
             if(dto.getUserGender() != null){
                 user.setUserGender(dto.getUserGender());
@@ -103,7 +95,6 @@ public class ServiceProviderService {
 
         serviceProviderRepository.save(existingServiceProvider);
         userService.saveUser(user);
-        accountRepository.save(account);
         return serviceProviderMapper.toServiceProviderDTO(existingServiceProvider);
     }
 

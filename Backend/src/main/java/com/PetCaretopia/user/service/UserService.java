@@ -27,13 +27,11 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final AccountRepository accountRepository;
-    private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final SharedImageUploadService imageUploadService;
-    public UserService(UserRepository userRepository, AccountRepository accountRepository, PasswordEncoder passwordEncoder, UserMapper userMapper, SharedImageUploadService imageUploadService) {
+    public UserService(UserRepository userRepository, AccountRepository accountRepository, UserMapper userMapper, SharedImageUploadService imageUploadService) {
         this.userRepository = userRepository;
         this.accountRepository = accountRepository;
-        this.passwordEncoder = passwordEncoder;
         this.userMapper = userMapper;
         this.imageUploadService = imageUploadService;
     }
@@ -81,8 +79,6 @@ public class UserService {
     }
     public UserDTO updateUser(Long id, UserDTO user, MultipartFile image){
         User existUser = userRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("User Not found!"));
-        Account exsitAccount = accountRepository.findByUsername(existUser.getUserEmail()).orElseThrow(()-> new IllegalArgumentException("Account Not found!"));
-
         if(user != null){
             if(user.getBirthDate() != null){
                 existUser.setBirthDate(user.getBirthDate());
@@ -99,10 +95,6 @@ public class UserService {
             if(user.getUserDetails() != null){
                 existUser.setUserDetails(user.getUserDetails());
             }
-            if(user.getUserPhoneNumber() != null){
-                existUser.setUserPhoneNumber(user.getUserPhoneNumber());
-                exsitAccount.setPassword(passwordEncoder.encode(user.getUserPhoneNumber()));
-            }
         }
         if(image != null && !image.isEmpty()){
             String imageUrl = imageUploadService.uploadMultipartFile(image);
@@ -112,7 +104,6 @@ public class UserService {
             existUser.setUserProfileImage(existUser.getUserProfileImage());
         }
         saveUser(existUser);
-        accountRepository.save(exsitAccount);
         return userMapper.toUserDTO(existUser);
     }
     public String deleteUser(Long id){
