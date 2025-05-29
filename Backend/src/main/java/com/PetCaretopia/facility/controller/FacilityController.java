@@ -41,17 +41,17 @@ public class FacilityController {
     public ResponseEntity<FacilitySimpleDTO> getFacilityById(@PathVariable Long facilityId){
         return ResponseEntity.ok(facilityService.getFacilityById(facilityId));
     }
-    @PreAuthorize("hasRole('ADMIN')")
-    @PostMapping("/add")
-    public ResponseEntity<FacilitySimpleDTO> createFacility(@RequestBody FacilitySimpleDTO facility){
-        return ResponseEntity.ok(facilityService.createFacility(facility));
+    @PreAuthorize("hasRole('SERVICE_PROVIDER')")
+    @PostMapping("/add/toServiceProvider/{serviceProviderId}")
+    public ResponseEntity<FacilitySimpleDTO> createFacility(@PathVariable Long serviceProviderId,@RequestBody FacilitySimpleDTO facility){
+        return ResponseEntity.ok(facilityService.createFacility(serviceProviderId,facility));
     }
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SERVICE_PROVIDER')")
     @PutMapping("/facility/{facilityId}")
     public ResponseEntity<FacilitySimpleDTO> updateFacility(@PathVariable Long facilityId , @RequestBody FacilitySimpleDTO facility){
         return ResponseEntity.ok(facilityService.updateFacility(facilityId,facility));
     }
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SERVICE_PROVIDER')")
     @DeleteMapping("/facility/{facilityId}")
     public ResponseEntity<String> deleteFacility(@PathVariable Long facilityId){
         return ResponseEntity.ok(facilityService.deleteFacilityById(facilityId));

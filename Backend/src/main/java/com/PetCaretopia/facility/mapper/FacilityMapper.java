@@ -10,7 +10,7 @@ import java.util.List;
 
 @Component
 public class FacilityMapper {
-    public FacilityDTO toFacilityDTO(Facility facility, List<ServiceProviderSimpleDTO> serviceProviders){
+    public FacilityDTO toFacilityDTO(Facility facility, ServiceProviderSimpleDTO serviceProvider){
         return new FacilityDTO(
                facility.getId(),
                 facility.getName(),
@@ -22,7 +22,7 @@ public class FacilityMapper {
                 facility.getClosingTime(),
                 facility.getCreatedAt(),
                 facility.getUpdatedAt(),
-                serviceProviders
+                serviceProvider
         );
     }
     public FacilitySimpleDTO toFacilitySimpleDTO(Facility facility){

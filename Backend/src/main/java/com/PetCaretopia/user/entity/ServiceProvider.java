@@ -42,12 +42,7 @@ public class ServiceProvider {
     public enum ServiceProviderType {
         VET, SITTER, TRAINER, OTHER
     }
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "serviceProviderFacility",
-            joinColumns = @JoinColumn(name = "serviceProviderID"),
-            inverseJoinColumns = @JoinColumn(name = "facility_id")
-    )
+    @OneToMany(mappedBy = "serviceProvider", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Facility> facilities;
     @OneToMany(mappedBy = "serviceProvider", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Feedback> feedbacks;

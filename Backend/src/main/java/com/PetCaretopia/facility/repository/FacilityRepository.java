@@ -17,6 +17,6 @@ public interface FacilityRepository extends JpaRepository<Facility, Long> {
 
     List<Facility> findByStatus(FacilityStatus status);// Get facilities by status
     List<Facility> findByFacilityType(Facility.FacilityType type);
-    @Query("SELECT f FROM Facility f JOIN f.serviceProviders sp WHERE sp.serviceProviderID = :serviceProviderId")
-    List<Facility> findFacilitiesByServiceProviderID(@Param("serviceProviderId") Long serviceProviderId);
+    //@Query("SELECT f FROM Facility f JOIN f.serviceProviders sp WHERE sp.serviceProviderID = :serviceProviderId")
+    List<Facility> findFacilitiesByServiceProvider_ServiceProviderID(@Param("serviceProviderId") Long serviceProviderId);
 }

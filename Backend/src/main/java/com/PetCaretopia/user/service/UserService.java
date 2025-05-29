@@ -83,24 +83,26 @@ public class UserService {
         User existUser = userRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("User Not found!"));
         Account exsitAccount = accountRepository.findByUsername(existUser.getUserEmail()).orElseThrow(()-> new IllegalArgumentException("Account Not found!"));
 
-        if(user.getBirthDate() != null){
-            existUser.setBirthDate(user.getBirthDate());
-        }
-        if(user.getName() != null){
-            existUser.setName(user.getName());
-        }
-        if(user.getUserGender() != null){
-            existUser.setUserGender(user.getUserGender());
-        }
-        if(user.getUserAddress() != null){
-            existUser.setUserAddress(user.getUserAddress());
-        }
-        if(user.getUserDetails() != null){
-            existUser.setUserDetails(user.getUserDetails());
-        }
-        if(user.getUserPhoneNumber() != null){
-            existUser.setUserPhoneNumber(user.getUserPhoneNumber());
-            exsitAccount.setPassword(passwordEncoder.encode(user.getUserPhoneNumber()));
+        if(user != null){
+            if(user.getBirthDate() != null){
+                existUser.setBirthDate(user.getBirthDate());
+            }
+            if(user.getName() != null){
+                existUser.setName(user.getName());
+            }
+            if(user.getUserGender() != null){
+                existUser.setUserGender(user.getUserGender());
+            }
+            if(user.getUserAddress() != null){
+                existUser.setUserAddress(user.getUserAddress());
+            }
+            if(user.getUserDetails() != null){
+                existUser.setUserDetails(user.getUserDetails());
+            }
+            if(user.getUserPhoneNumber() != null){
+                existUser.setUserPhoneNumber(user.getUserPhoneNumber());
+                exsitAccount.setPassword(passwordEncoder.encode(user.getUserPhoneNumber()));
+            }
         }
         if(image != null && !image.isEmpty()){
             String imageUrl = imageUploadService.uploadMultipartFile(image);
@@ -109,8 +111,8 @@ public class UserService {
         else {
             existUser.setUserProfileImage(existUser.getUserProfileImage());
         }
-        accountRepository.save(exsitAccount);
         saveUser(existUser);
+        accountRepository.save(exsitAccount);
         return userMapper.toUserDTO(existUser);
     }
     public String deleteUser(Long id){

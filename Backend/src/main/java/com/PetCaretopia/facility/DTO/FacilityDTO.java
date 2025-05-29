@@ -29,5 +29,5 @@ public class FacilityDTO {
     private LocalTime closingTime;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<ServiceProviderSimpleDTO> serviceProviders;
+    private ServiceProviderSimpleDTO serviceProvider;
 }

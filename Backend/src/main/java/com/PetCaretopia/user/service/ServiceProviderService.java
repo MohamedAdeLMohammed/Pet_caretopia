@@ -53,29 +53,39 @@ public class ServiceProviderService {
         var existingServiceProvider = serviceProviderRepository.findByUser_UserID(userId).orElseThrow(()->new IllegalArgumentException("I can Not Found service provider with userId : !"+userId));
         var account = accountRepository.findByUsername(existingServiceProvider.getUser().getUserEmail()).orElseThrow(()->new IllegalArgumentException("Not Found !"));
         var user = existingServiceProvider.getUser();
+        if(dto != null){
+            if(dto.getName() != null){
+                user.setName(dto.getName());
+            }
 
-        if(dto.getName() != null){
-            user.setName(dto.getName());
-        }
-
-        if(dto.getUserPhoneNumber() != null){
-            user.setUserPhoneNumber(dto.getUserPhoneNumber());
-            account.setPassword(passwordEncoder.encode(dto.getUserPhoneNumber()));
-        }
-        if(dto.getUserGender() != null){
-            user.setUserGender(dto.getUserGender());
-        }
-        if(dto.getUserAddress() != null){
-            user.setUserAddress(dto.getUserAddress());
-        }
-        if(dto.getBirthDate() != null){
-            user.setBirthDate(dto.getBirthDate());
-        }
-        if(dto.getUserDetails() != null){
-            user.setUserDetails(dto.getUserDetails());
-        }
-        if(dto.getUserStatus() != null){
-            user.setUserStatus(dto.getUserStatus());
+            if(dto.getUserPhoneNumber() != null){
+                user.setUserPhoneNumber(dto.getUserPhoneNumber());
+                account.setPassword(passwordEncoder.encode(dto.getUserPhoneNumber()));
+            }
+            if(dto.getUserGender() != null){
+                user.setUserGender(dto.getUserGender());
+            }
+            if(dto.getUserAddress() != null){
+                user.setUserAddress(dto.getUserAddress());
+            }
+            if(dto.getBirthDate() != null){
+                user.setBirthDate(dto.getBirthDate());
+            }
+            if(dto.getUserDetails() != null){
+                user.setUserDetails(dto.getUserDetails());
+            }
+            if(dto.getUserStatus() != null){
+                user.setUserStatus(dto.getUserStatus());
+            }
+            if(dto.getServiceProviderType() != null){
+                existingServiceProvider.setServiceProviderType(dto.getServiceProviderType());
+            }
+            if(dto.getServiceProviderExperience() != null){
+                existingServiceProvider.setServiceProviderExperience(dto.getServiceProviderExperience());
+            }
+            if(dto.getServiceProviderSalary() != null){
+                existingServiceProvider.setServiceProviderSalary(dto.getServiceProviderSalary());
+            }
         }
         if(image != null && !image.isEmpty()){
             String imageUrl = imageUploadService.uploadMultipartFile(image);
@@ -84,48 +94,16 @@ public class ServiceProviderService {
         else {
             user.setUserProfileImage(user.getUserProfileImage());
         }
-        if(dto.getServiceProviderType() != null){
-            existingServiceProvider.setServiceProviderType(dto.getServiceProviderType());
+
+        var facilities = facilityRepository.findFacilitiesByServiceProvider_ServiceProviderID(existingServiceProvider.getServiceProviderID());
+        if(facilities != null){
+            existingServiceProvider.getFacilities().clear();
+            existingServiceProvider.getFacilities().addAll(facilities);
         }
-        if(dto.getServiceProviderExperience() != null){
-            existingServiceProvider.setServiceProviderExperience(dto.getServiceProviderExperience());
-        }
-        if(dto.getServiceProviderSalary() != null){
-            existingServiceProvider.setServiceProviderSalary(dto.getServiceProviderSalary());
-        }
-        if (dto.getFacilities() != null) {
 
-            if (ServiceProvider.ServiceProviderType.OTHER.equals(dto.getServiceProviderType())) {
-                throw new IllegalArgumentException("You must be TRAINER, VET, or SITTER to work at a facility!");
-            }
-
-            List<Facility> managedFacilities = dto.getFacilities().stream()
-                    .map(fDto -> facilityRepository.findById(fDto.getFacilityId())
-                            .orElseThrow(() -> new IllegalArgumentException("Facility not found: " + fDto.getFacilityId())))
-                    .collect(Collectors.toList());
-
-            var facilitiesType = managedFacilities.stream().map(Facility::getFacilityType).toList();
-
-            if (dto.getServiceProviderType().equals(ServiceProvider.ServiceProviderType.TRAINER) &&
-                    !facilitiesType.stream().allMatch(type -> type == Facility.FacilityType.TRAINING_CENTER)) {
-                throw new IllegalArgumentException("Trainer can only work at Training Center!");
-            }
-
-            if (dto.getServiceProviderType().equals(ServiceProvider.ServiceProviderType.VET) &&
-                    !facilitiesType.stream().allMatch(type -> type == Facility.FacilityType.VETERINARY_CLINIC)) {
-                throw new IllegalArgumentException("Vet can only work at Veterinary Clinic!");
-            }
-
-            if (dto.getServiceProviderType().equals(ServiceProvider.ServiceProviderType.SITTER) &&
-                    !facilitiesType.stream().allMatch(type -> type == Facility.FacilityType.PET_HOTEL)) {
-                throw new IllegalArgumentException("Sitter can only work at Pet Hotel!");
-            }
-
-            existingServiceProvider.setFacilities(managedFacilities);
-        }
-        accountRepository.save(account);
         serviceProviderRepository.save(existingServiceProvider);
         userService.saveUser(user);
+        accountRepository.save(account);
         return serviceProviderMapper.toServiceProviderDTO(existingServiceProvider);
     }
 
@@ -148,11 +126,5 @@ public class ServiceProviderService {
                 serviceProviderMapper::toServiceProviderDTO
         ).collect(Collectors.toList());
     }
-    public ServiceProviderDTO removeFacilityById(Long userId,Long facilityId){
-        var serviceProvider = serviceProviderRepository.findByUser_UserID(userId).orElseThrow(()->new IllegalArgumentException("Service Provider Not Found !"));
-        var facility = facilityRepository.findById(facilityId).orElseThrow(()->new IllegalArgumentException("Facility Not Found !"));
-        serviceProvider.getFacilities().remove(facility);
-        serviceProviderRepository.save(serviceProvider);
-        return serviceProviderMapper.toServiceProviderDTO(serviceProvider);
-    }
+
 }

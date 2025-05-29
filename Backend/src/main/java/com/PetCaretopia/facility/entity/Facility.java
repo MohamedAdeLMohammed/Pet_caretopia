@@ -47,8 +47,9 @@ public class Facility {
 
     @OneToMany(mappedBy = "facility", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Appointment> appointments;
-    @ManyToMany(mappedBy = "facilities",cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ServiceProvider> serviceProviders;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "service_provider_id", nullable = false)
+    private ServiceProvider serviceProvider;
     @Column(nullable = false)
     private FacilityType facilityType;
     @Column(name = "opening_time", nullable = false)

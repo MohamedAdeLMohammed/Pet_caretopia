@@ -36,10 +36,10 @@ public class UserController {
         return ResponseEntity.ok(userService.getUserById(id));
     }
     @PutMapping("/user/{id}")
-    public ResponseEntity<?> updateUser(@PathVariable Long id , @RequestPart("user") UserDTO user, @RequestPart(value = "image", required = false) MultipartFile image,@AuthenticationPrincipal CustomUserDetails userDetails){
+    public ResponseEntity<?> updateUser(@PathVariable Long id , @RequestPart(value = "user",required = false) UserDTO user, @RequestPart(value = "image", required = false) MultipartFile image,@AuthenticationPrincipal CustomUserDetails userDetails){
         Long authId = userDetails.getUserId();
         if(!authId.equals(id)){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied !");
         }
         return ResponseEntity.ok(userService.updateUser(id, user,image));
 
@@ -48,7 +48,7 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable Long id,@AuthenticationPrincipal CustomUserDetails userDetails){
         Long authId = userDetails.getUserId();
         if(!authId.equals(id)){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied !");
         }
         return ResponseEntity.ok(userService.deleteUser(id));
     }

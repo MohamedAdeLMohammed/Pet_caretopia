@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,7 +27,8 @@ public class FacilityService {
     private final ServiceProviderMapper serviceProviderMapper;
     private final ServiceProviderRepository serviceProviderRepository;
 
-    public FacilitySimpleDTO createFacility(FacilitySimpleDTO dto){
+    public FacilitySimpleDTO createFacility(Long serviceProviderId,FacilitySimpleDTO dto){
+        var serviceProvider = serviceProviderRepository.findById(serviceProviderId).orElseThrow(()->new IllegalArgumentException("Service Provider Not Found !"));
         Facility facility = Facility.builder()
                 .name(dto.getFacilityName())
                 .address(dto.getFacilityAddress())
@@ -36,12 +39,26 @@ public class FacilityService {
                 .updatedAt(LocalDateTime.now())
                 .openingTime(dto.getOpeningTime())
                 .closingTime(dto.getClosingTime())
+                .serviceProvider(serviceProvider)
                 .build();
+        if(serviceProvider.getServiceProviderType().equals(ServiceProvider.ServiceProviderType.OTHER)){
+            throw new IllegalArgumentException("You Must Be Vet , Trainer , or Pet Sitter then you can have your facility !");
+        }
+        if(serviceProvider.getServiceProviderType().equals(ServiceProvider.ServiceProviderType.VET) && !facility.getFacilityType().equals(Facility.FacilityType.VETERINARY_CLINIC)){
+            throw new IllegalArgumentException("Vet can have only Veterinary Clinic !");
+        }
+        if(serviceProvider.getServiceProviderType().equals(ServiceProvider.ServiceProviderType.TRAINER) && !facility.getFacilityType().equals(Facility.FacilityType.TRAINING_CENTER)){
+            throw new IllegalArgumentException("Trainer can have only Training Center !");
+        }
+        if(serviceProvider.getServiceProviderType().equals(ServiceProvider.ServiceProviderType.SITTER) && !facility.getFacilityType().equals(Facility.FacilityType.PET_HOTEL)){
+            throw new IllegalArgumentException("Pet Sitter can have only Pet Hotel !");
+        }
         facilityRepository.save(facility);
         return facilityMapper.toFacilitySimpleDTO(facility);
     }
     public FacilitySimpleDTO updateFacility(Long facilityId,FacilitySimpleDTO dto){
         var existFacility = facilityRepository.findById(facilityId).orElseThrow(()-> new IllegalArgumentException("Facility Not Found !"));
+
         if(dto.getFacilityName() != null){
             existFacility.setName(dto.getFacilityName());
         }
@@ -63,15 +80,21 @@ public class FacilityService {
         if(dto.getClosingTime() != null){
             existFacility.setClosingTime(dto.getClosingTime());
         }
+        if(existFacility.getServiceProvider().getServiceProviderType().equals(ServiceProvider.ServiceProviderType.VET) && !existFacility.getFacilityType().equals(Facility.FacilityType.VETERINARY_CLINIC)){
+            throw new IllegalArgumentException("Vet can have only Veterinary Clinic !");
+        }
+        if(existFacility.getServiceProvider().getServiceProviderType().equals(ServiceProvider.ServiceProviderType.TRAINER) && !existFacility.getFacilityType().equals(Facility.FacilityType.TRAINING_CENTER)){
+            throw new IllegalArgumentException("Trainer can have only Training Center !");
+        }
+        if(existFacility.getServiceProvider().getServiceProviderType().equals(ServiceProvider.ServiceProviderType.SITTER) && !existFacility.getFacilityType().equals(Facility.FacilityType.PET_HOTEL)){
+            throw new IllegalArgumentException("Pet Sitter can have only Pet Hotel !");
+        }
         existFacility.setUpdatedAt(LocalDateTime.now());
         facilityRepository.save(existFacility);
         return facilityMapper.toFacilitySimpleDTO(existFacility);
     }
     public String deleteFacilityById(Long id){
         var facility = facilityRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("Facility Not Found !"));
-        if(!facility.getServiceProviders().isEmpty()){
-            throw new IllegalArgumentException("Can not Delete Facility because it has service providers working on it right now !");
-        }
         facilityRepository.delete(facility);
         return "Facility Deleted!";
     }
@@ -81,15 +104,15 @@ public class FacilityService {
     }
     public FacilityDTO getFacilityWithServiceProvidersByFacilityId(Long id){
         var facility = facilityRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("Facility Not Found !"));
-        List<ServiceProvider> serviceProviders = facility.getServiceProviders();
-       List<ServiceProviderSimpleDTO> simpleServiceProviders = serviceProviders.stream().map(serviceProviderMapper::toServiceProviderSimpleDTO).toList();
-        return facilityMapper.toFacilityDTO(facility,simpleServiceProviders);
+        var serviceProvider = facility.getServiceProvider();
+        var simpleServiceProvider = serviceProviderMapper.toServiceProviderSimpleDTO(serviceProvider);
+        return facilityMapper.toFacilityDTO(facility,simpleServiceProvider);
     }
     public FacilityDTO getFacilityWithServiceProvidersByFacilityName(String facilityName){
         var facility = facilityRepository.findByName(facilityName).orElseThrow(()->new IllegalArgumentException("Facility not found ! "+facilityName));
-        List<ServiceProvider> serviceProviders = facility.getServiceProviders();
-        List<ServiceProviderSimpleDTO> simpleServiceProviders = serviceProviders.stream().map(serviceProviderMapper::toServiceProviderSimpleDTO).toList();
-        return facilityMapper.toFacilityDTO(facility,simpleServiceProviders);
+        var serviceProvider = facility.getServiceProvider();
+        var simpleServiceProvider = serviceProviderMapper.toServiceProviderSimpleDTO(serviceProvider);
+        return facilityMapper.toFacilityDTO(facility,simpleServiceProvider);
     }
     public List<FacilitySimpleDTO> getFacilitiesByFacilityType(Facility.FacilityType type){
         var facilities = facilityRepository.findByFacilityType(type);
@@ -97,23 +120,13 @@ public class FacilityService {
     }
     public List<FacilitySimpleDTO> getServiceProviderFacilitiesByServiceProviderId(Long serviceProviderId){
         var serviceProvider = serviceProviderRepository.findById(serviceProviderId).orElseThrow(()->new IllegalArgumentException("Service Provider not found !"));
-        var facilities = facilityRepository.findFacilitiesByServiceProviderID(serviceProviderId);
+        var facilities = facilityRepository.findFacilitiesByServiceProvider_ServiceProviderID(serviceProviderId);
         return facilities.stream().map(facilityMapper::toFacilitySimpleDTO).collect(Collectors.toList());
     }
     public List<FacilityDTO> getAllFacilitiesWithServiceProviders(){
         var facilities = facilityRepository.findAll();
         return facilities.stream().map(facility ->
-                facilityMapper.toFacilityDTO(facility,facility.getServiceProviders().stream().map(
-                        serviceProviderMapper::toServiceProviderSimpleDTO)
-                        .collect(Collectors.toList()))).collect(Collectors.toList());
+                facilityMapper.toFacilityDTO(facility,serviceProviderMapper.toServiceProviderSimpleDTO(facility.getServiceProvider()))).collect(Collectors.toList());
     }
-    public FacilityDTO removeServiceProviderById(Long facilityId,Long serviceProviderId){
-        var facility = facilityRepository.findById(facilityId).orElseThrow(()->new IllegalArgumentException("Facility Not Found !"));
-        var serviceProvider = serviceProviderRepository.findById(serviceProviderId).orElseThrow(()->new IllegalArgumentException("Service Provider Not Found !"));
-        facility.getServiceProviders().remove(serviceProvider);
-        facilityRepository.save(facility);
-        var serviceProviders = facility.getServiceProviders();
-       var serviceProvidersDTO = serviceProviders.stream().map(serviceProviderMapper::toServiceProviderSimpleDTO).collect(Collectors.toList());
-        return facilityMapper.toFacilityDTO(facility,serviceProvidersDTO);
-    }
+
 }

@@ -38,7 +38,7 @@ public class ServiceProviderController {
     }
     @PreAuthorize("hasRole('SERVICE_PROVIDER')")
     @PutMapping("/user/{userId}")
-    public ResponseEntity<?> updateServiceProvider(@PathVariable Long userId, @RequestPart("user") ServiceProviderDTO dto,@RequestPart(value = "image", required = false) MultipartFile image,@AuthenticationPrincipal CustomUserDetails userDetails){
+    public ResponseEntity<?> updateServiceProvider(@PathVariable Long userId, @RequestPart(value = "user",required = false) ServiceProviderDTO dto,@RequestPart(value = "image", required = false) MultipartFile image,@AuthenticationPrincipal CustomUserDetails userDetails){
         Long authId = userDetails.getUserId();
         if(!authId.equals(userId)){
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
@@ -50,7 +50,7 @@ public class ServiceProviderController {
     public ResponseEntity<?> deleteServiceProvider(@PathVariable Long userId,@AuthenticationPrincipal CustomUserDetails userDetails){
         Long authId = userDetails.getUserId();
         if(!authId.equals(userId)){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied !");
         }
         return ResponseEntity.ok(serviceProviderService.deleteServiceProvider(userId));
     }
@@ -62,14 +62,6 @@ public class ServiceProviderController {
     public ResponseEntity<List<ServiceProviderDTO>> getAllServiceProvidersWithFacilities(){
         return ResponseEntity.ok(serviceProviderService.getAllServiceProvidersWithFacilities());
     }
-    @PreAuthorize("hasRole('SERVICE_PROVIDER')")
-    @DeleteMapping("/serviceProvider/{userId}/facility/{facilityId}")
-    public ResponseEntity<ServiceProviderDTO> removeFacility(@PathVariable Long userId,@PathVariable Long facilityId,@AuthenticationPrincipal CustomUserDetails userDetails){
-        Long authId = userDetails.getUserId();
-        if(!authId.equals(userId)){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
-        return ResponseEntity.ok(serviceProviderService.removeFacilityById(userId,facilityId));
-    }
+
 
 }
