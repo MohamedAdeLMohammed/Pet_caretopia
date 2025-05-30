@@ -46,9 +46,6 @@ public class AppointmentRequestController {
     @PreAuthorize("hasRole('SERVICE_PROVIDER')")
     @PatchMapping("/serviceProvider/{serviceProviderId}/appointmentRequest/{appointmentRequestId}/status")
     public ResponseEntity<AppointmentRequestDTO> updateAppointmentRequestStatusByServiceProviderIdAndAppointmentRequestId(@PathVariable Long serviceProviderId , @PathVariable Long appointmentRequestId, @RequestParam AppointmentRequest.AppointmentRequestStatus status){
-        if(status.equals(AppointmentRequest.AppointmentRequestStatus.ACCEPTED)){
-
-        }
         return ResponseEntity.ok(appointmentRequestService.updateAppointmentRequestStatusByServiceProviderIdAndAppointmentRequestId(appointmentRequestId,serviceProviderId,status));
     }
     @PreAuthorize("hasAnyRole('SERVICE_PROVIDER','ADMIN')")
@@ -58,18 +55,18 @@ public class AppointmentRequestController {
     }
     @PreAuthorize("hasAnyRole('USER','PET_OWNER')")
     @PutMapping("/user/{userId}/appointmentRequest/{appointmentRequestId}")
-    public ResponseEntity<AppointmentRequestDTO> updateAppointmentRequestByUserIdAndAppointmentRequestId(@PathVariable Long userId , @PathVariable Long appointmentRequestId , @RequestBody AppointmentRequestDTO dto , @AuthenticationPrincipal CustomUserDetails userDetails){
+    public ResponseEntity<?> updateAppointmentRequestByUserIdAndAppointmentRequestId(@PathVariable Long userId , @PathVariable Long appointmentRequestId , @RequestBody AppointmentRequestDTO dto , @AuthenticationPrincipal CustomUserDetails userDetails){
         Long authId = userDetails.getUserId();
         if(!authId.equals(userId)){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied !");
         }
         return ResponseEntity.ok(appointmentRequestService.updateAppointmentRequestByUserIdAndAppointmentRequestId(userId,appointmentRequestId,dto));
     }
     @PostMapping("/add/user/{userId}")
-    public ResponseEntity<AppointmentRequestDTO> createAppointmentRequest(@PathVariable Long userId,@RequestBody AppointmentRequestDTO dto,@AuthenticationPrincipal CustomUserDetails userDetails){
+    public ResponseEntity<?> createAppointmentRequest(@PathVariable Long userId,@RequestBody AppointmentRequestDTO dto,@AuthenticationPrincipal CustomUserDetails userDetails){
         Long authId = userDetails.getUserId();
         if(!authId.equals(userId)){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied !");
         }
         return ResponseEntity.ok(appointmentRequestService.createAppointmentRequest(userId,dto));
     }
