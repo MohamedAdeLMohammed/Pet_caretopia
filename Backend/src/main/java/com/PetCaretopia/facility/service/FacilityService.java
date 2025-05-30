@@ -2,9 +2,10 @@ package com.PetCaretopia.facility.service;
 
 import com.PetCaretopia.facility.DTO.FacilityDTO;
 import com.PetCaretopia.facility.DTO.FacilitySimpleDTO;
-import com.PetCaretopia.facility.entity.Facility;
-import com.PetCaretopia.facility.entity.FacilityStatus;
+import com.PetCaretopia.facility.entity.*;
 import com.PetCaretopia.facility.mapper.FacilityMapper;
+import com.PetCaretopia.facility.repository.AppointmentRepository;
+import com.PetCaretopia.facility.repository.AppointmentRequestRepository;
 import com.PetCaretopia.facility.repository.FacilityRepository;
 import com.PetCaretopia.user.DTO.ServiceProviderSimpleDTO;
 import com.PetCaretopia.user.Mapper.ServiceProviderMapper;
@@ -26,6 +27,8 @@ public class FacilityService {
     private final FacilityMapper facilityMapper;
     private final ServiceProviderMapper serviceProviderMapper;
     private final ServiceProviderRepository serviceProviderRepository;
+    private final AppointmentRepository appointmentRepository;
+    private final AppointmentRequestRepository appointmentRequestRepository;
 
     public FacilitySimpleDTO createFacility(Long serviceProviderId,FacilitySimpleDTO dto){
         var serviceProvider = serviceProviderRepository.findById(serviceProviderId).orElseThrow(()->new IllegalArgumentException("Service Provider Not Found !"));
@@ -68,9 +71,6 @@ public class FacilityService {
         if(dto.getFacilityAddress() != null){
             existFacility.setAddress(dto.getFacilityAddress());
         }
-        if(dto.getFacilityType() != null){
-            existFacility.setFacilityType(dto.getFacilityType());
-        }
         if(dto.getStatus() != null){
             existFacility.setStatus(dto.getStatus());
         }
@@ -93,9 +93,33 @@ public class FacilityService {
         facilityRepository.save(existFacility);
         return facilityMapper.toFacilitySimpleDTO(existFacility);
     }
-    public String deleteFacilityById(Long id){
-        var facility = facilityRepository.findById(id).orElseThrow(()-> new IllegalArgumentException("Facility Not Found !"));
+    public String deleteFacilityById(Long id) {
+        var facility = facilityRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Facility Not Found!"));
+
+        var requests = appointmentRequestRepository.findByFacility_Id(id);
+        var appointments = appointmentRepository.findByFacility_Id(id);
+
+        boolean hasPendingRequests = requests != null && requests.stream()
+                .anyMatch(request -> request.getStatus() == AppointmentRequest.AppointmentRequestStatus.PENDING);
+
+        boolean hasNotTreatedAppointments = appointments != null && appointments.stream()
+                .anyMatch(appointment -> appointment.getAppointmentStatus() == Appointment.AppointmentStatus.NOT_TREATED);
+
+        if (hasPendingRequests || hasNotTreatedAppointments) {
+            throw new IllegalArgumentException("You cannot delete this facility because there are some Requests and Appointments still not handled!");
+        }
+
+        if (appointments != null) {
+            appointments.forEach(appointmentRepository::delete);
+        }
+
+        if (requests != null) {
+            requests.forEach(appointmentRequestRepository::delete);
+        }
+
         facilityRepository.delete(facility);
+
         return "Facility Deleted!";
     }
     public FacilitySimpleDTO getFacilityById(Long id){
