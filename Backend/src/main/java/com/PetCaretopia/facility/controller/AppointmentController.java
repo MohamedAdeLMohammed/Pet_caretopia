@@ -21,6 +21,10 @@ public class AppointmentController {
     public ResponseEntity<List<AppointmentDTO>> getAllAppointments(){
         return ResponseEntity.ok(appointmentService.getAllAppointments());
     }
+    @GetMapping("/appointment/{appointmentId}")
+    public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable Long appointmentId){
+        return ResponseEntity.ok(appointmentService.getAppointmentById(appointmentId));
+    }
     @GetMapping("user/{userId}")
     public ResponseEntity<List<AppointmentDTO>> getAllAppointmentsByUserId(@PathVariable Long userId){
         return ResponseEntity.ok(appointmentService.getAllAppointmentsByUserId(userId));

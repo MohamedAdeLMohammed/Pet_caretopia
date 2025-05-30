@@ -91,4 +91,8 @@ public class AppointmentService {
         appointmentRepository.save(appointment);
         return appointmentMapper.toAppointmentDTO(appointment);
     }
+    public AppointmentDTO getAppointmentById(Long appointmentId){
+        var appointment = appointmentRepository.findById(appointmentId).orElseThrow(()->new IllegalArgumentException("Not Found !"));
+        return appointmentMapper.toAppointmentDTO(appointment);
+    }
 }

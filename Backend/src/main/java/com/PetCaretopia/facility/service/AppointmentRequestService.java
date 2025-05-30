@@ -149,4 +149,8 @@ public class AppointmentRequestService {
         appointmentRequestRepository.save(existAppointmentRequest);
         return appointmentRequestMapper.toAppointmentRequestDTO(existAppointmentRequest);
     }
+    public AppointmentRequestDTO getAppointmentRequestById(Long appointmentId){
+        var appointmentRequest = appointmentRequestRepository.findById(appointmentId).orElseThrow(()->new IllegalArgumentException("Not Found !"));
+        return appointmentRequestMapper.toAppointmentRequestDTO(appointmentRequest);
+    }
 }

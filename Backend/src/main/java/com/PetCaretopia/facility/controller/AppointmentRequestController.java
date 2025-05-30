@@ -24,6 +24,10 @@ public class AppointmentRequestController {
     public ResponseEntity<List<AppointmentRequestDTO>> getAllAppointmentRequestsByUserId(@PathVariable Long userId){
         return ResponseEntity.ok(appointmentRequestService.getAppointmentRequestsByUserId(userId));
     }
+    @GetMapping("/appointmentRequest/{appointmentRequestId}")
+    public ResponseEntity<AppointmentRequestDTO> getAppointmentRequestById(@PathVariable Long appointmentRequestId){
+        return ResponseEntity.ok(appointmentRequestService.getAppointmentRequestById(appointmentRequestId));
+    }
     @PreAuthorize("hasRole('SERVICE_PROVIDER')")
     @GetMapping("/serviceProvider/{serviceProviderId}")
     public ResponseEntity<List<AppointmentRequestDTO>> getAllAppointmentRequestsByServiceProviderId(@PathVariable Long serviceProviderId){
