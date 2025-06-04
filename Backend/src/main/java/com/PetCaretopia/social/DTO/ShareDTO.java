@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 public class ShareDTO {
     private Long shareId;
 
-
     private Long userId;
 
     @NotNull
     private Long postId;
 
     private String shareMessage;
+
     private LocalDateTime sharedAt;
 }

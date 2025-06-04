@@ -1,5 +1,8 @@
 package com.PetCaretopia.social.Service;
 
+import com.PetCaretopia.Notification.NotificationMapper;
+import com.PetCaretopia.Notification.NotificationService;
+import com.PetCaretopia.Notification.NotificationType;
 import com.PetCaretopia.Security.Service.CustomUserDetails;
 import com.PetCaretopia.shared.SharedImageUploadService;
 import com.PetCaretopia.social.DTO.PostDTO;
@@ -26,6 +29,8 @@ public class PostService {
     @Autowired private UserRepository userRepository;
     @Autowired private PostMapper postMapper;
     @Autowired private SharedImageUploadService imageService;
+    @Autowired private NotificationService notificationService;
+    @Autowired private NotificationMapper notificationMapper;
 
     @Transactional
     public PostDTO createPostWithMultipart(PostDTO dto, List<MultipartFile> images, Long userId) {
@@ -45,7 +50,18 @@ public class PostService {
             post.setPostImages(postImages);
             post.setUser(user);
         }
-        return postMapper.toDTO(postRepository.save(post));
+        Post savedPost = postRepository.save(post);
+
+        notificationService.sendNotification(
+                user,
+                "Your post has been published successfully!",
+                NotificationType.GENERAL_ANNOUNCEMENT,
+                savedPost.getPostId(),
+                "post"
+        );
+
+
+        return postMapper.toDTO(savedPost);
     }
 
     public List<PostDTO> getAllPosts() {

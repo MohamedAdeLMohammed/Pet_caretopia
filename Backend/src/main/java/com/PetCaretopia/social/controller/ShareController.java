@@ -25,7 +25,7 @@
                 @Valid @RequestBody ShareDTO dto,
                 @AuthenticationPrincipal com.PetCaretopia.Security.Service.CustomUserDetails principal
         ) {
-            dto.setUserId(principal.getUserId()); // حماية من تزوير userId في الـ body
+            dto.setUserId(principal.getUserId());
             return ResponseEntity.ok(shareService.sharePost(dto));
         }
 

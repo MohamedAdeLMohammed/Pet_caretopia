@@ -38,17 +38,16 @@ public class ShareService {
         Share share = shareMapper.toEntity(dto, user, originalPost);
         shareRepository.save(share);
 
-        // 2. Create a new post copied from the original
         Post newPost = new Post();
         newPost.setContent(originalPost.getContent());
         newPost.setUser(user);
-        newPost.setCreatedAt(LocalDateTime.now()); // Or use whatever logic you prefer
+        newPost.setCreatedAt(LocalDateTime.now());
 
         // Copy images from original post if any
         List<PostImage> copiedImages = new ArrayList<>();
         for (PostImage originalImage : originalPost.getPostImages()) {
             PostImage image = new PostImage();
-            image.setUrl(originalImage.getUrl()); // Reuse same URL
+            image.setUrl(originalImage.getUrl());
             image.setPost(newPost);
             copiedImages.add(image);
         }
