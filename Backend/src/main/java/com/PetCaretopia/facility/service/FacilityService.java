@@ -100,21 +100,21 @@ public class FacilityService {
         var requests = appointmentRequestRepository.findByFacility_Id(id);
         var appointments = appointmentRepository.findByFacility_Id(id);
 
-        boolean hasPendingRequests = requests != null && requests.stream()
+        boolean hasPendingRequests = requests != null && !requests.isEmpty() && requests.stream()
                 .anyMatch(request -> request.getStatus() == AppointmentRequest.AppointmentRequestStatus.PENDING);
 
-        boolean hasNotTreatedAppointments = appointments != null && appointments.stream()
+        boolean hasNotTreatedAppointments = appointments != null && !appointments.isEmpty() && appointments.stream()
                 .anyMatch(appointment -> appointment.getAppointmentStatus() == Appointment.AppointmentStatus.NOT_TREATED);
 
         if (hasPendingRequests || hasNotTreatedAppointments) {
             throw new IllegalArgumentException("You cannot delete this facility because there are some Requests and Appointments still not handled!");
         }
 
-        if (appointments != null) {
+        if (appointments != null && !appointments.isEmpty()) {
             appointments.forEach(appointmentRepository::delete);
         }
 
-        if (requests != null) {
+        if (requests != null && !requests.isEmpty()) {
             requests.forEach(appointmentRequestRepository::delete);
         }
 

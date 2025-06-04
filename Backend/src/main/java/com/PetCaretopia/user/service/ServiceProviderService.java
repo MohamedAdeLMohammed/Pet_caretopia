@@ -98,7 +98,7 @@ public class ServiceProviderService {
                 user.setUserStatus(dto.getUserStatus());
             }
             if(dto.getServiceProviderType() != null){
-                if(existingServiceProvider.getFacilities() != null){
+                if(existingServiceProvider.getFacilities() != null && !existingServiceProvider.getFacilities().isEmpty()){
                     throw new IllegalArgumentException("You Cannot Change Your Service Provider Type Because it's related to your facilities so you must delete these facilities first !");
                 }
                 existingServiceProvider.setServiceProviderType(dto.getServiceProviderType());

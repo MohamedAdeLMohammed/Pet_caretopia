@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import tensorflow as tf
 from PIL import Image
 import numpy as np
@@ -12,7 +13,7 @@ with open('class_labels.json', 'r') as f:
     class_labels = json.load(f)
 
 app = Flask(__name__)
-
+CORS(app)
 def preprocess_image(image_path, target_size=(224, 224)):
     img = Image.open(image_path).convert('RGB')
     img = img.resize(target_size)
