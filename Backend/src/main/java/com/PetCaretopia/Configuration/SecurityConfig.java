@@ -55,7 +55,8 @@ public class SecurityConfig {
                                         "/messages/{senderId}/{receiverId}",
                                         "/swagger-ui/**",
                                         "/store/**",
-                                        "/v3/api-docs/**"
+                                        "/v3/api-docs/**",
+                                        "/users/email/{email}"
 
                                 ).permitAll()
 
