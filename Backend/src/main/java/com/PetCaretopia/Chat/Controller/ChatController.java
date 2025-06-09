@@ -1,10 +1,9 @@
 package com.PetCaretopia.Chat.Controller;
 
+
 import com.PetCaretopia.Chat.Model.Message;
+import com.PetCaretopia.Chat.Model.ChatNotification;
 import com.PetCaretopia.Chat.Service.MessageService;
-import com.PetCaretopia.Notification.NotificationService;
-import com.PetCaretopia.Notification.NotificationType;
-import com.PetCaretopia.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -22,25 +21,19 @@ public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageService messageService;
-    private final NotificationService notificationService;
-    private final UserRepository userRepository;
 
     @MessageMapping("/chat")
     public void process(@Payload Message message) {
         Message savedMessage = messageService.save(message);
-
-        notificationService.sendNotification(
-                userRepository.findById(Long.valueOf(savedMessage.getReceiverId())).orElseThrow(),
-                "You've received a new message!",
-                NotificationType.GENERAL_ANNOUNCEMENT,
-                savedMessage.getId(),
-                "chat"
-        );
-
         messagingTemplate.convertAndSendToUser(
-                savedMessage.getReceiverId(), // still String — this is correct for WebSocket username
+                message.getReceiverId(),
                 "/queue/messages",
-                savedMessage
+                new ChatNotification(
+                        savedMessage.getId(),
+                        savedMessage.getSenderId(),
+                        savedMessage.getReceiverId(),
+                        savedMessage.getContent()
+                )
         );
     }
 
@@ -52,4 +45,5 @@ public class ChatController {
         var chatMessages = messageService.getChatMessage(senderId, receiverId);
         return ResponseEntity.ok(chatMessages);
     }
+
 }
