@@ -9,6 +9,7 @@ import com.PetCaretopia.Security.Util.GetAgeUtil;
 import com.PetCaretopia.order.entity.ProductImage;
 import com.PetCaretopia.shared.SharedImageUploadService;
 import com.PetCaretopia.user.DTO.UserDTO;
+import com.PetCaretopia.user.DTO.UserSummaryDTO;
 import com.PetCaretopia.user.mapper.UserMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -133,9 +134,9 @@ public class UserService {
         userRepository.save(user);
         return "This user became new Admin !";
     }
-    public List<UserDTO> getAllUsers(){
+    public List<UserSummaryDTO> getAllUsers(){
         var users = userRepository.findAll();
-        return users.stream().map(userMapper::toUserDTO).collect(Collectors.toList());
+        return users.stream().map(userMapper::toUserSummaryDTO).collect(Collectors.toList());
     }
 
 }

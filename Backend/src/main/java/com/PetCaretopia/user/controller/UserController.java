@@ -4,6 +4,7 @@ package  com.PetCaretopia.user.controller;
 
 import com.PetCaretopia.Security.Service.CustomUserDetails;
 import com.PetCaretopia.user.DTO.UserDTO;
+import com.PetCaretopia.user.DTO.UserSummaryDTO;
 import com.PetCaretopia.user.entity.User;
 import com.PetCaretopia.user.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -64,7 +65,7 @@ public class UserController {
         return ResponseEntity.ok(userService.upgradeToAdmin(id));
     }
     @GetMapping("/all")
-    public ResponseEntity<List<UserDTO>> getAllUsers(){
+    public ResponseEntity<List<UserSummaryDTO>> getAllUsers(){
         return ResponseEntity.ok(userService.getAllUsers());
     }
 }
