@@ -26,7 +26,7 @@ public class FacilityController {
         return ResponseEntity.ok(facilityService.getServiceProviderFacilitiesByServiceProviderId(serviceProviderId));
     }
     @GetMapping("/type")
-    public ResponseEntity<List<FacilitySimpleDTO>> getFacilitiesByType(@RequestParam Facility.FacilityType type){
+    public ResponseEntity<List<FacilityDTO>> getFacilitiesByType(@RequestParam Facility.FacilityType type){
         return ResponseEntity.ok(facilityService.getFacilitiesByFacilityType(type));
     }
     @GetMapping("/facilityName")

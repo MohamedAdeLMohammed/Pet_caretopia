@@ -138,9 +138,15 @@ public class FacilityService {
         var simpleServiceProvider = serviceProviderMapper.toServiceProviderSimpleDTO(serviceProvider);
         return facilityMapper.toFacilityDTO(facility,simpleServiceProvider);
     }
-    public List<FacilitySimpleDTO> getFacilitiesByFacilityType(Facility.FacilityType type){
+    public List<FacilityDTO> getFacilitiesByFacilityType(Facility.FacilityType type) {
         var facilities = facilityRepository.findByFacilityType(type);
-        return facilities.stream().map(facilityMapper::toFacilitySimpleDTO).collect(Collectors.toList());
+
+        return facilities.stream()
+                .map(facility -> {
+                    var spDTO = serviceProviderMapper.toServiceProviderSimpleDTO(facility.getServiceProvider());
+                    return facilityMapper.toFacilityDTO(facility, spDTO);
+                })
+                .collect(Collectors.toList());
     }
     public List<FacilitySimpleDTO> getServiceProviderFacilitiesByServiceProviderId(Long serviceProviderId){
         var serviceProvider = serviceProviderRepository.findById(serviceProviderId).orElseThrow(()->new IllegalArgumentException("Service Provider not found !"));
