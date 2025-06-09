@@ -20,7 +20,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -130,6 +132,10 @@ public class UserService {
         user.setUserRole(User.Role.ADMIN);
         userRepository.save(user);
         return "This user became new Admin !";
+    }
+    public List<UserDTO> getAllUsers(){
+        var users = userRepository.findAll();
+        return users.stream().map(userMapper::toUserDTO).collect(Collectors.toList());
     }
 
 }

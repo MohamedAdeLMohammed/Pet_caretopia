@@ -60,7 +60,13 @@ public class FeedbackService {
         return feedbackMapper.toFeedbackDTO(feedback);
     }
 
-    public String deleteFeedback(Long feedbackID) {
+    public String deleteFeedbackByUserIdAndFeedbackId(Long feedbackID,Long userID) {
+        var feedback = feedbackRepository.findById(feedbackID)
+                .orElseThrow(() -> new IllegalArgumentException("Feedback not found!"));
+
+        if (!feedback.getUser().getUserID().equals(userID)) {
+            throw new IllegalArgumentException("Feedback does not belong to the given user!");
+        }
         feedbackRepository.deleteById(feedbackID);
         return "Feedback Deleted !";
     }
@@ -68,5 +74,19 @@ public class FeedbackService {
         var feedbacks = feedbackRepository.findAll();
         return feedbacks.stream().map(feedbackMapper::toFeedbackDTO).collect(Collectors.toList());
     }
+    public FeedbackDTO updateFeedbackByUserIdAndFeedbackId(Long userId, Long feedbackId, String newContent) {
+        var feedback = feedbackRepository.findById(feedbackId)
+                .orElseThrow(() -> new IllegalArgumentException("Feedback not found!"));
 
+        if (!feedback.getUser().getUserID().equals(userId)) {
+            throw new IllegalArgumentException("Feedback does not belong to the given user!");
+        }
+
+        if (newContent != null && !newContent.isEmpty()) {
+            feedback.setFeedbackContent(newContent);
+        }
+
+        feedbackRepository.save(feedback);
+        return feedbackMapper.toFeedbackDTO(feedback);
+    }
 }

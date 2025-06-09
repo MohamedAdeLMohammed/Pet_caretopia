@@ -43,6 +43,8 @@ public class Appointment {
 
     @Column(nullable = true)
     private String reason; //  Allows users to specify a reason
+    @Column(nullable = true)
+    private Long requestId;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

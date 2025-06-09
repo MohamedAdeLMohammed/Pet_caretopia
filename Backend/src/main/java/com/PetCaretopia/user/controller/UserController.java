@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -61,6 +62,10 @@ public class UserController {
     @PatchMapping("/toAdmin/user/{id}")
     public ResponseEntity<String> upgradeUserToAdmin(@PathVariable Long id,@AuthenticationPrincipal CustomUserDetails userDetails){
         return ResponseEntity.ok(userService.upgradeToAdmin(id));
+    }
+    @GetMapping("/all")
+    public ResponseEntity<List<UserDTO>> getAllUsers(){
+        return ResponseEntity.ok(userService.getAllUsers());
     }
 }
 

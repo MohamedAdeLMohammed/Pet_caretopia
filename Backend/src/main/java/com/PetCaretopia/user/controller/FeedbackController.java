@@ -1,17 +1,20 @@
 package com.PetCaretopia.user.controller;
 
+import com.PetCaretopia.Security.Service.CustomUserDetails;
 import com.PetCaretopia.user.DTO.FeedbackDTO;
 import com.PetCaretopia.user.entity.Feedback;
 import com.PetCaretopia.user.service.FeedbackService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/feedback")
+@RequestMapping("/feedbacks")
 public class FeedbackController {
 
     private final FeedbackService feedbackService;
@@ -45,9 +48,21 @@ public class FeedbackController {
     public ResponseEntity<List<FeedbackDTO>> getAll(){
         return ResponseEntity.ok(feedbackService.getAllFeedbacks());
     }
-    @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteFeedback(@PathVariable Long id) {
-        return ResponseEntity.ok(feedbackService.deleteFeedback(id));
+
+    @DeleteMapping("/user/{userId}/feedback/{feedbackId}")
+    public ResponseEntity<String> deleteFeedback(@PathVariable Long userId , @PathVariable Long feedbackId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        var authId = userDetails.getUserId();
+        if(!authId.equals(userId)){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied !");
+        }
+        return ResponseEntity.ok(feedbackService.deleteFeedbackByUserIdAndFeedbackId(feedbackId,userId));
+    }
+    @PutMapping("/user/{userId}/feedback/{feedbackId}")
+    public ResponseEntity<?> updateFeedbackContent(@PathVariable Long userId , @PathVariable Long feedbackId , @RequestBody String newContent ,@AuthenticationPrincipal CustomUserDetails userDetails){
+        var authId = userDetails.getUserId();
+        if(!authId.equals(userId)){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access Denied !");
+        }
+        return ResponseEntity.ok(feedbackService.updateFeedbackByUserIdAndFeedbackId(userId,feedbackId,newContent));
     }
 }

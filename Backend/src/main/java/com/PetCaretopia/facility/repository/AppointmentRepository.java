@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
@@ -22,4 +23,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
             Long userId, Long facilityId, Long serviceProviderId,
             LocalDateTime startOfDay, LocalDateTime endOfDay
     );
+    Optional<Appointment> findByRequestId(Long requestId);
 }

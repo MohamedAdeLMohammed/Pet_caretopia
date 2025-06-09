@@ -44,4 +44,9 @@ public class AppointmentController {
     public ResponseEntity<AppointmentDTO> markAsTreatedByServiceProviderIdAndAppointmentId(@PathVariable Long serviceProviderId, @PathVariable Long appointmentId , @RequestParam Appointment.AppointmentStatus status){
         return ResponseEntity.ok(appointmentService.markAsTreatedByServiceProviderIdAndAppointmentId(serviceProviderId,appointmentId,status));
     }
+    @PreAuthorize("hasAnyRole('ADMIN','SERVICE_PROVIDER')")
+    @GetMapping("/appointmentRequest/{appointmentRequestId}")
+    public ResponseEntity<AppointmentDTO> getAppointmentByRequestId(@PathVariable Long appointmentRequestId){
+        return ResponseEntity.ok(appointmentService.getAppointmentByRequestId(appointmentRequestId));
+    }
 }

@@ -38,6 +38,8 @@ public class AppointmentService {
             if(!exists){
                 Appointment appointment = Appointment.builder()
                         .user(request.getUser())
+                        .requestId(request.getId())
+                        .reason(request.getReason())
                         .serviceProvider(request.getServiceProvider())
                         .facility(request.getFacility())
                         .appointmentTime(request.getRequestedTime())
@@ -93,6 +95,11 @@ public class AppointmentService {
     }
     public AppointmentDTO getAppointmentById(Long appointmentId){
         var appointment = appointmentRepository.findById(appointmentId).orElseThrow(()->new IllegalArgumentException("Not Found !"));
+        return appointmentMapper.toAppointmentDTO(appointment);
+    }
+    public AppointmentDTO getAppointmentByRequestId(Long requestId){
+        var request = appointmentRequestRepository.findById(requestId).orElseThrow(()->new IllegalArgumentException("Request Not Found !"));
+        var appointment = appointmentRepository.findByRequestId(requestId).orElseThrow(()->new IllegalArgumentException("Appointment Not Found !"));
         return appointmentMapper.toAppointmentDTO(appointment);
     }
 }

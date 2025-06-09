@@ -16,9 +16,11 @@ public class AppointmentMapper {
     public AppointmentDTO toAppointmentDTO(Appointment appointment){
         return new AppointmentDTO(
                 appointment.getId(),
+                appointment.getRequestId(),
                 appointment.getUser().getUserID(),
                 appointment.getServiceProvider().getServiceProviderID(),
                 appointment.getFacility().getId(),
+                appointment.getReason(),
                 userMapper.toUserDTO(appointment.getUser()),
                 serviceProviderMapper.toServiceProviderSimpleDTO(appointment.getServiceProvider()),
                 facilityMapper.toFacilitySimpleDTO(appointment.getFacility()),

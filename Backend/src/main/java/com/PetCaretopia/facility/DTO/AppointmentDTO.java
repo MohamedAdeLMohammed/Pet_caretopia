@@ -15,10 +15,12 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Builder
 public class AppointmentDTO {
-    private Long AppointmentId;
+    private Long appointmentId;
+    private Long requestId;
     private Long userId;
     private Long serviceProviderId;
     private Long facilityId;
+    private String reason;
     private UserDTO user;
     private ServiceProviderSimpleDTO serviceProvider;
     private FacilitySimpleDTO facility;
