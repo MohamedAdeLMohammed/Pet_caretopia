@@ -64,12 +64,12 @@ public class BreedingRequestController {
     }
 
     @GetMapping("/available-for-breeding")
-    @PreAuthorize("hasRole('PET_OWNER')")
-    public ResponseEntity<List<PetDTO>> getAvailablePetsForBreeding(@AuthenticationPrincipal CustomUserDetails principal) {
-        List<Pet> pets = service.getMyAvailablePetsForBreeding(principal.getUsername());
+    public ResponseEntity<List<PetDTO>> getAvailablePetsForBreeding() {
+        List<Pet> pets = service.getAllAvailablePetsForBreeding();
         List<PetDTO> result = pets.stream().map(PetMapper::toDTO).toList();
         return ResponseEntity.ok(result);
     }
+
 
     @PreAuthorize("hasRole('PET_OWNER')")
     @PutMapping("/{id}/make-available-for-breeding")

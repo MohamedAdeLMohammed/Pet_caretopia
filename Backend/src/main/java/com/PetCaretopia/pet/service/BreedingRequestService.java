@@ -140,15 +140,10 @@ public class BreedingRequestService {
                 .map(mapper::toDTO)
                 .toList();
     }
-    public List<Pet> getMyAvailablePetsForBreeding(String userEmail) {
-        User user = userRepository.findByUserEmail(userEmail)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        PetOwner owner = petOwnerRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Pet owner not found"));
-
-        return petRepo.findByOwnerAndIsAvailableForBreedingTrue(owner);
+    public List<Pet> getAllAvailablePetsForBreeding() {
+        return petRepo.findByIsAvailableForBreedingTrue();
     }
+
 
 
 

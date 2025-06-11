@@ -183,7 +183,6 @@ public class PetService {
         Pet pet = petRepository.findById(petId)
                 .orElseThrow(() -> new IllegalArgumentException("Pet not found"));
 
-        // تأكيد إن المستخدم هو صاحب الحيوان
         User user = userRepository.findByUserEmail(emailFromToken)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
@@ -194,9 +193,9 @@ public class PetService {
             throw new IllegalArgumentException("You are not the owner of this pet.");
         }
 
-        // تفعيل التزاوج
         pet.setAvailableForBreeding(true);
         petRepository.save(pet);
     }
+
 
 }
