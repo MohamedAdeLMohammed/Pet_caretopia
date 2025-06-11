@@ -30,8 +30,8 @@ public class UserController {
 
 
     @GetMapping("/email/{email}")
-    public Optional<User> getUserByEmail(@PathVariable String email) {
-        return userService.getUserByEmail(email);
+    public ResponseEntity<UserDTO> getUserByEmail(@PathVariable String email) {
+        return ResponseEntity.ok(userService.getUserByEmail(email));
     }
     @GetMapping("/user/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable Long id){

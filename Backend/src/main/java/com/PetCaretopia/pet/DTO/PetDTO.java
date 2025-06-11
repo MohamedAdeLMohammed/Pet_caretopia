@@ -16,7 +16,7 @@ public class PetDTO {
 
     @NotNull(message = "Pet breed is required")
     private String petBreedName;
-
+    private Boolean availableForAdoption;
     private Long ownerId;
     private Long shelterId;
     private String imageUrl;

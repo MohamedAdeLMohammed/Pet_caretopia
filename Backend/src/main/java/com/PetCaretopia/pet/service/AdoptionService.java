@@ -55,22 +55,14 @@ public class AdoptionService {
 
         dto.setRequesterUserId(principal.getUserId());
 
+        Adoption adoption = AdoptionMapper.toEntity(dto, pet, null, null, pet.getShelter(), user);
 
-
-        Adoption adoption = AdoptionMapper.toEntity(dto, pet, null, null, null);
         adoption.setStatus(AdoptionStatus.PENDING);
         adoption.setAdoptionDate(dto.getAdoptionDate() != null ? dto.getAdoptionDate() : LocalDate.now());
         adoption.setCreatedAt(LocalDateTime.now());
-        adoption.setRequesterUserId(principal.getUserId());
-
-        // ✅ ربط الشيلتر لو الحيوان من شيلتر
-        if (pet.getShelter() != null) {
-            adoption.setShelter(pet.getShelter());
-        }
 
         return AdoptionMapper.toDTO(adoptionRepository.save(adoption));
     }
-
 
     public List<AdoptionDTO> getByPetId(Long petId) {
         return adoptionRepository.findByPet_PetID(petId).stream()

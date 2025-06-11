@@ -36,10 +36,8 @@ public class PetController {
             @AuthenticationPrincipal CustomUserDetails principal
     ) {
         Long userId = principal.getUserId();
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
         if (dto.getShelterId() == null) {
             PetOwner owner = user.getPetOwner();
 
@@ -50,11 +48,12 @@ public class PetController {
                 if(user.getUserRole().equals(User.Role.USER)) {
                     user.setUserRole(User.Role.PET_OWNER);
                 }
-                user = userRepository.save(user); // يعيد النسخة المحدثة من اليوزر
+                user = userRepository.save(user);
                 owner = user.getPetOwner();
             }
-
             dto.setOwnerId(owner.getPetOwnerId());
+        } else {
+            dto.setAvailableForAdoption(true);
         }
 
         return ResponseEntity.ok(petService.createPet(dto, imageFile));

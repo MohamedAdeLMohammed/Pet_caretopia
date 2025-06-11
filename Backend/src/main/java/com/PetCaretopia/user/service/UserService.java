@@ -65,8 +65,9 @@ public class UserService {
 
         return userRepository.save(user);
     }
-    public Optional<User> getUserByEmail(String email) {
-        return userRepository.findByUserEmail(email);
+    public UserDTO getUserByEmail(String email) {
+        var user = userRepository.findByUserEmail(email).orElseThrow(()->new IllegalArgumentException("User Not Found !"));
+        return userMapper.toUserDTO(user);
     }
     public UserDTO getUserById(Long id){
         User user = userRepository.findById(id).orElseThrow(()->new IllegalArgumentException("User Not found!"));

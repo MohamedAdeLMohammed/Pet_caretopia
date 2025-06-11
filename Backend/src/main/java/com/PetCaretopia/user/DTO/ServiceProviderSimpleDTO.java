@@ -21,7 +21,7 @@ public class ServiceProviderSimpleDTO {
     private String userAddress;
     private User.Gender userGender;
     private User.Status userStatus;
-    private String age;
+    private String userAge;
     private LocalDate birthDate;
     private String userDetails;
     private String userProfileImage;

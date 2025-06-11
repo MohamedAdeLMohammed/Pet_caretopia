@@ -6,6 +6,7 @@ import com.PetCaretopia.pet.entity.AdoptionStatus;
 import com.PetCaretopia.pet.entity.Pet;
 import com.PetCaretopia.pet.entity.Shelter;
 import com.PetCaretopia.user.entity.PetOwner;
+import com.PetCaretopia.user.entity.User;
 
 import java.time.LocalDateTime;
 
@@ -33,7 +34,8 @@ public class AdoptionMapper {
             Pet pet,
             PetOwner adopter,
             PetOwner previousOwner,
-            Shelter shelter
+            Shelter shelter,
+            User requesterUser
     ) {
         Adoption entity = new Adoption();
         entity.setId(dto.getId());
@@ -49,6 +51,9 @@ public class AdoptionMapper {
         entity.setCreatedBy(dto.getRequesterUserId());
         entity.setCreatedAt(dto.getCreatedAt() != null ? dto.getCreatedAt() : LocalDateTime.now());
         entity.setRequesterUserId(dto.getRequesterUserId());
+        if (requesterUser != null) {
+            entity.setRequesterUser(requesterUser);
+        }
         return entity;
     }
 
