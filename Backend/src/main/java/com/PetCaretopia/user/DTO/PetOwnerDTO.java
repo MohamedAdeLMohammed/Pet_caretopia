@@ -7,6 +7,6 @@ import lombok.Data;
 public class PetOwnerDTO {
     private Long petOwnerId;
 
-    @NotNull(message = "User ID is required")
-    private Long userId;
+    private UserDTO user;
+
 }

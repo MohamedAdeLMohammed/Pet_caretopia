@@ -6,7 +6,7 @@ import com.PetCaretopia.facility.entity.AppointmentRequest;
 import com.PetCaretopia.user.DTO.ServiceProviderSimpleDTO;
 import com.PetCaretopia.user.DTO.UserDTO;
 import com.PetCaretopia.user.Mapper.ServiceProviderMapper;
-import com.PetCaretopia.user.mapper.UserMapper;
+import com.PetCaretopia.user.Mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

@@ -1,8 +1,4 @@
 package com.PetCaretopia.user.service;
-
-
-
-
 import com.PetCaretopia.user.DTO.PetOwnerDTO;
 import com.PetCaretopia.user.Mapper.PetOwnerMapper;
 import com.PetCaretopia.user.entity.PetOwner;
@@ -20,12 +16,16 @@ public class PetOwnerService {
 
     private final UserRepository userRepository;
 
+    private final PetOwnerMapper petOwnerMapper;
+
     public PetOwnerDTO create(PetOwnerDTO dto) {
-        User user = userRepository.findById(dto.getUserId())
+        User user = userRepository.findById(dto.getUser().getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        PetOwner entity = PetOwnerMapper.toEntity(dto, user);
-        return PetOwnerMapper.toDTO(petOwnerRepository.save(entity));
+
+        PetOwner entity = petOwnerMapper.toEntity(dto, user);
+        return petOwnerMapper.toDTO(petOwnerRepository.save(entity));
+
     }
 
 

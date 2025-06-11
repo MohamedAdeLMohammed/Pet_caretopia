@@ -1,4 +1,4 @@
-package com.PetCaretopia.user.mapper;
+package com.PetCaretopia.user.Mapper;
 
 import com.PetCaretopia.Security.Util.GetAgeUtil;
 import com.PetCaretopia.user.DTO.UserDTO;
@@ -15,19 +15,22 @@ public class UserMapper {
         this.getAgeUtil = getAgeUtil;
     }
 
-    public UserDTO toUserDTO(User user){
-        return new UserDTO(
-                user.getName(),
-                user.getUserEmail(),
-                user.getUserPhoneNumber(),
-                user.getUserAddress(),
-                user.getUserDetails(),
-                user.getUserProfileImage(),
-                user.getBirthDate(),
-                user.getUserGender(),
-                user.getUserStatus(),
-                getAgeUtil.getAge(user.getBirthDate()));
+    public UserDTO toUserDTO(User user) {
+        return UserDTO.builder()
+                .userId(user.getUserID())
+                .name(user.getName())
+                .userEmail(user.getUserEmail())
+                .userPhoneNumber(user.getUserPhoneNumber())
+                .userAddress(user.getUserAddress())
+                .userDetails(user.getUserDetails())
+                .userImageProfile(user.getUserProfileImage())
+                .birthDate(user.getBirthDate())
+                .userGender(user.getUserGender())
+                .userStatus(user.getUserStatus())
+                .userAge(getAgeUtil.getAge(user.getBirthDate()))
+                .build();
     }
+
     public UserSummaryDTO toUserSummaryDTO(User user){
         return new UserSummaryDTO(
                 user.getUserID(),

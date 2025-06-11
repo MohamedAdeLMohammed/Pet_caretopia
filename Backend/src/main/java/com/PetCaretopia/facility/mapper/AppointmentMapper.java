@@ -3,7 +3,7 @@ package com.PetCaretopia.facility.mapper;
 import com.PetCaretopia.facility.DTO.AppointmentDTO;
 import com.PetCaretopia.facility.entity.Appointment;
 import com.PetCaretopia.user.Mapper.ServiceProviderMapper;
-import com.PetCaretopia.user.mapper.UserMapper;
+import com.PetCaretopia.user.Mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

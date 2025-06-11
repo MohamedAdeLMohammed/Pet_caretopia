@@ -10,7 +10,7 @@ import com.PetCaretopia.order.entity.ProductImage;
 import com.PetCaretopia.shared.SharedImageUploadService;
 import com.PetCaretopia.user.DTO.UserDTO;
 import com.PetCaretopia.user.DTO.UserSummaryDTO;
-import com.PetCaretopia.user.mapper.UserMapper;
+import com.PetCaretopia.user.Mapper.UserMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
