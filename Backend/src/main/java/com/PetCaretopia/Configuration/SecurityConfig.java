@@ -80,7 +80,8 @@ public class SecurityConfig {
                                 "pet-types/**",
                                 "pet-breeds/**",
                                 "adoptions/**",
-                                "shelters/**"
+                                "shelters/**",
+                                "breeding-requests/**"
                         ).authenticated()
 
                                 .anyRequest().authenticated()

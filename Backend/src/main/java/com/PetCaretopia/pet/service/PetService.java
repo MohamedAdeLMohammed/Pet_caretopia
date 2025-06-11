@@ -31,6 +31,7 @@ public class PetService {
     private final SharedImageUploadService imageUploadService;
     private final UserRepository userRepository;
     private final PetMapper petMapper;
+
     public PetDTO createPet(PetDTO dto, MultipartFile imageFile) {
         PetType type = petTypeRepository.findByTypeName(dto.getPetTypeName())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid pet type"));
@@ -178,5 +179,24 @@ public class PetService {
                 .toList();
     }
 
+    public void makePetAvailableForBreeding(Long petId, String emailFromToken) {
+        Pet pet = petRepository.findById(petId)
+                .orElseThrow(() -> new IllegalArgumentException("Pet not found"));
+
+        // تأكيد إن المستخدم هو صاحب الحيوان
+        User user = userRepository.findByUserEmail(emailFromToken)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        PetOwner owner = petOwnerRepository.findByUser(user)
+                .orElseThrow(() -> new IllegalArgumentException("Owner not found"));
+
+        if (pet.getOwner() == null || !pet.getOwner().getPetOwnerId().equals(owner.getPetOwnerId())) {
+            throw new IllegalArgumentException("You are not the owner of this pet.");
+        }
+
+        // تفعيل التزاوج
+        pet.setAvailableForBreeding(true);
+        petRepository.save(pet);
+    }
 
 }

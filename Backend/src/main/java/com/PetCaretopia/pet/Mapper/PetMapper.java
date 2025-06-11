@@ -19,8 +19,8 @@ public class PetMapper {
         dto.setPetTypeName(pet.getPetType().getTypeName());
         dto.setPetBreedName(pet.getPetBreed().getBreedName());
         dto.setImageUrl(pet.getImageUrl());
-
         dto.setAvailableForAdoption(pet.isAvailableForAdoption());
+        dto.setGender(pet.getGender());
 
         return dto;
     }
@@ -34,6 +34,7 @@ public class PetMapper {
         pet.setOwner(owner);
         pet.setShelter(shelter);
         pet.setImageUrl(dto.getImageUrl());
+        pet.setGender(dto.getGender());
 
         if (dto.getAvailableForAdoption() != null) {
             pet.setAvailableForAdoption(dto.getAvailableForAdoption());

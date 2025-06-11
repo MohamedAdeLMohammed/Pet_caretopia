@@ -1,5 +1,6 @@
 package com.PetCaretopia.pet.DTO;
 
+import com.PetCaretopia.user.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -16,9 +17,12 @@ public class PetDTO {
 
     @NotNull(message = "Pet breed is required")
     private String petBreedName;
+
     private Boolean availableForAdoption;
     private Long ownerId;
     private Long shelterId;
     private String imageUrl;
 
+    @NotNull(message = "Pet gender is required")
+    private User.Gender gender;
 }

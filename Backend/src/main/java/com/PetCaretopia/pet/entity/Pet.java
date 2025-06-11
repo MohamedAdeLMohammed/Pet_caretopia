@@ -1,5 +1,6 @@
 package com.PetCaretopia.pet.entity;
 import com.PetCaretopia.health.entity.PetVaccine;
+import com.PetCaretopia.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,6 +44,10 @@ public class Pet {
     @OneToMany(mappedBy = "pet",cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<PetVaccine> petVaccines;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private User.Gender gender;
+
     @Column(length = 500)
     private String imageUrl;
 
@@ -50,4 +55,8 @@ public class Pet {
         this.owner = newOwner;
         this.shelter = null;
     }
+
+    @Column(name = "is_available_for_breeding", nullable = false)
+    private boolean isAvailableForBreeding = false;
+
 }

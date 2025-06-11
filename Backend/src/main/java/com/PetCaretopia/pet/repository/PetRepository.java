@@ -20,4 +20,6 @@ public interface PetRepository extends JpaRepository<Pet, Long> {
     List<Pet> findByOwner_User_UserID(Long userId);
 
     List<Pet> findByIsAvailableForAdoptionTrue();
+    List<Pet> findByOwnerAndIsAvailableForBreedingTrue(PetOwner owner);
+
 }
