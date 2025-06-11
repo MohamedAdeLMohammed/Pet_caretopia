@@ -77,13 +77,11 @@ public class ReactionController {
         return ResponseEntity.ok(reactionService.reactToComment(dto));
     }
 
-    @PreAuthorize("permitAll()")
     @GetMapping("/post/{postId}")
     public ResponseEntity<List<ReactionDTO>> getReactionsByPost(@PathVariable Long postId) {
         return ResponseEntity.ok(reactionService.getReactionsByPost(postId));
     }
 
-    @PreAuthorize("permitAll()")
     @GetMapping("/comment/{commentId}")
     public ResponseEntity<List<ReactionDTO>> getReactionsByComment(@PathVariable Long commentId) {
         return ResponseEntity.ok(reactionService.getReactionsByComment(commentId));

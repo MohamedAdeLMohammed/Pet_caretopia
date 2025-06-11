@@ -22,21 +22,18 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
-    //  Public: Get all products
-    @PreAuthorize("permitAll()")
+
     @GetMapping
     public List<ProductDTO> getAllProducts() {
         return productService.getAllProducts();
     }
 
-    //  Public: Get product by ID
-    @PreAuthorize("permitAll()")
+
     @GetMapping("/{id}")
     public ProductDTO getProductById(@PathVariable Long id) {
         return productService.getProductById(id);
     }
 
-    //  Admin: Create product (accepts Base64 images)
     @PostMapping(value = "/product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
 
@@ -55,29 +52,23 @@ public class ProductController {
         return productService.saveProductWithMultipart(updatedProductDTO, images);
     }
 
-    //  Admin: Delete product
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
     }
 
-    //  Public: Search products by keyword
-    @PreAuthorize("permitAll()")
     @GetMapping("/search")
     public List<ProductDTO> searchProducts(@RequestParam String keyword) {
         return productService.searchProducts(keyword);
     }
 
-    //  Public: Filter by category (strict enum)
-    @PreAuthorize("permitAll()")
     @GetMapping("/category")
     public List<ProductDTO> getByCategory(@RequestParam ProductCategory category) {
         return productService.filterByCategory(category);
     }
 
-    //  Public: Search with optional category filter
-    @PreAuthorize("permitAll()")
+
     @GetMapping("/search-filter")
     public List<ProductDTO> searchAndFilter(@RequestParam String keyword,
                                             @RequestParam(required = false) String category) {

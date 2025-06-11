@@ -21,13 +21,11 @@ public class ShelterController {
 
     private final ShelterService shelterService;
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'PET_OWNER', 'USER')")
     @GetMapping
     public ResponseEntity<List<ShelterDTO>> getAll() {
         return ResponseEntity.ok(shelterService.getAll());
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'PET_OWNER', 'USER')")
     @GetMapping("/{shelterId}/pets")
     public ResponseEntity<List<PetDTO>> getPetsByShelter(@PathVariable Long shelterId) {
         return ResponseEntity.ok(shelterService.getPetsByShelter(shelterId));

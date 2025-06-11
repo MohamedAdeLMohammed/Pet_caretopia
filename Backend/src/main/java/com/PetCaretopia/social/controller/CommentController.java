@@ -23,7 +23,6 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
     @GetMapping("/post/{postId}")
     public ResponseEntity<List<CommentDTO>> getCommentsByPost(@PathVariable Long postId) {
         return ResponseEntity.ok(commentService.getCommentsForPost(postId));
@@ -42,6 +41,7 @@ public class CommentController {
         return ResponseEntity.ok(commentService.createCommentWithMultipart(dto, images, principal.getUserId()));
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
     @PutMapping(value = "/{commentId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CommentDTO> updateComment(
             @PathVariable Long commentId,
@@ -50,6 +50,7 @@ public class CommentController {
         return ResponseEntity.ok(commentService.updateComment(commentId, dto, images));
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
     @DeleteMapping("/{commentId}")
     public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
         commentService.deleteComment(commentId);

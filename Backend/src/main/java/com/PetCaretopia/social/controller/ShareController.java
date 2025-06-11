@@ -31,7 +31,6 @@
 
 
         @GetMapping("/user")
-        @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
         public ResponseEntity<List<ShareDTO>> getSharesByUser(
                 @AuthenticationPrincipal com.PetCaretopia.Security.Service.CustomUserDetails principal
         ) {
@@ -40,7 +39,6 @@
 
 
         @GetMapping("/post/{postId}")
-        @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
         public ResponseEntity<List<ShareDTO>> getSharesByPost(@PathVariable Long postId) {
             return ResponseEntity.ok(shareService.getSharesByPost(postId));
         }
@@ -55,7 +53,6 @@
 
 
         @GetMapping("/post/{postId}/exists")
-        @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER')")
         public ResponseEntity<Boolean> hasUserSharedPost(
                 @PathVariable Long postId,
                 @AuthenticationPrincipal com.PetCaretopia.Security.Service.CustomUserDetails principal
@@ -65,7 +62,6 @@
 
 
         @GetMapping("/recent")
-        @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
         public ResponseEntity<List<ShareDTO>> getRecentSharesByUser(
                 @AuthenticationPrincipal com.PetCaretopia.Security.Service.CustomUserDetails principal,
                 @RequestParam(defaultValue = "5") int limit

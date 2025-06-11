@@ -82,11 +82,9 @@ public class PetController {
     ) throws AccessDeniedException {
         Long userId = principal.getUserId();
 
-        // ✅ جلب الـ PetOwner المرتبط بالمستخدم
         PetOwner owner = petOwnerRepository.findByUser_UserID(userId)
                 .orElseThrow(() -> new IllegalArgumentException("PetOwner not found for user"));
 
-        // ✅ ضبط الـ ownerId الصحيح في الـ DTO
         dto.setOwnerId(owner.getPetOwnerId());
 
         return ResponseEntity.ok(petService.updatePet(id, dto, imageFile, principal));
@@ -109,6 +107,7 @@ public class PetController {
     public ResponseEntity<List<PetDTO>> filterByType(@RequestParam String type) {
         return ResponseEntity.ok(petService.getPetsByType(type));
     }
+
     @PreAuthorize("hasAnyRole('PET_OWNER')")
     @GetMapping("/mine")
     public ResponseEntity<List<PetDTO>> getMyPets(@AuthenticationPrincipal CustomUserDetails principal) {

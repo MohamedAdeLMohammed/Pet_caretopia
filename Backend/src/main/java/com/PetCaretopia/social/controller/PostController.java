@@ -22,7 +22,6 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
     public ResponseEntity<List<PostDTO>> getAllPosts() {
         return ResponseEntity.ok(postService.getAllPosts());
     }
@@ -33,7 +32,6 @@ public class PostController {
         return ResponseEntity.ok(postService.getPostsByUser(principal.getUserId()));
     }
 
-    @PreAuthorize("hasAnyRole('USER', 'PET_OWNER', 'SERVICE_PROVIDER', 'ADMIN')")
     @GetMapping("/{postId}")
     public ResponseEntity<PostDTO> getPostById(@PathVariable Long postId) {
         return ResponseEntity.ok(postService.getPostById(postId));
