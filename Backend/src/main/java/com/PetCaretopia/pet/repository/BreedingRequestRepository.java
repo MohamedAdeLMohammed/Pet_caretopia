@@ -1,6 +1,7 @@
 package com.PetCaretopia.pet.repository;
 
 import com.PetCaretopia.pet.entity.BreedingRequest;
+import com.PetCaretopia.pet.entity.BreedingStatus;
 import com.PetCaretopia.pet.entity.Pet;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,7 +12,8 @@ public interface BreedingRequestRepository extends JpaRepository<BreedingRequest
     List<BreedingRequest> findByReceiver_PetOwnerId(Long receiverId);
     List<BreedingRequest> findByRequester_PetOwnerId(Long requesterId);
 
-    // ✅ جديد: التحقق من تكرار الطلب
     boolean existsByMalePetAndFemalePetAndRequestDate(Pet male, Pet female, LocalDate date);
+    List<BreedingRequest> findByStatus(BreedingStatus status);
+
 }
 

@@ -145,6 +145,26 @@ public class BreedingRequestService {
     }
 
 
+    public List<BreedingRequestDTO> getAllRequestsForAdmin(String status) {
+        List<BreedingRequest> requests;
+
+        if (status == null || status.isBlank()) {
+            requests = repository.findAll();
+        } else {
+            BreedingStatus parsedStatus;
+            try {
+                parsedStatus = BreedingStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Invalid status value. Must be: PENDING, ACCEPTED, or REJECTED.");
+            }
+            requests = repository.findByStatus(parsedStatus);
+        }
+
+        return requests.stream()
+                .map(mapper::toDTO)
+                .toList();
+    }
+
 
 
 }

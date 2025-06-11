@@ -3,9 +3,11 @@ package com.PetCaretopia.pet.controller;
 import com.PetCaretopia.Security.Service.CustomUserDetails;
 import com.PetCaretopia.pet.DTO.AdoptionDTO;
 import com.PetCaretopia.pet.DTO.AdoptionOfferDTO;
+import com.PetCaretopia.pet.DTO.BreedingRequestDTO;
 import com.PetCaretopia.pet.DTO.PetDTO;
 import com.PetCaretopia.pet.entity.AdoptionStatus;
 import com.PetCaretopia.pet.service.AdoptionService;
+import com.PetCaretopia.pet.service.BreedingRequestService;
 import com.PetCaretopia.pet.service.PetService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,8 @@ public class AdoptionController {
 
     private final AdoptionService adoptionService;
     private final PetService petService;
+    private final BreedingRequestService breedingRequestService;
+
     @PreAuthorize("hasAnyRole('USER', 'PET_OWNER')")
     @PostMapping
     public ResponseEntity<AdoptionDTO> submit(@RequestBody @Valid AdoptionDTO dto,
@@ -103,5 +107,8 @@ public class AdoptionController {
         List<PetDTO> pets = petService.getAvailableForAdoption();
         return ResponseEntity.ok(pets);
     }
+
+
+
 
 }

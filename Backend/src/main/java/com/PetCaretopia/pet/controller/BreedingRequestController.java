@@ -23,6 +23,7 @@ public class BreedingRequestController {
 
     private final BreedingRequestService service;
     private final PetService petService;
+    private final BreedingRequestService breedingRequestService;
 
     @PostMapping
     @PreAuthorize("hasRole('PET_OWNER')")
@@ -79,6 +80,14 @@ public class BreedingRequestController {
     ) {
         petService.makePetAvailableForBreeding(id, principal.getUsername());
         return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/all")
+    public ResponseEntity<List<BreedingRequestDTO>> getAllRequestsForAdmin(
+            @RequestParam(required = false) String status
+    ) {
+        return ResponseEntity.ok(service.getAllRequestsForAdmin(status));
     }
 
 }

@@ -23,8 +23,8 @@ public class BreedingRequestMapper {
 
         dto.setMalePet(PetMapper.toDTO(entity.getMalePet()));
         dto.setFemalePet(PetMapper.toDTO(entity.getFemalePet()));
-        dto.setRequester(petOwnerMapper.toDTO(entity.getRequester())); // ✅
-        dto.setReceiver(petOwnerMapper.toDTO(entity.getReceiver()));   // ✅
+        dto.setRequester(petOwnerMapper.toDTO(entity.getRequester()));
+        dto.setReceiver(petOwnerMapper.toDTO(entity.getReceiver()));
 
         return dto;
     }
