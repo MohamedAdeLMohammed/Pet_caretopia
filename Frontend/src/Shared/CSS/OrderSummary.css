@@ -1,0 +1,159 @@
+body{
+  background: #e7e3e3;
+}
+
+.order-summary-container {
+  margin: 40px auto;
+  max-width: 900px;
+  background-color: #f8f4f4; 
+  color: white;
+  padding: 30px;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.order-info p {
+  margin: 8px 0;
+  color: #2c3e50;
+  font-size: 25px;
+  border-bottom: 0.5px solid #838282;
+}
+
+.order-items {
+  margin: 20px 0;
+  color: #2c3e50;
+
+}
+
+.order-item {
+  color: #2c3e50;
+  display: flex;
+  gap: 20px;
+  border-bottom: 0.5px solid #838282;
+  padding: 15px 0;
+  font-size: 20px;
+}
+
+.order-item img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.order-total {
+  border-top: 0.5px solid #838282;
+  padding-top: 20px;
+  font-size: 27px;
+  font-weight: bold;
+  color: #023C5A;
+
+}
+
+.continue-btn {
+  display: block;
+  margin: 30px auto 0;
+  padding: 10px 25px;
+  background:#023C5A;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 20px;
+  cursor: pointer;
+
+}
+
+.continue-btn:hover {
+  background: #075e89;
+}
+.order-items h4{
+font-size: 30px;
+}
+@media (max-width: 1200px) {
+  .order-summary-container {
+    max-width: 800px;
+  }
+}
+
+@media (max-width: 992px) {
+  .order-summary-container {
+    max-width: 700px;
+    padding: 25px;
+  }
+  .order-info p {
+    font-size: 22px;
+  }
+  .order-item {
+    font-size: 18px;
+  gap: 15px;
+  }
+  .order-item img {
+    width: 130px;
+    height: 130px;
+  }
+  .order-total {
+    font-size: 24px;
+  }
+  .continue-btn {
+    font-size: 18px;
+  }
+  .order-items h4 {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 768px) {
+  .order-summary-container {
+    max-width: 600px;
+    margin: 30px auto;
+  }
+  .order-item {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .order-item img {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+  }
+}
+
+@media (max-width: 576px) {
+  .order-summary-container {
+    margin: 20px 15px;
+    padding: 20px;
+  }
+  .order-info p {
+    font-size: 20px;
+  }
+  .order-item {
+    font-size: 16px;
+    padding: 10px 0;
+  }
+  .order-total {
+    font-size: 22px;
+  }
+  .continue-btn {
+    font-size: 16px;
+    padding: 8px 20px;
+    margin-top: 20px;
+  }
+  .order-items h4 {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 400px) {
+  .order-summary-container {
+    padding: 15px;
+  }
+  .order-info p {
+    font-size: 18px;
+  }
+  .order-total {
+    font-size: 20px;
+  }
+  .continue-btn {
+    width: 100%;
+  }
+}

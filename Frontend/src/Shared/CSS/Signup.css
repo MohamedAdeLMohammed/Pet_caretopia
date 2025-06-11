@@ -1,0 +1,273 @@
+body {
+  background-color: #f0f9ffbd;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.sign-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.sign-form-section {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  width: 100%;
+  max-width: 900px;
+}
+
+.sign-form-section h2 {
+  color: #023C5A;
+  font-size: 2.2rem;
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.sign-form-section h2::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 4px;
+  background-color: #ff3399;
+  border-radius: 2px;
+}
+
+.sign-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px 30px;
+}
+
+.sign-button,
+.remember-row,
+.signup-text {
+  grid-column: 1 / -1;
+}
+
+.form-group {
+  margin-bottom: 5px;
+}
+
+.sign-form label {
+  display: block;
+  color: #023C5A;
+  font-weight: 500;
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+
+.sign-form input,
+.sign-form select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background-color: #f8fafc;
+}
+
+.sign-form input:focus,
+.sign-form select:focus {
+  border-color: #ff3399;
+  box-shadow: 0 0 0 3px rgba(255, 51, 153, 0.1);
+  outline: none;
+  background-color: white;
+}
+
+.sign-form select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+}
+
+.remember-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 15px 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.remember-row input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #023C5A;
+}
+
+.sign-button {
+  background-color: #023C5A;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.sign-button:hover {
+  background-color: #03527a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(2, 60, 90, 0.2);
+}
+
+.signup-text {
+  text-align: center;
+  color: #64748b;
+  font-size: 0.95rem;
+  margin-top: 15px;
+}
+
+.signup-text a {
+  color: #023C5A;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.signup-text a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .sign-form {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .sign-form-section {
+    padding: 30px 20px;
+    margin: 20px;
+  }
+  
+  .sign-form-section h2 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sign-form input,
+  .sign-form select {
+    padding: 12px 14px;
+  }
+}
+@media (max-width: 1200px) {
+  .sign-form-section {
+    max-width: 800px;
+  }
+}
+
+@media (max-width: 992px) {
+  .sign-form-section {
+    max-width: 700px;
+    padding: 35px;
+  }
+  
+  .sign-form-section h2 {
+    font-size: 2rem;
+  }
+  
+  .sign-form label {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .sign-form {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .sign-form-section {
+    padding: 30px 20px;
+    margin: 20px;
+    max-width: 600px;
+  }
+  
+  .sign-form-section h2 {
+    font-size: 1.8rem;
+  }
+  
+  .sign-form label {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .sign-form-section {
+    padding: 25px 15px;
+    border-radius: 10px;
+  }
+  
+  .sign-form-section h2 {
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+  }
+  
+  .sign-form-section h2::after {
+    width: 80px;
+    bottom: -8px;
+  }
+  
+  .sign-form label {
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sign-form input,
+  .sign-form select {
+    padding: 12px 14px;
+    font-size: 0.9rem;
+  }
+  
+  .sign-button {
+    padding: 14px;
+    font-size: 0.95rem;
+  }
+  
+  .remember-row {
+    font-size: 0.85rem;
+  }
+  
+  .signup-text {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .sign-form-section {
+    padding: 20px 12px;
+    margin: 15px;
+  }
+  
+  .sign-form-section h2 {
+    font-size: 1.4rem;
+  }
+  
+  .sign-form input,
+  .sign-form select {
+    padding: 10px 12px;
+  }
+  
+  .sign-button {
+    padding: 12px;
+  }
+}
