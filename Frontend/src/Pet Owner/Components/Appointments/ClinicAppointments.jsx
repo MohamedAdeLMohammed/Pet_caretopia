@@ -106,7 +106,10 @@ function ClinicAppointments() {
     };
 
     const requestAppointment = async (facilityId, serviceProviderId, openingTime, closingTime) => {
-        if (!token) {
+if (!token) {
+            // Store the current path before redirecting to login
+            sessionStorage.setItem('redirectAfterLogin', location.pathname);
+
             Swal.fire({
                 title: "Login Required",
                 text: "You must be logged in to request an appointment",
@@ -116,7 +119,9 @@ function ClinicAppointments() {
                 cancelButtonText: "Cancel"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    navigate("/login");
+                    navigate("/login", { 
+                        state: { from: location.pathname } 
+                    });
                 }
             });
             return;
@@ -187,7 +192,10 @@ function ClinicAppointments() {
                     try {
                         const today = new Date();
                         const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-                        const requestedTime = `${dateStr} ${selectedTime}`;
+                        const [hour, minAmpm] = selectedTime.split(':');
+                        const [minutes, ampm] = minAmpm.split(' ');
+                        const paddedTime = `${hour.padStart(2, '0')}:${minutes} ${ampm}`;
+                        const requestedTime = `${dateStr} ${paddedTime}`;
 
                         await axios.post(
                             `https://localhost:8088/appointment-requests/add/user/${userId}`,

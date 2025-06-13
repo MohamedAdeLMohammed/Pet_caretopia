@@ -6,7 +6,8 @@ import {
   FaSyringe,
   FaHandsHelping,
   FaExchangeAlt,
-  FaUser
+  FaUser,
+  FaRegCommentDots
 } from "react-icons/fa";
 
 import { useNavigate } from "react-router-dom";
@@ -52,6 +53,10 @@ function AdminSB() {
           <FaExchangeAlt />
           <p>Breeding Transactions</p>
         </Link>
+            <Link to={'/dashboard/chat'} className=" db-btn">
+            <FaRegCommentDots/>
+            <p>Chat</p>
+            </Link>
       </div>
     </>
   );

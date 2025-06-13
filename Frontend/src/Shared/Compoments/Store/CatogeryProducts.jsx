@@ -4,13 +4,13 @@ import axios from "axios";
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import { StoreContext } from "../Store/StoreContext";
-
+import { useNavigate } from "react-router-dom";
 function CategoryProducts({ category, title }) {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const token = sessionStorage.getItem('token');
-  
+  const navigate = useNavigate("");
   // Safely destructure context with default values
   const context = useContext(StoreContext);
   const refreshCartCount = context?.refreshCartCount || (() => {});
@@ -62,10 +62,26 @@ function CategoryProducts({ category, title }) {
   };
 
   const handleAddToCart = async (productId) => {
-    if (!token) {
-      showLoginAlert();
-      return;
-    }
+  if (!token) {
+            // Store the current path before redirecting to login
+            sessionStorage.setItem('redirectAfterLogin', location.pathname);
+
+            Swal.fire({
+                title: "Login Required",
+                text: "You must be logged in to request an appointment",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Login",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigate("/login", { 
+                        state: { from: location.pathname } 
+                    });
+                }
+            });
+            return;
+        }
 
     try {
       const decode = jwtDecode(token);
@@ -131,9 +147,25 @@ function CategoryProducts({ category, title }) {
 
   const handleAddToWishlist = async (productId) => {
     if (!token) {
-      showLoginAlert();
-      return;
-    }
+            // Store the current path before redirecting to login
+            sessionStorage.setItem('redirectAfterLogin', location.pathname);
+
+            Swal.fire({
+                title: "Login Required",
+                text: "You must be logged in to request an appointment",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Login",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigate("/login", { 
+                        state: { from: location.pathname } 
+                    });
+                }
+            });
+            return;
+        }
 
     try {
       const decode = jwtDecode(token);

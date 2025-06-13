@@ -43,7 +43,7 @@ function Shelter() {
       <ProductSearchBar setProducts={setProducts} token={token} /> */}
 
       <Link to={`addPet`} className="Add-btn"> <FaPlusCircle /> Add Pet</Link>
-      <Link to={`shelterAdoptionReqests`} className="Add-btn"> <FaPlusCircle /> Add Pet</Link>
+      <Link to={`shelterAdoptionReqests`} className="Add-btn"> <FaPlusCircle /> Shelter Adoption Request</Link>
         <div className="table-responsive">
           <table className="table products-table">
           <thead>

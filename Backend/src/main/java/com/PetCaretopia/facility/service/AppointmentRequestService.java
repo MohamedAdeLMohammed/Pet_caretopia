@@ -27,10 +27,33 @@ public class AppointmentRequestService {
     private final ApplicationEventPublisher eventPublisher;
 
 
-    public AppointmentRequestDTO createAppointmentRequest(Long userId,AppointmentRequestDTO dto){
-        var user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("User Not Found !"));
-        var serviceProvider = serviceProviderRepository.findById(dto.getServiceProviderId()).orElseThrow(()->new IllegalArgumentException("Service Provider Not Found !"));
-        var facility = facilityRepository.findById(dto.getFacilityId()).orElseThrow(()->new IllegalArgumentException("Facility Not Found !"));
+    public AppointmentRequestDTO createAppointmentRequest(Long userId, AppointmentRequestDTO dto) {
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User Not Found!"));
+        var serviceProvider = serviceProviderRepository.findById(dto.getServiceProviderId())
+                .orElseThrow(() -> new IllegalArgumentException("Service Provider Not Found!"));
+        var facility = facilityRepository.findById(dto.getFacilityId())
+                .orElseThrow(() -> new IllegalArgumentException("Facility Not Found!"));
+
+        // Define start and end of the day
+        LocalDateTime startOfDay = dto.getRequestedTime().toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = startOfDay.plusDays(1).minusSeconds(1);
+
+        // Check if user already has an ACCEPTED appointment for the same facility and day
+        boolean hasAcceptedRequest = appointmentRequestRepository
+                .existsByUser_UserIDAndFacility_IdAndStatusAndRequestedTimeBetween(
+                        userId,
+                        dto.getFacilityId(),
+                        AppointmentRequest.AppointmentRequestStatus.ACCEPTED,
+                        startOfDay,
+                        endOfDay
+                );
+
+        if (hasAcceptedRequest) {
+            throw new IllegalArgumentException("You already have an ACCEPTED appointment at this facility on this day.");
+        }
+
+        // Else create new appointment request
         AppointmentRequest request = AppointmentRequest.builder()
                 .user(user)
                 .serviceProvider(serviceProvider)
@@ -41,9 +64,11 @@ public class AppointmentRequestService {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
+
         appointmentRequestRepository.save(request);
         return appointmentRequestMapper.toAppointmentRequestDTO(request);
     }
+
     public List<AppointmentRequestDTO> getAppointmentRequestsByUserId(Long userId){
         var user = userRepository.findById(userId).orElseThrow(()->new IllegalArgumentException("User Not Found !"));
         var requests = appointmentRequestRepository.findByUser_UserID(userId);

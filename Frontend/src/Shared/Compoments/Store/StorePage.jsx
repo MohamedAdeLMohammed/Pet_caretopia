@@ -13,29 +13,29 @@ function StorePage() {
   // Safely extract context values (fallback to 0 if undefined)
   const cartCount = context?.cartCount ?? 0;
   const wishCount = context?.wishCount ?? 0;
-
+  console.log(cartCount)
   return (
     <div className="store-page">
       <div className="store-header">
         <nav className="store-main-nav">
           <h2>Pet Store</h2>
-          <Link to="FoodProductsDetails" className="store-link">Food</Link>
-          <Link to="AccessoriesProductsDetails" className="store-link">Accessories</Link>
-          <Link to="ToysProductsDetails" className="store-link">Toys</Link>
-          <Link to="MedicationsProductsDetails" className="store-link">Medications</Link>
+
           
           {/* Auth-protected links */}
-          {token && (
-            <>
-              <Link to="Orders" className="store-link">Orders</Link>
-              <Link to="Cart" className="store-link">
+          {token?(<><Link to="/dashboard/store/FoodProductsDetails" className="store-link">Food</Link>
+          <Link to="/dashboard/store/AccessoriesProductsDetails" className="store-link">Accessories</Link>
+          <Link to="/dashboard/store/ToysProductsDetails" className="store-link">Toys</Link>
+          <Link to="/dashboard/store/MedicationsProductsDetails" className="store-link">Medications</Link>
+              <Link to="/dashboard/store/Orders" className="store-link">Orders</Link>
+              <Link to="/dashboard/store/Cart" className="store-link">
                 <FaShoppingCart /> {cartCount}
               </Link>
-              <Link to="Wishlist" className="store-link">
+              <Link to="/dashboard/store/Wishlist" className="store-link">
                 <FaHeart /> {wishCount}
-              </Link>
-            </>
-          )}
+              </Link></>):(<><Link to="FoodProductsDetails" className="store-link">Food</Link>
+          <Link to="AccessoriesProductsDetails" className="store-link">Accessories</Link>
+          <Link to="ToysProductsDetails" className="store-link">Toys</Link>
+          <Link to="MedicationsProductsDetails" className="store-link">Medications</Link></>)}
         </nav>
       </div>
 

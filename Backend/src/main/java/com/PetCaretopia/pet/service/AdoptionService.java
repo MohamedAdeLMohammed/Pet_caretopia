@@ -82,6 +82,7 @@ public class AdoptionService {
         return AdoptionMapper.toDTO(adoption);
     }
 
+    @Transactional
     public AdoptionDTO approve(Long id, CustomUserDetails principal) {
         Adoption adoption = adoptionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Adoption not found"));
@@ -103,6 +104,7 @@ public class AdoptionService {
         User user = userRepository.findById(adoption.getCreatedBy())
                 .orElseThrow(() -> new EntityNotFoundException("User who submitted the adoption request not found"));
 
+        // Get or create PetOwner
         PetOwner adopter = petOwnerRepository.findByUser_UserID(user.getUserID())
                 .orElseGet(() -> {
                     PetOwner newOwner = new PetOwner();
@@ -114,16 +116,29 @@ public class AdoptionService {
                     return saved;
                 });
 
+        PetOwner previousOwner = pet.getOwner();
 
-        pet.adopt(adopter);
+        // Adopt logic
+        pet.adopt(adopter); // ← this sets new owner
         pet.setAvailableForAdoption(false);
+
+        // Set adoption info
         adoption.setAdopter(adopter);
         adoption.setStatus(AdoptionStatus.APPROVED);
-        adoption.setPreviousOwner(pet.getOwner());
-        petRepository.save(pet);
-        return AdoptionMapper.toDTO(adoptionRepository.save(adoption));
-    }
+        adoption.setPreviousOwner(previousOwner);
 
+        List<Adoption> otherRequests = adoptionRepository.findByPet(pet).stream()
+                .filter(other -> !other.getId().equals(id) && other.getStatus() == AdoptionStatus.PENDING)
+                .peek(other -> other.setStatus(AdoptionStatus.REJECTED))
+                .toList();
+
+        // Save everything
+        adoptionRepository.saveAll(otherRequests);
+        petRepository.save(pet);
+        Adoption saved = adoptionRepository.save(adoption);
+
+        return AdoptionMapper.toDTO(saved);
+    }
     @Transactional
     public AdoptionDTO reject(Long id, CustomUserDetails principal) {
         Adoption adoption = adoptionRepository.findById(id)
@@ -189,12 +204,22 @@ public class AdoptionService {
         PetOwner owner = petOwnerRepository.findByUser_UserID(userId)
                 .orElseThrow(() -> new EntityNotFoundException("PetOwner not found"));
 
-        List<Long> ownedPetIds = petRepository.findByOwner(owner).stream()
-                .map(Pet::getPetID)
-                .toList();
-
         return adoptionRepository.findAll().stream()
-                .filter(a -> ownedPetIds.contains(a.getPet().getPetID()))
+                .filter(adoption -> {
+                    Pet pet = adoption.getPet();
+                    PetOwner currentOwner = pet.getOwner();
+                    PetOwner previousOwner = adoption.getPreviousOwner();
+                    Long currentOwnerId = (currentOwner != null) ? currentOwner.getPetOwnerId() : null;
+                    Long previousOwnerId = (previousOwner != null) ? previousOwner.getPetOwnerId() : null;
+
+                    boolean isOwner = (currentOwnerId != null && currentOwnerId.equals(owner.getPetOwnerId()))
+                            || (previousOwnerId != null && previousOwnerId.equals(owner.getPetOwnerId()));
+
+                    boolean isRequester = adoption.getCreatedBy() != null
+                            && adoption.getCreatedBy().equals(userId);
+
+                    return isOwner || isRequester;
+                })
                 .map(AdoptionMapper::toDTO)
                 .toList();
     }

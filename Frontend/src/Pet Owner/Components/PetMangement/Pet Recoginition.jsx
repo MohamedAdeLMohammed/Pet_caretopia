@@ -5,7 +5,6 @@ import Swal from 'sweetalert2';
 function PetRecognition() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [result, setResult] = useState(null);
-
   const handleFileChange = (e) => {
     setSelectedImage(e.target.files[0]);
   };
@@ -31,8 +30,8 @@ function PetRecognition() {
 
       const data = await res.json();
       setResult(data);
-
-      Swal.fire({
+      if(data.breed !== undefined){
+              Swal.fire({
         title: 'Prediction Complete',
         html: `
           <strong>Breed:</strong> ${data.breed}<br/>
@@ -40,6 +39,16 @@ function PetRecognition() {
         `,
         icon: 'success'
       });
+      }else{
+        Swal.fire({
+        title: 'Prediction Error',
+        html: `
+          <strong>This Image is not a Pet</strong><br/>
+        `,
+        icon: 'error'
+      });
+      }
+
 
     } catch (err) {
       Swal.fire("Error", err.message, "error");
@@ -52,7 +61,7 @@ function PetRecognition() {
       <h2 className='section-title'style={{fontWeight:"500px"}}>Pet Recoginition</h2>
 
       <div className="d-flex flex-column align-items-center gap-3">
-        <h2 style={{fontSize:"30px"}}>Upload a photo of your pet, and let our AI do the magic!</h2>
+        <h2 style={{fontSize:"30px"}}>Upload a photo of your pet, and let our AI Predict Your Pet Breed !</h2>
 
         {/* File input */}
         <input type="file" accept="image/*" onChange={handleFileChange} className="form-control mb-2" />
@@ -75,8 +84,13 @@ function PetRecognition() {
       {result && (
         <div className='result-section d-flex flex-column align-items-center gap-2 mt-2'>
           <h2 className='blue-text fw-bolder'>Result:</h2>
+          {result.breed !== undefined?(<>
           <h2>Breed Identification: {result.breed}</h2>
           <h2>Confidence: {(result.confidence * 100).toFixed(2)}%</h2>
+          </>):(<>
+                    <h2>this image is not pet</h2>
+          </>)}
+
         </div>
       )}
     </div>

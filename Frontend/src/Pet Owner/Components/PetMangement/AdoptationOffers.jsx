@@ -23,21 +23,26 @@ function AdoptationOffers() {
   }
 
   const requestAdoption = (petId) => {
-    if (!token) {
-      Swal.fire({
-        title: "Login Required",
-        text: "You must be logged in to request an appointment",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonText: "Login",
-        cancelButtonText: "Cancel"
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate("/login");
-        }
-      });
-      return;
-    }
+                if (!token) {
+                    // Store the current path before redirecting to login
+                    sessionStorage.setItem('redirectAfterLogin', location.pathname);
+                    
+                    Swal.fire({
+                        title: "Login Required",
+                        text: "You must be logged in to request an appointment",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Login",
+                        cancelButtonText: "Cancel"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            navigate("/login", { 
+                                state: { from: location.pathname } 
+                            });
+                        }
+                    });
+                    return;
+                }
 
     Swal.fire({
       title: "Send Adoption Request",
@@ -117,9 +122,8 @@ function AdoptationOffers() {
               <button 
                 className='management-card-button' 
                 onClick={() => requestAdoption(pet.petID)}
-                disabled={!token}
               >
-                {token ? "Request To Adopt" : "Login to Adopt"}
+                Request To Adopt
               </button>
             </div>
           ))}

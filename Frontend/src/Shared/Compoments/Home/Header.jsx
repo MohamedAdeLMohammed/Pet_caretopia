@@ -74,7 +74,22 @@ const [userInfo,setUserInfo] = useState("");
         <div className="logo-section">
           <span className="home-title">Pet CareTopia</span>
         </div>
-{token?(null):(<div className="nav-links">
+
+{token?(<div className="nav-links">
+        
+          {decode.role === "ADMIN"?(<Link to="/dashboard">Dashboard</Link>):(
+            <>
+            <Link to="/home">Home</Link>
+            <Link to="/dashboard">Dashboard</Link>
+          <Link to="/home/petServices">Services</Link>
+            <Link to="/home/store">Store</Link>
+          <Link to="/home/shelters">Shelters</Link>
+          <Link to="/home/adoption">Adoption</Link>
+          <Link to="/home/petRecogintion">Pet Recogintion</Link>
+            </>
+)}
+
+        </div>):(<div className="nav-links">
           <Link to="/home">Home</Link>
           <Link to="/home/petServices">Services</Link>
           <Link to="/home/store">Store</Link>

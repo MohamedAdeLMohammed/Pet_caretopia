@@ -113,10 +113,11 @@ function BreedingOffers() {
 
           return true;
         } catch (error) {
-          console.error("Error sending breeding request:", error);
-          Swal.showValidationMessage("Failed to send breeding request.");
-          return false;
-        }
+            console.error("Error sending breeding request:", error);
+            const errorMessage = error.response?.data?.message || "An unexpected error occurred.";
+            Swal.showValidationMessage(errorMessage);
+            return false;
+          }
       },
     }).then((result) => {
       if (result.isConfirmed) {

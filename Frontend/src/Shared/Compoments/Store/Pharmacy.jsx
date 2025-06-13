@@ -59,10 +59,85 @@ function MedicationsProductsDetails() {
 
         getMedicationsProducts();
     }, [token]);
+    const handleAddToWishlist = async (productId) => {
+        if (!token) {
+            // Store the current path before redirecting to login
+            sessionStorage.setItem('redirectAfterLogin', location.pathname);
+
+            Swal.fire({
+                title: "Login Required",
+                text: "You must be logged in to request an appointment",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Login",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigate("/login", { 
+                        state: { from: location.pathname } 
+                    });
+                }
+            });
+            return;
+        }
+
+        try {
+            const decode = jwtDecode(token);
+            const userId = decode.id;
+
+            await axios.post(
+                `https://localhost:8088/wishlist/add?userId=${userId}&productId=${productId}`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            if (context?.refreshWishCount) {
+                await context.refreshWishCount();
+            }
+
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Added to wishlist",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        } catch (error) {
+            Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Failed to add to wishlist",
+                showConfirmButton: false,
+                timer: 1500
+            });
+            console.error(error);
+        }
+    };
 
     const handleAddToCart = async (productId) => {
         if (!token) {
-            showLoginAlert();
+            // Store the current path before redirecting to login
+            sessionStorage.setItem('redirectAfterLogin', location.pathname);
+
+            Swal.fire({
+                title: "Login Required",
+                text: "You must be logged in to request an appointment",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Login",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigate("/login", { 
+                        state: { from: location.pathname } 
+                    });
+                }
+            });
             return;
         }
 
@@ -132,11 +207,11 @@ function MedicationsProductsDetails() {
                 
                 {token && (
                     <>
-                        <Link to="Orders" className="store-link">Orders</Link>
-                        <Link to="Cart" className="store-link">
+                        <Link to="/dashboard/store/Orders" className="store-link">Orders</Link>
+                        <Link to="/dashboard/store/Cart" className="store-link">
                             <FaShoppingCart /> {cartCount}
                         </Link>
-                        <Link to="Wishlist" className="store-link">
+                        <Link to="/dashboard/store/Wishlist" className="store-link">
                             <FaHeart /> {wishCount}
                         </Link>
                     </>
@@ -160,6 +235,12 @@ function MedicationsProductsDetails() {
                                 onClick={() => handleAddToCart(product.id)}
                             >
                                 Add to Cart
+                            </button>
+                            <button
+                                className="add-to-cart"
+                                onClick={() => handleAddToWishlist(product.id)}
+                            >
+                                Add to Wishlist
                             </button>
                         </div>
                     ))}

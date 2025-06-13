@@ -2,9 +2,11 @@ package com.PetCaretopia.pet.repository;
 
 import com.PetCaretopia.pet.entity.Adoption;
 import com.PetCaretopia.pet.entity.AdoptionStatus;
+import com.PetCaretopia.pet.entity.Pet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Repository
@@ -16,5 +18,5 @@ public interface AdoptionRepository extends JpaRepository<Adoption, Long> {
     List<Adoption> findByRequesterUserId(Long userId);
     List<Adoption> findByRequesterUserIdAndStatus(Long userId, AdoptionStatus status);
 
-
+    List<Adoption> findByPet(Pet pet);
 }

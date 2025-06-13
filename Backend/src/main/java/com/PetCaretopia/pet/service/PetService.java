@@ -109,6 +109,7 @@ public class PetService {
         existingPet.setPetBreed(breed);
         existingPet.setOwner(owner);
         existingPet.setShelter(shelter);
+        existingPet.setGender(dto.getGender());
 
         if (imageFile != null && !imageFile.isEmpty()) {
             String imageUrl = imageUploadService.uploadMultipartFile(imageFile);

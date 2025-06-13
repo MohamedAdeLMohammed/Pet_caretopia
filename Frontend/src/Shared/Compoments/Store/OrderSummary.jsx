@@ -34,10 +34,7 @@ function OrderSummary() {
       <div className="order-items">
         {order.orderItems.map((item) => (
           <div className="order-item" key={item.id}>
-            <img
-              src={item.product?.imageUrls?.[0] || "https://via.placeholder.com/150"}
-              alt={item.product?.name || "Product Image"}
-            />
+            
             <div>
               <h4>{item.product?.name || "Product info "}</h4>
               <p>Qty: {item.quantity}</p>

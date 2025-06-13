@@ -61,7 +61,23 @@ function FoodProductsDetails() {
 
     const handleAddToCart = async (productId) => {
         if (!token) {
-            showLoginAlert();
+            // Store the current path before redirecting to login
+            sessionStorage.setItem('redirectAfterLogin', location.pathname);
+
+            Swal.fire({
+                title: "Login Required",
+                text: "You must be logged in to request an appointment",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Login",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigate("/login", { 
+                        state: { from: location.pathname } 
+                    });
+                }
+            });
             return;
         }
 
@@ -105,7 +121,23 @@ function FoodProductsDetails() {
 
     const handleAddToWishlist = async (productId) => {
         if (!token) {
-            showLoginAlert();
+            // Store the current path before redirecting to login
+            sessionStorage.setItem('redirectAfterLogin', location.pathname);
+
+            Swal.fire({
+                title: "Login Required",
+                text: "You must be logged in to request an appointment",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Login",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigate("/login", { 
+                        state: { from: location.pathname } 
+                    });
+                }
+            });
             return;
         }
 
@@ -173,11 +205,11 @@ function FoodProductsDetails() {
                 
                 {token && (
                     <>
-                        <Link to="Orders" className="store-link">Orders</Link>
-                        <Link to="Cart" className="store-link">
+                        <Link to="/dashboard/store/Orders" className="store-link">Orders</Link>
+                        <Link to="/dashboard/store/Cart" className="store-link">
                             <FaShoppingCart /> {cartCount}
                         </Link>
-                        <Link to="Wishlist" className="store-link">
+                        <Link to="/dashboard/store/Wishlist" className="store-link">
                             <FaHeart /> {wishCount}
                         </Link>
                     </>
@@ -211,7 +243,7 @@ function FoodProductsDetails() {
                             )}
                             
                             <button
-                                className="add-to-wishlist"
+                                className="add-to-cart"
                                 onClick={() => handleAddToWishlist(product.id)}
                             >
                                 Add to Wishlist

@@ -1,129 +1,150 @@
-import { Link } from "react-router-dom";
-import { useNavigate } from 'react-router-dom';
-import { React, useState } from 'react';
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useState } from 'react';
 import Swal from 'sweetalert2';
-import { toast, ToastContainer } from 'react-toastify';
-import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
+
 function LoginForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const navigate = useNavigate();
-const handleSubmit = async (e) => {
-  e.preventDefault();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const navigate = useNavigate();
+    const location = useLocation();
 
-  try {
-    // 1. Get user by email to check status
-    const statusRes = await axios.get(`https://localhost:8088/users/email/${email}`, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
-    
-    // The user data is the response data itself, not nested under a property
-    const userData = statusRes.data;
-    console.log("Full user data:", userData); // Debugging
-    
-    const userStatus = userData.userStatus;
-    console.log("User status:", userStatus); // Debugging
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    if (userStatus === 'BANNED') {
-      Swal.fire({
-        icon: 'error',
-        title: 'Access Denied',
-        text: 'Your account has been banned.',
-      });
-      return;
-    }
+        try {
+            // Check user status first
+            const statusRes = await axios.get(`https://localhost:8088/users/email/${email}`, {
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            const userData = statusRes.data;
+            const userStatus = userData.userStatus;
 
-    if (userStatus === 'INACTIVE') {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Inactive Account',
-        text: 'Your account is inactive. Please contact support.',
-      });
-      return;
-    }
+            if (userStatus === 'BANNED') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Access Denied',
+                    text: 'Your account has been banned.',
+                });
+                return;
+            }
 
-    // Rest of your login logic...
-    const response = await axios.post('https://localhost:8088/auth/login', {
-      email,
-      password,
-    }, {
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+            if (userStatus === 'INACTIVE') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Inactive Account',
+                    text: 'Your account is inactive. Please contact support.',
+                });
+                return;
+            }
 
-    const token = response.data.token;
-    sessionStorage.setItem("token", token);
+            // Proceed with login
+            const response = await axios.post('https://localhost:8088/auth/login', {
+                email,
+                password,
+            }, {
+                headers: { 'Content-Type': 'application/json' }
+            });
 
-    Swal.fire({
-      position: "top-end",
-      icon: "success",
-      title: "You logged in successfully",
-      showConfirmButton: false,
-      timer: 1500
-    });
+            const token = response.data.token;
+            sessionStorage.setItem("token", token);
 
-    navigate("/dashboard");
+            // Decode token to get user role
+            const decodedToken = jwtDecode(token);
+            const userRole = decodedToken.role;
 
-  } catch (error) {
-    console.error("Login error:", error); // Debugging
-    
-    let errorMessage = "Incorrect Password or Email";
-    if (error.response && error.response.status === 404) {
-      errorMessage = "Email not found";
-    } else if (error.response && error.response.status === 401) {
-      errorMessage = "Incorrect password";
-    }
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Login successful",
+                showConfirmButton: false,
+                timer: 1500
+            });
 
-    Swal.fire({
-      position: "top-end",
-      icon: "error",
-      title: errorMessage,
-      showConfirmButton: false,
-      timer: 1500
-    });
-  }
-};
-  return (
-    <div className="login-container">
-      <div className="login-form-section">
-        <h2>Welcome back!</h2>
+            // Handle redirect based on user role
+            if (userRole === 'ADMIN') {
+                navigate("/dashboard", { replace: true });
+            } else {
+                const redirectPath = getRedirectPath();
+                navigate(redirectPath, { replace: true });
+            }
 
-        <form className="login-form" onSubmit={handleSubmit}>
-          <label>Email address</label>
-          <input type="email" placeholder="Enter your email" value={email}
-          onChange={(e) => setEmail(e.target.value)}/>
+        } catch (error) {
+            console.error("Login error:", error);
+            
+            let errorMessage = "Incorrect Password or Email";
+            if (error.response?.status === 404) {
+                errorMessage = "Email not found";
+            } else if (error.response?.status === 401) {
+                errorMessage = "Incorrect password";
+            }
 
-          <label>Password</label>
-          
-            <input type="password" placeholder="Enter your password" 
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            />
-           
+            Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: errorMessage,
+                showConfirmButton: false,
+                timer: 1500
+            });
+        }
+    };
 
-            <div className="forgot" >
-            <Link to={'/reset-password'}>forgot password</Link>
+    const getRedirectPath = () => {
+        // 1. Check for state from navigation
+        if (location.state?.from) {
+            return location.state.from;
+        }
+        
+        // 2. Check session storage
+        const storedRedirect = sessionStorage.getItem('redirectAfterLogin');
+        if (storedRedirect) {
+            sessionStorage.removeItem('redirectAfterLogin');
+            return storedRedirect;
+        }
+        
+        // 3. Default to home page for regular users
+        return "/";
+    };
+
+    return (
+        <div className="login-container">
+            <div className="login-form-section">
+                <h2>Welcome back!</h2>
+
+                <form className="login-form" onSubmit={handleSubmit}>
+                    <label>Email address</label>
+                    <input 
+                        type="email" 
+                        placeholder="Enter your email" 
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
+
+                    <label>Password</label>
+                    <input 
+                        type="password" 
+                        placeholder="Enter your password" 
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+
+                    <div className="forgot">
+                        <Link to="/reset-password">Forgot password?</Link>
+                    </div>
+
+                    <button className="login-button" type="submit">Login</button>
+
+                    <p className="signup-text">
+                        Don't have an account? <Link to="/signup">Sign Up</Link>
+                    </p>
+                </form>
             </div>
-             
-
-          <button className="login-button">Login</button>
-
-
-          <p className="signup-text"> Do not have an account?<Link to={'/Signup'}>
-                      <p>Sign Up</p>
-                      </Link>
-          </p>
-          
-        </form>
-      </div>
-
-
-    </div>
-  );
+        </div>
+    );
 }
 
 export default LoginForm;
