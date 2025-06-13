@@ -1,11 +1,13 @@
 import { Link } from "react-router-dom";
-
+import { jwtDecode } from "jwt-decode";
 function PetServices(){
+    const token = sessionStorage.getItem("token");
+  console.log(token);
     return(
         <>
         <div className="store-management-container">
         <h2 className="management-dashboard-title">Services</h2>
-          <Link to={'myAppointments'} className="management-card-button">My Appointments</Link>
+        {token ? (<Link to={'myAppointments'} className="management-card-button">My Appointments</Link>):(null)}
         <div className="management-grid">
             <div className="management-card">
               <img src={'../src/assets/adoption.png'} alt={''} />

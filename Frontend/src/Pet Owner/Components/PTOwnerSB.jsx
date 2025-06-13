@@ -17,10 +17,18 @@ function PTOwnerSB(){
              <FaPaw />
             <p>My Pets</p>
             </Link>
-            {decode.role === "PET_OWNER"?(<Link to={'/dashboard/adoptationRequests'} className="db-btn">
-             <FaQuestionCircle />
+                  {decode.role === "PET_OWNER" && (
+        <>
+          <Link to={'/dashboard/adoptationRequests'} className="db-btn">
+            <FaQuestionCircle />
             <p>Adoption Requests</p>
-            </Link>):null}
+          </Link>
+          <Link to={'/dashboard/breedingRequests'} className="db-btn">
+            <FaQuestionCircle />
+            <p>Breed Requests</p>
+          </Link>
+        </>
+      )}
             <Link to={'/dashboard/community'} className="db-btn">
             <FaUsers />
             <p>Community</p>
@@ -28,6 +36,10 @@ function PTOwnerSB(){
             <Link to={'/dashboard/adoptationOffers'} className="db-btn">
             <FaPaw />
             <p>Adoption Offers</p>
+            </Link>
+            <Link to={'/dashboard/breedingOffers'} className="db-btn">
+            <FaPaw />
+            <p>Breed Offers</p>
             </Link>
             <Link to={'/dashboard/petrecoginition'} className="db-btn">
             <FaRobot />

@@ -81,11 +81,13 @@ public class PetController {
             @AuthenticationPrincipal CustomUserDetails principal
     ) throws AccessDeniedException {
         Long userId = principal.getUserId();
+        String role = principal.getRole();
 
-        PetOwner owner = petOwnerRepository.findByUser_UserID(userId)
-                .orElseThrow(() -> new IllegalArgumentException("PetOwner not found for user"));
-
-        dto.setOwnerId(owner.getPetOwnerId());
+        if (!"ADMIN".equals(role)) {
+            PetOwner owner = petOwnerRepository.findByUser_UserID(userId)
+                    .orElseThrow(() -> new IllegalArgumentException("PetOwner not found for user"));
+            dto.setOwnerId(owner.getPetOwnerId());
+        }
 
         return ResponseEntity.ok(petService.updatePet(id, dto, imageFile, principal));
     }

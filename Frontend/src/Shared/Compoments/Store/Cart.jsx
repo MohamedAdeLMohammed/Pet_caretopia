@@ -1,16 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import "../../CSS/Store.css";
+import { StoreContext } from "../Store/StoreContext";
 function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const token = sessionStorage.getItem('token');
   const decode = jwtDecode(token);
   const userId = decode.id;
   const navigate = useNavigate();
-
+  const { refreshCartCount, refreshWishCount } = useContext(StoreContext);
   useEffect(() => {
     const getCartItems = async () => {
       try {
@@ -88,6 +89,7 @@ function Cart() {
             <div className="item-details">
               <h4>{item.product.name}</h4>
               <p>{item.product.description}</p>
+              <p>Available: {item.product.quantity}</p>
               <div className="quantity-controls">
                 <button
                   onClick={() =>
@@ -95,123 +97,151 @@ function Cart() {
                     updateItemQuantity(item.product.id, item.quantity - 1)
                   }
                 >-</button>
+
                 <span>{item.quantity}</span>
+
                 <button
-                  onClick={() =>
-                    updateItemQuantity(item.product.id, item.quantity + 1)
-                  }
+                  disabled={item.quantity >= item.product.stockQuantity}
+                  onClick={() => {
+                    if (item.quantity < item.product.stockQuantity) {
+                      updateItemQuantity(item.product.id, item.quantity + 1);
+                    } else {
+                      Swal.fire({
+                        icon: "warning",
+                        title: "Stock limit reached",
+                        text: `Only ${item.product.quantity} in stock.`,
+                        timer: 2000,
+                        showConfirmButton: false,
+                      });
+                    }
+                  }}
                 >+</button>
               </div>
 
               <p className="price">${(item.product.price * item.quantity).toFixed(2)}</p>
-                              <button className="remove-btn" onClick={async () => {
-                  try {
-                    await axios.delete(
-                      `https://localhost:8088/cart/item/${item.id}`,
-                      {
-                        headers: {
-                          Authorization: `Bearer ${token}`,
-                          'Content-Type': 'application/json'
-                        }
-                      }
-                    );
-                    Swal.fire({
-                      position: "top-end",
-                      icon: "success",
-                      title: "Item Removed Successfully",
-                      showConfirmButton: false,
-                      timer: 1500
-                    });
-                    setCartItems(prev => prev.filter(i => i.id !== item.id));
-                  } catch (error) {
-                    Swal.fire({
-                      position: "top-end",
-                      icon: "error",
-                      title: "Unauthorized: Please log in again",
-                      showConfirmButton: false,
-                      timer: 1500
-                    });
-                    console.error(error);
-                  }
-                }}>
-                  Remove
-                </button>
 
+              <button className="remove-btn" onClick={async () => {
+                try {
+                  await axios.delete(
+                    `https://localhost:8088/cart/item/${item.id}`,
+                    {
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                      }
+                    }
+                  );
+                  await refreshCartCount();
+                  Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Item Removed Successfully",
+                    showConfirmButton: false,
+                    timer: 1500
+                  });
+                  setCartItems(prev => prev.filter(i => i.id !== item.id));
+                } catch (error) {
+                  Swal.fire({
+                    position: "top-end",
+                    icon: "error",
+                    title: "Unauthorized: Please log in again",
+                    showConfirmButton: false,
+                    timer: 1500
+                  });
+                  console.error(error);
+                }
+              }}>
+                Remove
+              </button>
             </div>
           </div>
         ))}
       </div>
 
       <div className="cart-total">
-        <h4 style={{color:"#023C5A;"}}>Total: ${total.toFixed(2)}</h4>
+        <h4 style={{ color: "#023C5A" }}>Total: ${total.toFixed(2)}</h4>
       </div>
 
-      <div className="">
-        <button className="place-order" style={{fontSize:"20px" ,marginRight:"10px" }} onClick={async () => {
-          try {
-            const response = await axios.post(
-              `https://localhost:8088/checkout/place?userId=${userId}`,
-              {},
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  'Content-Type': 'application/json'
+      <div>
+        <button
+          className="place-order"
+          style={{ fontSize: "20px", marginRight: "10px" }}
+          onClick={async () => {
+            try {
+              const response = await axios.post(
+                `https://localhost:8088/checkout/place?userId=${userId}`,
+                {},
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                  }
                 }
-              }
-            );
-            Swal.fire({
-              position: "top-end",
-              icon: "success",
-              title: "Order Placed Successfully",
-              showConfirmButton: false,
-              timer: 1500
-            });
-            navigate("/dashboard/store/order-summary", { state: { order: response.data } });
-          } catch (error) {
-            Swal.fire({
-              position: "top-end",
-              icon: "error",
-              title: "Unauthorized: Please log in again",
-              showConfirmButton: false,
-              timer: 1500
-            });
-            console.error(error);
-          }
-        }}>Place Order</button>
+              );
+              await refreshCartCount();
+              Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Order Placed Successfully",
+                showConfirmButton: false,
+                timer: 1500
+              });
+              navigate("/dashboard/store/order-summary", { state: { order: response.data } });
+            } catch (error) {
+              Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Unauthorized: Please log in again",
+                showConfirmButton: false,
+                timer: 1500
+              });
+              console.error(error);
+            }
+          }}
+        >
+          Place Order
+        </button>
 
-        <button style={{fontSize:"20px"}} className="add-to-cart" onClick={async () => {
-          try {
-            await axios.delete(
-              `https://localhost:8088/cart/clear/${userId}`,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  'Content-Type': 'application/json'
+        <button
+          style={{ fontSize: "20px" }}
+          className="add-to-cart"
+          onClick={async () => {
+            try {
+              await axios.delete(
+                `https://localhost:8088/cart/clear`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                  }
                 }
-              }
-            );
-            Swal.fire({
-              position: "top-end",
-              icon: "success",
-              title: "Cart Cleared Successfully",
-              showConfirmButton: false,
-              timer: 1500
-            });
-            setCartItems([]);
-          } catch (error) {
-            Swal.fire({
-              position: "top-end",
-              icon: "error",
-              title: "Unauthorized: Please log in again",
-              showConfirmButton: false,
-              timer: 1500
-            });
-            console.error(error);
-          }
-        }}>
+              );
+              await refreshCartCount();
+              Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Cart Cleared Successfully",
+                showConfirmButton: false,
+                timer: 1500
+              });
+              setCartItems([]);
+              navigate("/dashboard/store")
+            } catch (error) {
+              Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Unauthorized: Please log in again",
+                showConfirmButton: false,
+                timer: 1500
+              });
+              console.error(error);
+            }
+          }}
+        >
           Clear Cart
         </button>
       </div>
+            <button className="continue-btn" onClick={() => navigate("/dashboard/store")}>Back to Store</button>
     </div>
   );
 }

@@ -46,65 +46,72 @@ function PetProfile() {
     }
   };
 
-  const addVaccine = async () => {
-    await getVaccines(); // Ensure vaccines are loaded
+const addVaccine = async () => {
+  // Load vaccines first if they're not already loaded
+  if (vaccines.length === 0) {
+    await getVaccines();
+  }
 
-    const vaccineOptions = vaccines.map(v => `<option value="${v.vaccineId}">${v.vaccineName}</option>`).join("");
+  const vaccineOptions = vaccines.map(v => 
+    `<option value="${v.vaccineId}">${v.vaccineName}</option>`
+  ).join("");
 
-    Swal.fire({
-      title: "Add Vaccine",
-      html: `
-        <input type="text" id="vaccinationDate" class="swal2-input" placeholder="Vaccine Date (yyyy-mm-dd)" />
-        <input type="text" id="nextDoseDue" class="swal2-input" placeholder="Next Dose Due (yyyy-mm-dd)" />
-        <input type="text" id="notes" class="swal2-input" placeholder="notes" />
-        <select id="vaccineType" class="swal2-input">${vaccineOptions}</select>
-      `,
-      showCancelButton: true,
-      confirmButtonText: "Add",
-      preConfirm: async () => {
-        const vaccineTypeId = document.getElementById("vaccineType").value;
-        const vaccinationDate = document.getElementById("vaccinationDate").value.trim();
-        console.log(vaccineTypeId)
-        const nextDoseDue = document.getElementById("nextDoseDue").value.trim();
-        const notes = document.getElementById("notes").value.trim();
+  Swal.fire({
+    title: "Add Vaccine",
+    html: `
+      <input type="date" id="vaccinationDate" class="swal2-input" placeholder="Vaccine Date" />
+      <input type="date" id="nextDoseDue" class="swal2-input" placeholder="Next Dose Due" />
+      <input type="text" id="notes" class="swal2-input" placeholder="Notes" />
+      <select id="vaccineType" class="swal2-input">
+        <option value="">Select a vaccine</option>
+        ${vaccineOptions}
+      </select>
+    `,
+    showCancelButton: true,
+    confirmButtonText: "Add",
+    preConfirm: async () => {
+      const vaccineTypeId = document.getElementById("vaccineType").value;
+      const vaccinationDate = document.getElementById("vaccinationDate").value.trim();
+      const nextDoseDue = document.getElementById("nextDoseDue").value.trim();
+      const notes = document.getElementById("notes").value.trim();
 
-        if (!vaccinationDate || !nextDoseDue || !vaccineTypeId) {
-          Swal.showValidationMessage("All fields are required.");
-          return false;
-        }
-
-        try {
-          await axios.post(
-            `https://localhost:8088/petVaccines/add/pet/${petID}`,
-            {
-              vaccinationDate,
-              nextDoseDue,
-              notes,
-              petVaccine:{vaccineId:vaccineTypeId},
-            },
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-        } catch (error) {
-          console.error("Error adding vaccine:", error);
-          Swal.showValidationMessage("Failed to add vaccine.");
-                  console.log(vaccineTypeId)
-          return false;
-        }
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire("Success", "Vaccine added successfully!", "success");
-
-        // Optional: Refresh the vaccine list or section
+      if (!vaccinationDate || !nextDoseDue || !vaccineTypeId) {
+        Swal.showValidationMessage("All fields are required.");
+        return false;
       }
-    });
-  };
+
+      try {
+        await axios.post(
+          `https://localhost:8088/petVaccines/add/pet/${petID}`,
+          {
+            vaccinationDate,
+            nextDoseDue,
+            notes,
+            petVaccine: { vaccineId: vaccineTypeId },
+          },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        return true;
+      } catch (error) {
+        console.error("Error adding vaccine:", error);
+        Swal.showValidationMessage("Failed to add vaccine.");
+        return false;
+      }
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.fire("Success", "Vaccine added successfully!", "success");
+      getPetVaccines(); // Refresh the vaccine list
+    }
+  });
+};
 
   useEffect(() => {
     getPet();
     getPetVaccines();
+    getVaccines();
   }, []);
 
   if (!pet) return <p>Loading pet profile...</p>;
@@ -118,6 +125,7 @@ function PetProfile() {
         <p><strong>Name:</strong> {pet.petName}</p>
         <p><strong>Type:</strong> {pet.petTypeName}</p>
         <p><strong>Breed:</strong> {pet.petBreedName}</p>
+        <p><strong>Breed:</strong> {pet.gender}</p>
       </div>
       <div className="pet-image-container">
         <img src={pet.imageUrl} alt={pet.petName} className="pet-image" />

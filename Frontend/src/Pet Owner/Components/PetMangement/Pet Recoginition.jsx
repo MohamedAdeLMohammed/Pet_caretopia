@@ -63,7 +63,7 @@ function PetRecognition() {
         </button>
       </div>
 
-      <div className="photo-section d-flex flex-column align-items-center gap-3">
+      <div className="photo-section d-flex flex-column align-items-center gap-3 mb-2">
         <h5 style={{fontSize:"20px"}}>
           Ensure your pet’s face and body are clearly visible in the image for accurate analysis.
         </h5>

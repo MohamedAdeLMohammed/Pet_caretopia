@@ -1,122 +1,245 @@
 import { useEffect, useState } from "react";
-import axios from 'axios';
-import { Link } from "react-router-dom";
+import axios from "axios";
 import Swal from "sweetalert2";
-import { jwtDecode } from 'jwt-decode';
-function TrainingCenterAppointments(){
-    const [facilities,setFacilities] = useState([]);
-    const token = sessionStorage.getItem('token');
-    const decode = jwtDecode(token);
-    const userId = decode.id;
-useEffect(() => {
-    const getFacilites = async () => {
-        try {
-            const response = await axios.get('https://localhost:8088/facilities/type?type=TRAINING_CENTER',{
-              headers: {
-              Authorization: `Bearer ${token}`,
-            },
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
+import center from '../../../assets/center.jpg'
+function TrainingCenterAppointments() {
+  const [facilities, setFacilities] = useState([]);
+  const token = sessionStorage.getItem("token");
+  const navigate = useNavigate();
+  const appointmentDuration = 0.5; 
+  let userId = null;
+
+  if (token) {
+    try {
+      const decode = jwtDecode(token);
+      userId = decode.id;
+    } catch (error) {
+      console.error("Invalid token", error);
+      sessionStorage.removeItem("token");
+    }
+  }
+
+  // Fetch training centers WITHOUT token
+  useEffect(() => {
+    const getFacilities = async () => {
+      try {
+        const response = await axios.get(
+          "https://localhost:8088/facilities/type?type=TRAINING_CENTER"
+        );
+        setFacilities(response.data);
+      } catch (error) {
+        console.error("Error fetching facilities:", error);
+      }
+    };
+    getFacilities();
+  }, []);
+        const generateTimeSlots = (openingTime, closingTime) => {
+        const parseTime = (timeStr) => {
+            const [time, modifier] = timeStr.split(' ');
+            let [hours, minutes] = time.split(':');
+            
+            hours = parseInt(hours);
+            minutes = parseInt(minutes);
+            
+            if (modifier === 'PM' && hours !== 12) {
+                hours += 12;
+            } else if (modifier === 'AM' && hours === 12) {
+                hours = 0;
+            }
+            
+            return { hours, minutes };
+        };
+
+        const opening = parseTime(openingTime);
+        const closing = parseTime(closingTime);
+
+        const openingDate = new Date();
+        openingDate.setHours(opening.hours, opening.minutes, 0, 0);
+        
+        const closingDate = new Date();
+        closingDate.setHours(closing.hours, closing.minutes, 0, 0);
+        
+        const diffInHours = (closingDate - openingDate) / (1000 * 60 * 60);
+        const numberOfAppointments = Math.floor(diffInHours / appointmentDuration);
+        
+        const timeSlots = [];
+        let currentTime = new Date(openingDate);
+        
+        for (let i = 0; i < numberOfAppointments; i++) {
+            const slotStart = new Date(currentTime);
+            const slotEnd = new Date(currentTime.getTime() + appointmentDuration * 60 * 60 * 1000);
+            
+            const formatTime = (date) => {
+                let hours = date.getHours();
+                const minutes = date.getMinutes();
+                const ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12;
+                const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+                return `${hours}:${minutesStr} ${ampm}`;
+            };
+            
+            timeSlots.push({
+                start: formatTime(slotStart),
+                end: formatTime(slotEnd),
+                value: `${formatTime(slotStart)} - ${formatTime(slotEnd)}`,
+                dateTime: new Date(slotStart) // Store the actual Date object for comparison
             });
-            console.log(response.data);
-            setFacilities(response.data)  // This logs the product details
-            // You can set state here, for example:
-            // setPets(response.data.vaccines.$values)
+            
+            currentTime = slotEnd;
+        }
+        
+        return timeSlots;
+    };
+  // Handle appointment request
+      const requestAppointment = async (facilityId, serviceProviderId, openingTime, closingTime) => {
+        if (!token) {
+            Swal.fire({
+                title: "Login Required",
+                text: "You must be logged in to request an appointment",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Login",
+                cancelButtonText: "Cancel"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigate("/login");
+                }
+            });
+            return;
+        }
+
+        try {
+            // Fetch existing appointments for this facility
+            const appointmentsResponse = await axios.get(
+                `https://localhost:8088/appointments/facility/${facilityId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const bookedAppointments = appointmentsResponse.data;
+            const allTimeSlots = generateTimeSlots(openingTime, closingTime);
+
+            // Get current date without time component
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            // Filter out booked time slots
+            const availableTimeSlots = allTimeSlots.filter(slot => {
+                return !bookedAppointments.some(appointment => {
+                    const appointmentDate = new Date(appointment.appointmentTime);
+                    // Compare dates and times
+                    return (
+                        appointmentDate.getDate() === slot.dateTime.getDate() &&
+                        appointmentDate.getMonth() === slot.dateTime.getMonth() &&
+                        appointmentDate.getFullYear() === slot.dateTime.getFullYear() &&
+                        appointmentDate.getHours() === slot.dateTime.getHours() &&
+                        appointmentDate.getMinutes() === slot.dateTime.getMinutes()
+                    );
+                });
+            });
+
+            if (availableTimeSlots.length === 0) {
+                Swal.fire("No Available Slots", "All appointment slots are booked for today.", "info");
+                return;
+            }
+
+            Swal.fire({
+                title: "Request Appointment",
+                html: `
+                    <input type="text" id="appointment-reason" class="swal2-input" placeholder="Appointment Reason" required>
+                    <select id="appointment-time" class="swal2-input" required>
+                        <option value="" disabled selected>Select a time slot</option>
+                        ${availableTimeSlots.map(slot => 
+                            `<option value="${slot.start}">${slot.value}</option>`
+                        ).join('')}
+                    </select>
+                `,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: "Request",
+                cancelButtonText: "Cancel",
+                preConfirm: async () => {
+                    const reason = document.getElementById('appointment-reason').value.trim();
+                    const selectedTime = document.getElementById('appointment-time').value;
+
+                    if (!reason || !selectedTime) {
+                        Swal.showValidationMessage('Please fill all fields');
+                        return false;
+                    }
+
+                    try {
+                        const today = new Date();
+                        const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                        const requestedTime = `${dateStr} ${selectedTime}`;
+
+                        await axios.post(
+                            `https://localhost:8088/appointment-requests/add/user/${userId}`,
+                            {
+                                facilityId,
+                                serviceProviderId,
+                                requestReason: reason,
+                                requestedTime,
+                            },
+                            {
+                                headers: {
+                                    Authorization: `Bearer ${token}`,
+                                },
+                            }
+                        );
+                        return true;
+                    } catch (error) {
+                        Swal.showValidationMessage(`Request failed: ${error.response?.data?.message || error.message}`);
+                        return false;
+                    }
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire("Success", "Appointment requested successfully!", "success");
+                }
+            });
+
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.error("Error:", error);
+            Swal.fire("Error", "Failed to process appointment request", "error");
         }
     };
-    getFacilites();
-    }, []);
-    const formatDateTime = (date) => {
-  const pad = (n) => String(n).padStart(2, '0');
 
-  let hours = date.getHours();
-  const minutes = pad(date.getMinutes());
-  const ampm = hours >= 12 ? 'PM' : 'AM';
-
-  hours = hours % 12;
-  hours = hours ? hours : 12; // Convert 0 to 12 for 12 AM
-
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(hours)}:${minutes} ${ampm}`;
-};
-
-const requestAppointment = (facilityId, serviceProviderId) => {
-  Swal.fire({
-    title: "Request Appointment",
-    html: `
-      <input type="text" id="appointment-reason" class="swal2-input" placeholder="What is Appointment Reason?" />
-      <input type="text" id="appointment-time" class="swal2-input" placeholder="Requested Time (e.g., 2025-06-05 09:30 AM)" />
-    `,
-    showCancelButton: true,
-    confirmButtonText: "Add",
-    preConfirm: async () => {
-      const reason = document.getElementById("appointment-reason").value.trim();
-      const requestedTime = document.getElementById("appointment-time").value.trim();
-
-      if (!reason || !requestedTime) {
-        Swal.showValidationMessage("All fields are required.");
-        return false;
-      }
-
-      // Validate time format using a simple regex
-      const dateTimeRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2} (AM|PM)$/;
-      if (!dateTimeRegex.test(requestedTime)) {
-        Swal.showValidationMessage("Time format must be: YYYY-MM-DD hh:mm AM/PM");
-        return false;
-      }
-
-      try {
-        await axios.post(`https://localhost:8088/appointment-requests/add/user/${userId}`, {
-          facilityId,
-          serviceProviderId,
-          requestReason: reason,
-          requestedTime,
-        }, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        return true;
-      } catch (error) {
-        console.error("Error adding appointment:", error);
-        Swal.showValidationMessage("Failed to request Appointment.");
-        return false;
-      }
-    },
-  }).then((result) => {
-    if (result.isConfirmed) {
-      Swal.fire("Success", "Appointment registered successfully!", "success");
-    }
-  });
-};
-
-
-
-
-
-    return(
-        <>
-        <div className="store-management-container">
-        <h2 className="management-dashboard-title">Training Centers</h2>
-        <div className="management-grid">
-      {facilities.map((facility) => (
+  return (
+    <div className="store-management-container">
+      <h2 className="management-dashboard-title">Training Centers</h2>
+      <div className="management-grid">
+        {facilities.map((facility) => (
           <div className="management-card" key={facility.facilityId}>
             <img
-              src="#"
+              src={center}
+              alt="Facility"
+              className="management-card-image"
             />
             <h4 className="management-card-title">{facility.facilityName}</h4>
-            <p>{facility.facilityDescription}</p>
-            <h5 className="price">${facility.facilityAddress}</h5>
-            <button className="management-card-button" onClick={()=>{
-                requestAppointment(facility.facilityId,facility.serviceProvider.serviceProviderId)}}>
-    request for Appointment
-  </button>
-  
+            <p className="management-card-description">{facility.facilityDescription}</p>
+            <h5 className="management-card-address">{facility.facilityAddress}</h5>
+                        <button
+                            className="management-card-button"
+                            onClick={() => requestAppointment(
+                                facility.facilityId, 
+                                facility.serviceProvider.serviceProviderId,
+                                facility.openingTime,
+                                facility.closingTime
+                            )}
+                        >
+                            Request Appointment
+                        </button>
           </div>
         ))}
-        </div>
       </div>
-        </>
-    );
+    </div>
+  );
 }
+
 export default TrainingCenterAppointments;

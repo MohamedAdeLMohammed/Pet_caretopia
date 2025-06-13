@@ -74,17 +74,22 @@ const [userInfo,setUserInfo] = useState("");
         <div className="logo-section">
           <span className="home-title">Pet CareTopia</span>
         </div>
-        
-          <div className="nav-links">
-          <Link to="/">Home</Link>
-          {/* <Link to="/services">Services</Link>
-          <Link to="/about">Store</Link>
-          <Link to="/blog">Community</Link>
-          <Link to="/contact">Adoption</Link> */}
-        </div>
-       
-        
-
+{token?(null):(<div className="nav-links">
+          <Link to="/home">Home</Link>
+          <Link to="/home/petServices">Services</Link>
+          <Link to="/home/store">Store</Link>
+          <Link to="/home/shelters">Shelters</Link>
+          <Link to="/home/adoption">Adoption</Link>
+          <Link to="/home/petRecogintion">Pet Recogintion</Link>
+        </div>)}
+{/* <div className="nav-links">
+          <Link to="/home">Home</Link>
+          <Link to="/home/petServices">Services</Link>
+          <Link to="/home/store">Store</Link>
+          <Link to="/home/shelters">Shelters</Link>
+          <Link to="/home/adoption">Adoption</Link>
+          <Link to="/home/petRecogintion">Pet Recogintion</Link>
+        </div> */}
         {isLoggedIn && decode.name ? (
           <div className="d-flex align-items-center gap-3">
  <Link to={'/dashboard/userProfile'} className="user-profile-link">

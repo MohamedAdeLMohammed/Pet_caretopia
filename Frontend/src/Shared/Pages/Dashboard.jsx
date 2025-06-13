@@ -18,11 +18,11 @@ import StorePage from "../Compoments/Store/StorePage"
 import Pharmacy from "../Compoments/Store/Pharmacy"
 import StoreSlider from "../Compoments/Store/StoreSlider"
 import Cart from "../Compoments/Store/Cart"
-import Cats from "../Compoments/Store/Cats"
-import CatsDetails from "../Compoments/Store/CatsDetails"
-import Dogs from "../Compoments/Store/Dogs"
-import DogsDetails from "../Compoments/Store/DogsDetails"
-import Travel from "../Compoments/Store/Travel"
+import Cats from "../Compoments/Store/FoodProducts"
+import FoodProductsDetails from "../Compoments/Store/FoodProductsDetails"
+import Dogs from "../Compoments/Store/Accessories"
+import AccessoriesDetails from "../Compoments/Store/AccessoriesDetails"
+import Travel from "../Compoments/Store/Toys"
 import OrderSummary from "../Compoments/Store/OrderSummary";
 import Orders from "../Compoments/Store/Orders";
 import StoreMangement from "../../Admin/Components/StoreMangement/StoreMangement";
@@ -53,8 +53,12 @@ import HotelAppointments from "../../Pet Owner/Components/Appointments/HotelAppo
 import ClinicAppointments from "../../Pet Owner/Components/Appointments/ClinicAppointments";
 import TrainingCenterAppointments from "../../Pet Owner/Components/Appointments/TrainingCenterAppointments";
 import UserProfile from "../Compoments/Auth/UserProfile";
-import UsersMangement from "../../Admin/Components/UserManagement/UsersMangement";
-
+import UsersMangement from "../../Admin/Components/UserMangement/UsersMangement";
+import BreedingOffers from "../../Pet Owner/Components/PetMangement/BreedingOffers";
+import BreedingRequests from "../../Pet Owner/Components/PetMangement/BreedingRequest";
+import BreedingTranscations from "../../Admin/Components/PetsMangement/BreedingTranscations";
+import { StoreProvider } from "../Compoments/Store/StoreContext";
+import ShelterAdoptationRequests from "../../Admin/Components/ShelterMangement/ShelterAdoptionsRequests";
 function Dashboard(){
   const token = sessionStorage.getItem("token");
   console.log(token);
@@ -122,7 +126,8 @@ function Dashboard(){
           {isSERVICE_PROVIDER?<ServiceProviderSB/> : null}
           {isAdmin?<AdminSB/> : null}
         <div className="main-content">
-        <Routes>
+          <StoreProvider>
+                    <Routes>
               <Route 
               path="/" 
               element={
@@ -137,6 +142,8 @@ function Dashboard(){
           <Route path='userProfile' element={<UserProfile />}></Route>
           <Route path="chat" element={<Chat />} />
           <Route path="petServices" element={<PetServices />} />
+          <Route path="breedingOffers" element={<BreedingOffers />} />
+          <Route path="breedingRequests" element={<BreedingRequests />} />
           <Route path='petServices/hotels' element={<HotelAppointments />}></Route>
           <Route path='petServices/clinics' element={<ClinicAppointments/>}></Route>
           <Route path='petServices/trainingCenter' element={<TrainingCenterAppointments/>}></Route>
@@ -148,11 +155,12 @@ function Dashboard(){
           <Route path='adoptationRequests' element={<AdoptationRequests />}></Route>
           <Route path='adoptationOffers' element={<AdoptationOffers />}></Route>
           <Route path='community' element={<Community />}></Route>
-          <Route path='store' element={<StorePage/>}></Route>
-          <Route path='store/CatsDetails' element={<CatsDetails/>}></Route>
-                   <Route path='store/Pharmacy' element={<Pharmacy/>}></Route>
-          <Route path='store/DogsDetails' element={<DogsDetails/>}></Route>
-          <Route path='store/Travel'element={<Travel/>}></Route>
+
+            <Route path='store' element={<StorePage/>}></Route>
+            <Route path='store/FoodProductsDetails' element={<FoodProductsDetails/>}></Route>
+            <Route path='store/MEDICATIONSProductsDetails' element={<Pharmacy/>}></Route>
+          <Route path='store/ACCESSORIESProductsDetails' element={<AccessoriesDetails/>}></Route>
+          <Route path='store/TOYSProductsDetails'element={<Travel/>}></Route>
           <Route path='store/Cart'element={<Cart/>}></Route>
           <Route path='store/order-summary'element={<OrderSummary/>}></Route>
           <Route path='store/Orders'element={<Orders/>}></Route>
@@ -170,6 +178,7 @@ function Dashboard(){
           <Route path='userProfile' element={<UserProfile />}></Route>
           <Route path='usersMangement' element={<UsersMangement />}></Route>
           <Route path='storeMangement' element={<StoreMangement/>}></Route>
+          <Route path='storeMangement/orders/order-summary' element={<OrderSummary/>}></Route>
           <Route path='storeMangement/products' element={<ProductsMangement/>}></Route>
           <Route path='storeMangement/orders' element={<Orders/>}></Route>
           <Route path='storeMangement/products/addProduct' element={<AddProducts/>}></Route>
@@ -178,18 +187,21 @@ function Dashboard(){
           <Route path='petMangement/petTypesMangement' element={<MangePetTypes/>}></Route>
           <Route path='sheltersMangement' element={<ShelterMangement/>}></Route>
           <Route path='sheltersMangement/shelter/:shelterId' element={<Shelter/>}></Route>
+          <Route path='sheltersMangement/shelter/:shelterId/shelterAdoptionReqests' element={<ShelterAdoptationRequests/>}></Route>
           <Route path='sheltersMangement/shelter/:shelterId/addPet' element={<AddPet/>}></Route>
+          <Route path='sheltersMangement/shelter/:shelterId/updatePet/:petID' element={<UpdatePet/>}></Route>
           <Route path='vaccineMangement' element={<Vaccines/>}></Route>
           <Route path='adoptionTranscations' element={<AdoptationTranscations/>}></Route>
+          <Route path='breedingTranscations' element={<BreedingTranscations/>}></Route>
           <Route path='serviceProvidersMangement' element={<ServiceProviderMangement/>}></Route>
           <Route path='serviceProvidersMangement/providersMangement' element={<ProvidersMangement/>}></Route>
           <Route path='serviceProvidersMangement/facilitiesMangement' element={<FacilitiesMangement/>}></Route>
                       <Route path="chat" element={<Chat />} />
-          {/* <Route path='VetDashboard/VetAppointment' element={<VetAppointment />}></Route> */}
-          {/* <Route path='/adoptationRequests' element={<ViewVetAppointment />}></Route> */}
-          {/* <Route path='community' element={<Community />}></Route> */}
+
         </Route>):null}
         </Routes>
+          </StoreProvider>
+
         </div>
         </div>
         <Footer/>

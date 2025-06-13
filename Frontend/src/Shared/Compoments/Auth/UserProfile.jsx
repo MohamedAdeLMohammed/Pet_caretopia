@@ -199,16 +199,18 @@ function UserProfile() {
 
               <div className="form-group full-width">
                 <label className="form-label">Service Provider Type</label>
-                <select
-                  className="form-select"
-                  value={serviceProviderType}
-                  onChange={(e) => setServiceProviderType(e.target.value)}
-                  required
-                >
-                  <option value="VET">VET</option>
-                  <option value="TRAINER">TRAINER</option>
-                  <option value="SITTER">SITTER</option>
-                </select>
+<select
+  className="form-select"
+  value={serviceProviderType}
+  onChange={(e) => setServiceProviderType(e.target.value)}
+  required
+>
+  <option value="">Select Type</option>
+  <option value="VET">VET</option>
+  <option value="TRAINER">TRAINER</option>
+  <option value="SITTER">SITTER</option>
+</select>
+
               </div>
             </div>
           )}

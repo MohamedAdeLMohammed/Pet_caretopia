@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 function AddProducts() {
   const [name, setName] = useState("");
@@ -10,7 +11,7 @@ function AddProducts() {
   const [category, setCategory] = useState("FOOD");
   const [imageFiles, setImageFiles] = useState([]);
   const token = sessionStorage.getItem("token");
-
+  const navigate = useNavigate("");
   const handleImageChange = (e) => {
     setImageFiles([...e.target.files]);
   };
@@ -48,7 +49,7 @@ function AddProducts() {
         title: "Product added successfully",
         text: `Product ID: ${response.data.id}`,
       });
-
+      navigate("/dashboard/storeMangement/products")
       // Optionally reset the form
       setName("");
       setDescription("");
@@ -125,7 +126,7 @@ function AddProducts() {
             >
               <option value="FOOD">FOOD</option>
               <option value="TOYS">TOYS</option>
-              <option value="CLOTHING">CLOTHING</option>
+              <option value="MEDICATIONS">Medications</option>
               <option value="ACCESSORIES">ACCESSORIES</option>
             </select>
           </div>

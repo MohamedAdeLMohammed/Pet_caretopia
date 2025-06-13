@@ -16,7 +16,7 @@ import java.util.List;
 public class AppointmentController {
     private final AppointmentService appointmentService;
 
-    @PreAuthorize("hasAnyRole('ADMIN','SERVICE_PROVIDER')")
+    @PreAuthorize("hasAnyRole('ADMIN','SERVICE_PROVIDER','USER','PET_OWNER')")
     @GetMapping("/all")
     public ResponseEntity<List<AppointmentDTO>> getAllAppointments(){
         return ResponseEntity.ok(appointmentService.getAllAppointments());
@@ -34,7 +34,7 @@ public class AppointmentController {
     public ResponseEntity<List<AppointmentDTO>> getAllAppointmentsByServiceProviderId(@PathVariable Long serviceProviderId){
         return ResponseEntity.ok(appointmentService.getAllAppointmentsByServiceProviderId(serviceProviderId));
     }
-    @PreAuthorize("hasAnyRole('ADMIN','SERVICE_PROVIDER')")
+    @PreAuthorize("hasAnyRole('ADMIN','SERVICE_PROVIDER','USER','PET_OWNER')")
     @GetMapping("/facility/{facilityId}")
     public ResponseEntity<List<AppointmentDTO>> getAllAppointmentsByServiceFacilityId(@PathVariable Long facilityId){
         return ResponseEntity.ok(appointmentService.getAllAppointmentsByFacilityId(facilityId));

@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
 import "../../CSS/Store.css";
+import { StoreContext } from "../Store/StoreContext";
 
 function Wishlist() {
   const [wishlistItems, setWishlistItems] = useState([]);
@@ -11,6 +12,69 @@ function Wishlist() {
   const decode = jwtDecode(token);
   const userId = decode.id;
   const navigate = useNavigate();
+  const { refreshCartCount, refreshWishCount } = useContext(StoreContext);
+
+  // ✅ Define this function to check if product is already in cart
+  const isProductInCart = async (productId) => {
+    try {
+      const response = await axios.get(`https://localhost:8088/cart/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const cartItems = response.data;
+      return cartItems.some(item => item.product.id === productId);
+    } catch (error) {
+      console.error("Error checking cart:", error);
+      return false;
+    }
+  };
+
+  const handleAddToCart = async (productId) => {
+    try {
+      const exists = await isProductInCart(productId);
+      if (exists) {
+        Swal.fire({
+          position: "top-end",
+          icon: "info",
+          title: "Product already in cart",
+          showConfirmButton: false,
+          timer: 1500
+        });
+        return;
+      }
+
+      await axios.post(
+        `https://localhost:8088/cart/add?userId=${userId}&productId=${productId}&quantity=1`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      await refreshCartCount();
+      Swal.fire({
+        position: "top-end",
+        icon: "success",
+        title: "Added to cart",
+        showConfirmButton: false,
+        timer: 1500
+      });
+      navigate("/dashboard/store/cart");
+    } catch (error) {
+      Swal.fire({
+        position: "top-end",
+        icon: "error",
+        title: "Unauthorized",
+        showConfirmButton: false,
+        timer: 1500
+      });
+    }
+  };
 
   useEffect(() => {
     const getWishlistItems = async () => {
@@ -39,6 +103,7 @@ function Wishlist() {
           'Content-Type': 'application/json'
         }
       });
+      await refreshWishCount();
       Swal.fire({
         position: "top-end",
         icon: "success",
@@ -67,6 +132,7 @@ function Wishlist() {
           'Content-Type': 'application/json'
         }
       });
+      await refreshWishCount();
       Swal.fire({
         position: "top-end",
         icon: "success",
@@ -104,6 +170,16 @@ function Wishlist() {
               <button className="remove-btn" onClick={() => removeItem(item.id)}>
                 Remove
               </button>
+              {item.stockQuantity > 0 ? (
+                <button
+                  className="add-to-cart"
+                  onClick={() => handleAddToCart(item.id)}
+                >
+                  Add to Cart
+                </button>
+              ) : (
+                <p className="add-to-cart">Sold out</p>
+              )}
               <p className="price">${item.price.toFixed(2)}</p>
             </div>
           </div>
@@ -111,12 +187,17 @@ function Wishlist() {
       </div>
 
       {wishlistItems.length > 0 && (
-        <div className="">
-          <button style={{fontSize:"20px", marginTop:"10px"}} className="add-to-cart" onClick={clearWishlist}>
+        <div>
+          <button
+            style={{ fontSize: "20px", marginTop: "10px" }}
+            className="add-to-cart"
+            onClick={clearWishlist}
+          >
             Clear Wishlist
           </button>
         </div>
       )}
+      <button className="continue-btn" onClick={() => navigate("/dashboard/store")}>Back to Store</button>
     </div>
   );
 }

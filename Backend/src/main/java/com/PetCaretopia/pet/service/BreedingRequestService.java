@@ -41,38 +41,51 @@ public class BreedingRequestService {
 
 
     public BreedingRequestDTO createRequest(Long malePetId, Long femalePetId, String emailFromToken) {
+        // 1. جلب الحيوانات
         Pet male = petRepo.findById(malePetId)
                 .orElseThrow(() -> new IllegalArgumentException("Male pet not found"));
 
         Pet female = petRepo.findById(femalePetId)
                 .orElseThrow(() -> new IllegalArgumentException("Female pet not found"));
 
+        // 2. جلب المستخدم الحالي
         User user = userRepo.findByUserEmail(emailFromToken)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         PetOwner requester = ownerRepo.findByUser(user)
                 .orElseThrow(() -> new IllegalArgumentException("Requester not found"));
 
-        PetOwner receiver = female.getOwner();
+        // 3. تحديد أصحاب الحيوانات
+        PetOwner maleOwner = male.getOwner();
+        PetOwner femaleOwner = female.getOwner();
 
-        if (requester.getPetOwnerId().equals(receiver.getPetOwnerId())) {
+        // 4. منع التزاوج بين حيوانات نفس المالك
+        if (maleOwner.getPetOwnerId().equals(femaleOwner.getPetOwnerId())) {
             throw new IllegalArgumentException("You cannot breed your own pets.");
         }
 
+        // 5. التأكد من النوع
         if (male.getGender() != User.Gender.MALE || female.getGender() != User.Gender.FEMALE) {
             throw new IllegalArgumentException("Breeding allowed only between male and female pets.");
         }
 
+        // 6. التأكد من الحالة
         if (!male.isAvailableForBreeding() || !female.isAvailableForBreeding()) {
             throw new IllegalArgumentException("One or both pets are not available for breeding.");
         }
 
-
+        // 7. منع تكرار الريكوست لنفس الذكر والأنثى في نفس اليوم
         boolean exists = repository.existsByMalePetAndFemalePetAndRequestDate(male, female, LocalDate.now());
         if (exists) {
             throw new IllegalArgumentException("Breeding request already exists for today.");
         }
 
+        // 8. تحديد الطرف المستقبل للطلب
+        PetOwner receiver = requester.getPetOwnerId().equals(maleOwner.getPetOwnerId())
+                ? femaleOwner
+                : maleOwner;
+
+        // 9. إنشاء الريكوست
         BreedingRequest request = new BreedingRequest();
         request.setMalePet(male);
         request.setFemalePet(female);

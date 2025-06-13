@@ -20,6 +20,7 @@ public class AdoptionMapper {
         dto.setPreviousOwnerId(entity.getPreviousOwner() != null ? entity.getPreviousOwner().getPetOwnerId() : null);
         dto.setShelterId(entity.getShelter() != null ? entity.getShelter().getId() : null);
         dto.setAdoptionDate(entity.getAdoptionDate());
+
         dto.setStatus(entity.getStatus());
         dto.setPetName(entity.getPet().getPetName());
         dto.setMessage(entity.getMessage());

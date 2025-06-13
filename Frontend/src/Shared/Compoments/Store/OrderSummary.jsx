@@ -1,13 +1,13 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import "../../CSS/OrderSummary.css";
-
+import { jwtDecode } from "jwt-decode";
 function OrderSummary() {
   const location = useLocation();
   const navigate = useNavigate();
+  const token = sessionStorage.getItem('token');
   const order = location.state?.order;
-
   console.log(order);
-
+  const decode = jwtDecode(token);
   if (!order) {
     return <div>No order data found. Please go back and try again.</div>;
   }
@@ -54,8 +54,7 @@ function OrderSummary() {
         {discount > 0 && <p>Discount: -{discount} EGP</p>}
         <h4>Total: {total} EGP</h4>
       </div>
-
-      <button className="continue-btn" onClick={() => navigate("/dashboard/store")}>Back to Store</button>
+            {decode.role === "ADMIN"?(<button className="continue-btn" onClick={() => navigate("/dashboard/storeMangement/orders")}>Back to Orders</button>):(<button className="continue-btn" onClick={() => navigate("/dashboard/store/Orders")}>Back to Orders</button>)}
     </div>
   );
 }

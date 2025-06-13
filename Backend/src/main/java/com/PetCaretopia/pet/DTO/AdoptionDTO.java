@@ -21,6 +21,7 @@ public class AdoptionDTO {
 
     private Long shelterId;
 
+
     private LocalDate adoptionDate;
 
     private AdoptionStatus status;

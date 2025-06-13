@@ -123,6 +123,7 @@ function ProvidersMangement() {
     )}
   </tbody>
 </table>
+          <button className="continue-btn" onClick={() => navigate("/dashboard/serviceProvidersMangement")}>Back to ServiceProvider Mangement</button>
 </div>
 </div>
     </div>

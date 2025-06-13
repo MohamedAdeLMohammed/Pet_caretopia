@@ -48,6 +48,10 @@ function AdminSB() {
           <FaExchangeAlt />
           <p>Adoptions Transactions</p>
         </Link>
+          <Link to={"/dashboard/breedingTranscations"} className="db-btn">
+          <FaExchangeAlt />
+          <p>Breeding Transactions</p>
+        </Link>
       </div>
     </>
   );

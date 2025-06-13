@@ -55,7 +55,8 @@ public class AccountService implements UserDetailsService {
 
         Account account = new Account();
         account.setUsername(username);
-        account.setPassword(passwordEncoder.encode(password)); // Encrypt password
+        account.setPassword(passwordEncoder.encode(password));
+        account.setStatus(Status.ONLINE);
         return accountRepository.save(account);
     }
 

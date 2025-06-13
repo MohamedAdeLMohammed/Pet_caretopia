@@ -19,12 +19,21 @@ function Footer(){
 
         <div className="footer-section">
           <h4>Quick Links</h4>
+          {/* {token?(null):(<div className="nav-links">
+          <Link to="/home">Home</Link>
+          <Link to="/home/petServices">Services</Link>
+          <Link to="/home/store">Store</Link>
+          <Link to="/home/shelters">Shelters</Link>
+          <Link to="/home/adoption">Adoption</Link>
+          <Link to="/home/petRecogintion">Pet Recogintion</Link>
+        </div>)} */}
           <ul className="footer-links">
-            <li><a href="/">Home</a></li>
-            <li><a href="/services">Services</a></li>
-            <li><a href="/about">Adoption</a></li>
-            <li><a href="/blog">Community</a></li>
-            <li><a href="/contact">Store</a></li>
+            <li><a href="/home">Home</a></li>
+            <li><a href="/home/petServices">Services</a></li>
+            <li><a href="/home/store">Store</a></li>
+            <li><a href="/home/shelters">Shelters</a></li>
+            <li><a href="/home/adoption">Adoption</a></li>
+            <li><a href="/home/petRecogintion">Pet Recogintion</a></li>
           </ul>
         </div>
 

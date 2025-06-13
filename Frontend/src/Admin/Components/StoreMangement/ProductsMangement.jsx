@@ -106,6 +106,7 @@ function ProductsManagement() {
               )}
             </tbody>
           </table>
+          <button className="continue-btn" onClick={() => navigate("/dashboard/storeMangement")}>Back to Store Mangement</button>
         </div>
       </div>
     </div>

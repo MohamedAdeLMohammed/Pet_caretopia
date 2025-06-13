@@ -78,7 +78,23 @@ const OrderActions = ({ order }) => {
 
   return (
     <>
-      <button
+          {decode.role === "ADMIN"?(<button
+        className="btn  btn-sm me-2"
+          style={{
+    backgroundColor: '#023C5A',
+    borderColor: '#023C5A',
+    color: 'white',
+    transition: 'all 0.3s ease',
+    padding: '0.375rem 0.75rem',
+    fontSize: '0.875rem',
+    lineHeight: '1.5',
+    borderRadius: '0.25rem'
+  }}
+
+        onClick={() => navigate("/dashboard/storeMangement/orders/order-summary", { state: { order } })}
+      >
+        View Summary
+      </button>):(<button
         className="btn  btn-sm me-2"
           style={{
     backgroundColor: '#023C5A',
@@ -94,7 +110,7 @@ const OrderActions = ({ order }) => {
         onClick={() => navigate("/dashboard/store/order-summary", { state: { order } })}
       >
         View Summary
-      </button>
+      </button>)}
       {decode.role === "ADMIN" && localStatus !== "CANCELLED" && (
   <>
     {localStatus !== "DELIVERED" && nextStatusMap[localStatus] && (
@@ -208,6 +224,7 @@ const OrderActions = ({ order }) => {
           )}
         </tbody>
       </table>
+      {decode.role === "ADMIN"?(<button className="continue-btn" onClick={() => navigate("/dashboard/storeMangement")}>Back to Store Mangement</button>):(<button className="continue-btn" onClick={() => navigate("/dashboard/store")}>Back to Store</button>)}
       </div>
     </div>
     </div>

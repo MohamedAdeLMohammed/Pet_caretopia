@@ -43,7 +43,7 @@ function Shelter() {
       <ProductSearchBar setProducts={setProducts} token={token} /> */}
 
       <Link to={`addPet`} className="Add-btn"> <FaPlusCircle /> Add Pet</Link>
-      
+      <Link to={`shelterAdoptionReqests`} className="Add-btn"> <FaPlusCircle /> Add Pet</Link>
         <div className="table-responsive">
           <table className="table products-table">
           <thead>
@@ -68,7 +68,7 @@ function Shelter() {
                   className=" btn-danger "
                   onClick={async () => {
                     try {
-                      await axios.delete(`https://localhost:8088/pets/${pet.id}`, {
+                      await axios.delete(`https://localhost:8088/pets/${pet.petID}`, {
                         headers: {
                           Authorization: `Bearer ${token}`,
                           'Content-Type': 'application/json'
@@ -83,7 +83,7 @@ function Shelter() {
                 >
                   <FaTrashAlt /> Remove
                 </button>
-                <Link to={`update/${pet.id}`} className="update-link"> <FaEdit />update</Link>
+                <Link to={`updatePet/${pet.petID}`} className="update-link"> <FaEdit />update</Link>
              </div>
               </td>
             </tr>

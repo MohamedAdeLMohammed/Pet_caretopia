@@ -2,170 +2,183 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from 'jwt-decode';
 import Swal from 'sweetalert2';
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { FaShoppingCart, FaHeart } from "react-icons/fa";
+import { useContext } from "react";
+import { StoreContext } from "../Store/StoreContext";
 
-const catProducts = [
-    {
-      id: 1,
-      name: "Nexgard",
-      description: "Nexgard Chewable for Large Dogs (25-50KG) 1 Tablet",
-      image: "src/assets/ph7.avif",
-      price:"$500.00", 
-    },
-    {
-      id: 2,
-      name: "Pets Republic",
-      description: "Pets Republic Flea & Ticks Spray (125ml)",
-      image: "src/assets/ph6.avif",
-      price:"$400.00", 
-
-    },
-    {
-      id: 3,
-      name: "Poro",
-      description: "Poro Pet Flea and Tick Solution for Cats 1 Pipette Sale price50.00 EGP",
-      image: "src/assets/ph3.avif",
-      price:"$300.00", 
-
-    },
-    {
-    id: 4,
-    name: "Eva pharma",
-    description: "Primigo Senior Geriatric Care Plus 60 ml For Dogs With Beef flavor",
-    image: "src/assets/ph1.avif",
-    price:"$200.00", 
-
-  },
-{
-  id: 5,
-  name: "Bolovia",
-  description: "Candioli Bolovia Hairball Removal Paste For Cats 50G",
-  image: "src/assets/ph2.avif",
-  price:"$100.00", 
-
-},
-
-  ];
-function Pharmacy(){
+function MedicationsProductsDetails() {
+    const [medicationsProducts, setMedicationsProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
     const token = sessionStorage.getItem('token');
-    console.log(token);
-    const decode = jwtDecode(token);
-    const userId = decode.id;
+    const context = useContext(StoreContext);
+    const cartCount = context?.cartCount ?? 0;
+    const wishCount = context?.wishCount ?? 0;
+    const navigate = useNavigate();
 
-    const [medcineProducts,SetMedcineProducts] = useState([]);
-useEffect(() => {
-  const getPharmacyProducts = async () => {
-    try {
-      const response = await axios.get(
-        `https://localhost:8088/store/products/category/MEDICATIONS`,
-        {
-          headers: {
-              'Content-Type': 'application/json'
-          },
+    const showLoginAlert = () => {
+        Swal.fire({
+            title: "Login Required",
+            text: "You must login to use store features",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Login",
+            cancelButtonText: "Cancel"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/login";
+            }
+        });
+    };
+
+    useEffect(() => {
+        const getMedicationsProducts = async () => {
+            try {
+                setLoading(true);
+                // Fetch products without requiring a token
+                const config = token ? {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                } : {};
+                
+                const response = await axios.get(
+                    `https://localhost:8088/store/products/category/MEDICATIONS`,
+                    config
+                );
+                setMedicationsProducts(response.data);
+            } catch (error) {
+                console.error(error);
+                Swal.fire("Error", "Failed to fetch medication products", "error");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        getMedicationsProducts();
+    }, [token]);
+
+    const handleAddToCart = async (productId) => {
+        if (!token) {
+            showLoginAlert();
+            return;
         }
-      );
-      console.log(response.data);
-      SetMedcineProducts(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
-  getPharmacyProducts();
-}, []);
+        try {
+            const decode = jwtDecode(token);
+            const userId = decode.id;
 
-    return(
-        <div className="all-cats-container">
-        <h2>Pharmacy</h2>
-        <div className="product-grid">
-      {medcineProducts.map((product) => (
-          <div className="product-card" key={product.id}>
-            <img
-              src={product.imageUrls?.[0] || 'https://via.placeholder.com/150'}
-              alt={product.name}
-              className="product-image"
-            />
-            <h4 className="ProductName">{product.name}</h4>
-            <p>{product.description}</p>
-            <h5 className="price">${product.price.toFixed(2)}</h5>
-            {product.stockQuantity > 0 ? (
-  <button className="add-to-cart" onClick={async () => {
-    try {
-      const response = await axios.post(
-        `https://localhost:8088/cart/add?userId=${userId}&productId=${product.id}&quantity=1`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+            await axios.post(
+                `https://localhost:8088/cart/add?userId=${userId}&productId=${productId}&quantity=1`,
+                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            // Refresh cart count if context is available
+            if (context?.refreshCartCount) {
+                await context.refreshCartCount();
+            }
+
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Added to cart",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        } catch (error) {
+            Swal.fire({
+                position: "top-end",
+                icon: "error",
+                title: "Failed to add to cart",
+                showConfirmButton: false,
+                timer: 1500
+            });
+            console.error(error);
         }
-      );
-      Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: "Added Successfully",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    } catch (error) {
-      Swal.fire({
-        position: "top-end",
-        icon: "error",
-        title: "Unauthorized: Please log in again",
-        showConfirmButton: false,
-        timer: 1500
-      });
-      console.error(error);
+    };
+
+    if (loading) {
+        return <div className="loading-message">Loading medication products...</div>;
     }
-  }}>
-    Add to Cart
-  </button>
+
+    return (
+        <div className="store-page">
+            <nav className="store-main-nav">
+                <h2>Pet Store</h2>
+                {token ? (
+  <>
+    <Link to="/dashboard/store/FoodProductsDetails" className="store-link">Food</Link>
+    <Link to="/dashboard/store/AccessoriesProductsDetails" className="store-link">Accessories</Link>
+    <Link to="/dashboard/store/ToysProductsDetails" className="store-link">Toys</Link>
+    <Link to="/dashboard/store/MedicationsProductsDetails" className="store-link">Medications</Link>
+  </>
 ) : (
-  <p className="add-to-cart">Sold out</p>
+  <>
+    <Link to="/home/store/FoodProductsDetails" className="store-link">Food</Link>
+    <Link to="/home/store/AccessoriesProductsDetails" className="store-link">Accessories</Link>
+    <Link to="/home/store/ToysProductsDetails" className="store-link">Toys</Link>
+    <Link to="/home/store/MedicationsProductsDetails" className="store-link">Medications</Link>
+  </>
 )}
-  <button className="add-to-cart" onClick={async () => {
-    try {
-      const response = await axios.post(
-        `https://localhost:8088/wishlist/add?userId=${userId}&productId=${product.id}`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      Swal.fire({
-        position: "top-end",
-        icon: "success",
-        title: "Added Successfully",
-        showConfirmButton: false,
-        timer: 1500
-      });
-    } catch (error) {
-      Swal.fire({
-        position: "top-end",
-        icon: "error",
-        title: "Unauthorized: Please log in again",
-        showConfirmButton: false,
-        timer: 1500
-      });
-      console.error(error);
-    }
-  }}>
-    Add to WishList
-  </button>
-  
-          </div>
-        ))}
+
+                
+                {token && (
+                    <>
+                        <Link to="Orders" className="store-link">Orders</Link>
+                        <Link to="Cart" className="store-link">
+                            <FaShoppingCart /> {cartCount}
+                        </Link>
+                        <Link to="Wishlist" className="store-link">
+                            <FaHeart /> {wishCount}
+                        </Link>
+                    </>
+                )}
+            </nav>
+
+            <div className="all-cats-container">
+                <h2 className="management-dashboard-title">MEDICATIONS</h2>
+                <div className="product-grid">
+                    {medicationsProducts.map((product) => (
+                        <div className="product-card" key={product.id}>
+                            <img 
+                                src={product.images?.[0]?.url || "https://via.placeholder.com/150"} 
+                                alt={product.name} 
+                            />
+                            <h4 className="ProductName">{product.name}</h4>
+                            <p>{product.description}</p>
+                            <h5 className="price">${product.price.toFixed(2)}</h5>
+                            <button 
+                                className="add-to-cart" 
+                                onClick={() => handleAddToCart(product.id)}
+                            >
+                                Add to Cart
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+{token?(<button 
+                className="continue-btn" 
+                onClick={() => navigate("/dashboard/store")}
+            >
+                Back to Store
+            </button>):(            <button 
+                className="continue-btn" 
+                onClick={() => navigate("/home/store")}
+            >
+                Back to Store
+            </button>)}
         </div>
-            <Link className="see-more-btn" to={'/CatsDetails'}>
-              <p>See More</p>
-            </Link>
-
-      </div>
-
     );
 }
-export default Pharmacy;
+
+export default MedicationsProductsDetails;

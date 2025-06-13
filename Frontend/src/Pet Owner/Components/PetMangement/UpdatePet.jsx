@@ -8,9 +8,9 @@ function UpdatePet() {
   const [petName, setPetName] = useState("");
   const [petTypeId, setPetTypeId] = useState("");
   const [petTypeName, setPetTypeName] = useState("");
+  const [petBreedId, setPetBreedId] = useState("");
   const [petBreedName, setPetBreedName] = useState("");
   const [petTypes, setPetTypes] = useState([]);
-  const [petBreedId, setPetBreedId] = useState("");
   const [petBreeds, setPetBreeds] = useState([]);
   const [petAge, setPetAge] = useState("");
   const [petGender, setPetGender] = useState("");
@@ -22,18 +22,15 @@ function UpdatePet() {
   const decode = jwtDecode(token);
   const navigate = useNavigate();
 
-  // Fetch pet and pet types on mount
   useEffect(() => {
     const getPet = async () => {
       try {
         const response = await axios.get(`https://localhost:8088/pets/${petID}`, {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
           },
         });
         const pet = response.data;
-        console.log(pet);
         setPetName(pet.petName);
         setPetGender(pet.gender);
         setPetAge(pet.age);
@@ -53,7 +50,6 @@ function UpdatePet() {
         const response = await axios.get(`https://localhost:8088/pet-types`, {
           headers: {
             Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
           },
         });
         setPetTypes(response.data);
@@ -67,17 +63,15 @@ function UpdatePet() {
     getPet();
   }, [token, petID]);
 
-  // Fetch pet breeds when type changes
   useEffect(() => {
     const getPetBreeds = async () => {
-      if (!petTypeId) return;
+      if (!petTypeName) return;
       try {
         const response = await axios.get(
-          `https://localhost:8088/pet-breeds/by-type/${petTypeId}`,
+          `https://localhost:8088/pet-breeds/by-type?type=${petTypeName}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json'
             },
           }
         );
@@ -89,7 +83,7 @@ function UpdatePet() {
     };
 
     getPetBreeds();
-  }, [petTypeId, token]);
+  }, [petTypeName, token]);
 
   const handleImageChange = (e) => {
     setImageFiles([...e.target.files]);
@@ -104,22 +98,20 @@ function UpdatePet() {
     try {
       const pet = {
         petName,
-        petTypeId,
         petTypeName,
-        petBreedId,
-        petBreedName,
         gender: petGender,
         age: petAge,
+        petBreedName,
       };
 
+      if (decode.role === "ADMIN") {
+        pet.shelterId = shelterId;
+      }
+
       const formData = new FormData();
-      
-      // Append the pet data as JSON
-      formData.append("pet", JSON.stringify(pet));
-      
-      // Append each image file
+      formData.append("pet", new Blob([JSON.stringify(pet)], { type: "application/json" }));
       imageFiles.forEach((file) => {
-        formData.append("images", file);
+        formData.append("image", file);
       });
 
       const response = await axios.put(`https://localhost:8088/pets/${petID}`, formData, {
@@ -140,13 +132,12 @@ function UpdatePet() {
       } else {
         navigate("/dashboard/pets");
       }
-
     } catch (error) {
       console.error("Error updating pet:", error.response?.data || error.message);
       Swal.fire({
         icon: "error",
         title: "Failed to update pet",
-        text: error.response?.data?.message || error.message || "An error occurred",
+        text: error.response?.data?.message || "An error occurred",
       });
     }
   };
@@ -173,7 +164,7 @@ function UpdatePet() {
           <div className="col-md-12">
             <label className="form-label">Pet Age</label>
             <input
-              type="text"
+              type="number"
               className="form-control"
               value={petAge}
               onChange={(e) => setPetAge(e.target.value)}
@@ -197,40 +188,36 @@ function UpdatePet() {
           <div className="col-md-6">
             <label className="form-label">Pet Type</label>
             <select
-              className="form-select"
-              value={petTypeId}
-              onChange={(e) => {
-                const selectedType = petTypes.find(type => type.id === e.target.value);
-                setPetTypeId(e.target.value);
-                setPetTypeName(selectedType?.typeName || "");
-                setPetBreedId("");
-                setPetBreedName("");
-              }}
-            >
-              <option value="">Select a type</option>
-              {petTypes.map((type) => (
-                <option key={type.id} value={type.id}>
-                  {type.typeName}
-                </option>
-              ))}
-            </select>
+  className="form-select"
+  value={petTypeName}
+  onChange={(e) => {
+    setPetTypeName(e.target.value); // this will now be the typeName
+    setPetBreedName(""); // reset breed
+  }}
+  required
+>
+  <option value="">Select a type</option>
+  {petTypes.map((type) => (
+    <option key={type.id} value={type.typeName}>
+      {type.typeName}
+    </option>
+  ))}
+</select>
+
           </div>
 
           <div className="col-md-6">
             <label className="form-label">Pet Breed</label>
             <select
               className="form-select"
-              value={petBreedId}
-              onChange={(e) => {
-                const selectedBreed = petBreeds.find(breed => breed.id === e.target.value);
-                setPetBreedId(e.target.value);
-                setPetBreedName(selectedBreed?.breedName || "");
-              }}
+              value={petBreedName}
+              onChange={(e) => setPetBreedName(e.target.value)}
+              required
               disabled={!petBreeds.length}
             >
               <option value="">Select a breed</option>
               {petBreeds.map((breed) => (
-                <option key={breed.id} value={breed.id}>
+                <option key={breed.id} value={breed.breedName}>
                   {breed.breedName}
                 </option>
               ))}
@@ -241,11 +228,11 @@ function UpdatePet() {
             <label className="form-label">Current Images</label>
             <div className="d-flex flex-wrap gap-2 mb-3">
               {existingImages.map((image, index) => (
-                <img 
-                  key={index} 
-                  src={image} 
-                  alt={`Pet ${index}`} 
-                  className="img-thumbnail" 
+                <img
+                  key={index}
+                  src={image}
+                  alt={`Pet ${index}`}
+                  className="img-thumbnail"
                   style={{ width: '100px', height: '100px', objectFit: 'cover' }}
                 />
               ))}
@@ -279,6 +266,7 @@ function UpdatePet() {
                 setPetName("");
                 setPetTypeId("");
                 setPetBreedId("");
+                setPetBreedName("");
                 setPetAge("");
                 setPetGender("");
                 setImageFiles([]);

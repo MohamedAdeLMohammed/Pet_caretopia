@@ -244,7 +244,9 @@ public class SecurityConfig {
                                 "/serviceProviders/user/{userID}",
                                 "/serviceProviders/type/{serviceProviderType}",
                                 "/serviceProviders/serviceProvider/{serviceProviderId}",
-                                "/serviceProviders/all"
+                                "/serviceProviders/all",
+                                "/social/posts",
+                                "adoptions/available-for-adoption"
                         ).permitAll()
 
                         .requestMatchers(

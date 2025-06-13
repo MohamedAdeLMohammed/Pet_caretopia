@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function UpdateProduct() {
   const { id: productId } = useParams();
@@ -13,7 +13,7 @@ function UpdateProduct() {
   const [category, setCategory] = useState("FOOD");
   const [imageFiles, setImageFiles] = useState([]);
   const token = sessionStorage.getItem("token");
-
+  const navigate = useNavigate("");
   // Fetch existing product data on mount
   useEffect(() => {
     const fetchProduct = async () => {
@@ -77,6 +77,7 @@ function UpdateProduct() {
         title: "Product updated successfully",
         text: `Product ID: ${response.data.id}`,
       });
+      navigate("/dashboard/storeMangement/products")
     } catch (error) {
       console.error("Error updating product:", error);
       Swal.fire({

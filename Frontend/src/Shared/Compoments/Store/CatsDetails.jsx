@@ -1,4 +1,5 @@
 import { FaShoppingCart } from "react-icons/fa";
+import ProjectLogo from "../../../assets/Blue Retro Animals & Pets Logo.png";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";

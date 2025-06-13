@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import {FaPaw, FaTrashAlt} from 'react-icons/fa';
+
 function MyAppointments() {
   const [appointments, setAppointments] = useState([]);
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ function MyAppointments() {
   const decode = jwtDecode(token);
   const userId = decode.id;
   const { facilityId } = useParams();
+
   useEffect(() => {
     const getAppointments = async () => {
       try {
@@ -25,12 +27,41 @@ function MyAppointments() {
         setAppointments(response.data);
       } catch (error) {
         console.error(error);
-        Swal.fire("Error", "Failed to load products", "error");
+        Swal.fire("Error", "Failed to load appointments", "error");
       }
     };
 
     getAppointments();
-  }, []);
+  }, [token, userId]);
+
+  const handleCancel = async (requestId) => {
+    try {
+      await axios.put(
+        `https://localhost:8088/appointment-requests/user/${userId}/appointmentRequest/${requestId}`,
+        { status: "CANCELED" },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      
+      // Update the local state to reflect the canceled appointment
+      setAppointments(prev => 
+        prev.map(appointment => 
+          appointment.requestId === requestId 
+            ? { ...appointment, status: "CANCELED" } 
+            : appointment
+        )
+      );
+      
+      Swal.fire("Canceled", "Appointment has been canceled", "success");
+    } catch (error) {
+      console.error(error);
+      Swal.fire("Error", "Failed to cancel appointment", "error");
+    }
+  };
 
   return (
     <div className="products-management-container">
@@ -40,74 +71,52 @@ function MyAppointments() {
         <div className="table-responsive">
           <table className="table products-table">
             <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Description</th>
-            <th>Stock</th>
-            <th>Category</th>
-            <th>Price</th>
-            <th>Actions</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {appointments.length > 0 ? appointments.map(appointment => (
-            <tr key={appointment.requestId}>
-              <td>{appointment.requestId}</td>
-              <td>{appointment.user.name}</td>
-              <td>{appointment.user.userPhoneNumber}</td>
-              <td>{appointment.user.userEmail}</td>
-              <td>{appointment.requestReason}</td>
-              <td>{appointment.requestedTime}</td>
-              <td>{appointment.status}</td>
-              <td>
-                {appointment.status === "PENDING" && (
-  <>
-    <button
-      className="btn btn-success btn-sm me-2"
-      onClick={async () => {
-        try {
-          await axios.put(
-            `https://localhost:8088/appointment-requests/user/${userId}/appointmentRequest/${appointment.requestId}`,
-            {
-              status:"CANCELED"
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-              },
-            }
-          );
-          Swal.fire("Approved", "Appointment approved", "success");
-          setAppointments(prev => prev.filter(p => p.appointmentId !== appointment.appointmentId));
-        } catch (error) {
-          Swal.fire("Error", "Unauthorized or failed", "error");
-        }
-      }}
-    >
-     <FaTrashAlt />   Cancel
-    </button>
-  </>
-)}
-
-
-
-              </td>
-            </tr>
-          )) : (
-                      <td colSpan="7" className="text-center py-5">
-                        <div className="text-muted">
-                          <FaPaw className="display-5 mb-3" />
-                          <h4>No items found</h4>
-                        </div>
-                      </td>
-          )}
-        </tbody>
-      </table>
-    </div>
-    </div>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Reason</th>
+                <th>Time</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {appointments.length > 0 ? appointments.map(appointment => (
+                <tr key={appointment.requestId}>
+                  <td>{appointment.requestId}</td>
+                  <td>{appointment.user.name}</td>
+                  <td>{appointment.user.userPhoneNumber}</td>
+                  <td>{appointment.user.userEmail}</td>
+                  <td>{appointment.requestReason}</td>
+                  <td>{appointment.requestedTime}</td>
+                  <td>{appointment.status}</td>
+                  <td>
+                    {appointment.status === "PENDING" && (
+                      <button
+                        className="btn btn-danger btn-sm me-2"
+                        onClick={() => handleCancel(appointment.requestId)}
+                      >
+                        <FaTrashAlt /> Cancel
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              )) : (
+                <tr>
+                  <td colSpan="8" className="text-center py-5">
+                    <div className="text-muted">
+                      <FaPaw className="display-5 mb-3" />
+                      <h4>No appointments found</h4>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
