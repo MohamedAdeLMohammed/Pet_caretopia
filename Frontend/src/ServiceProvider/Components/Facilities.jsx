@@ -75,7 +75,11 @@ function Facilities() {
         <input type="text" id="facilityName" class="swal2-input" placeholder="Facility Name" />
         <input type="text" id="facilityDescription" class="swal2-input" placeholder="Description" />
         <input type="text" id="facilityAddress" class="swal2-input" placeholder="Address" />
-        <input type="time" id="openingTime" class="swal2-input" />
+        <br>
+        Opening Time
+        <input type="time" id="openingTime" class="swal2-input"  />
+        <br>
+        Closing Time
         <input type="time" id="closingTime" class="swal2-input" />
       `,
       focusConfirm: false,
@@ -149,7 +153,11 @@ function Facilities() {
         <input type="text" id="facilityName" class="swal2-input" placeholder="Facility Name" value="${currentName}" />
         <input type="text" id="facilityDescription" class="swal2-input" placeholder="Description" value="${currentDescription}" />
         <input type="text" id="facilityAddress" class="swal2-input" placeholder="Address" value="${currentAddress}" />
+        <br>
+        Opening Time
         <input type="time" id="openingTime" class="swal2-input" value="${currentOpeningTime}" />
+        <br>
+        Closing Time
         <input type="time" id="closingTime" class="swal2-input" value="${currentClosingTime}" />
       `,
       focusConfirm: false,

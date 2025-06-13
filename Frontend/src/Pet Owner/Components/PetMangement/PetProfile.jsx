@@ -59,11 +59,15 @@ const addVaccine = async () => {
   Swal.fire({
     title: "Add Vaccine",
     html: `
+            Vaccination Date
       <input type="date" id="vaccinationDate" class="swal2-input" placeholder="Vaccine Date" />
+      <br>
+            Next Dose Due
+
       <input type="date" id="nextDoseDue" class="swal2-input" placeholder="Next Dose Due" />
       <input type="text" id="notes" class="swal2-input" placeholder="Notes" />
       <select id="vaccineType" class="swal2-input">
-        <option value="">Select a vaccine</option>
+              <option value="">Select a vaccine</option>
         ${vaccineOptions}
       </select>
     `,

@@ -85,9 +85,10 @@ function SignupForm() {
 
 <select
   id="selectedRole"
-  className="form-select"
+  className="form-select" style={{padding:"10px"}}
   value={selectedRole}
   onChange={(e) => setSelectedRole(e.target.value)}
+  
 >
   <option value="">Select a role...</option>
   <option value="USER">USER</option>
@@ -95,7 +96,7 @@ function SignupForm() {
 </select>
 <select
   id="selectedGender"
-  className="form-select"
+  className="form-select" style={{padding:"10px"}}
   value={gender}
   onChange={(e) => setGender(e.target.value)}
 >

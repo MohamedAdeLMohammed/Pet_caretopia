@@ -85,16 +85,19 @@ public class PostService {
 
     @Transactional
     public PostDTO updatePost(Long postId, PostDTO dto, List<MultipartFile> images, Long userId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
 
         if (!post.getUser().getUserID().equals(userId)) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You cannot update this post.");
         }
 
         post.setContent(dto.getContent());
-        post.getPostImages().clear();
 
+        // Only update images if new ones are provided
         if (images != null && !images.isEmpty()) {
+            post.getPostImages().clear(); // Remove old images only if new ones are provided
+
             List<PostImage> newImages = images.stream().map(file -> {
                 String url = imageService.uploadMultipartFile(file);
                 PostImage image = new PostImage();
@@ -102,6 +105,7 @@ public class PostService {
                 image.setPost(post);
                 return image;
             }).collect(Collectors.toList());
+
             post.getPostImages().addAll(newImages);
         }
 
