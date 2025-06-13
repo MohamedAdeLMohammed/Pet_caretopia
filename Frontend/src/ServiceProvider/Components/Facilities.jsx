@@ -4,8 +4,9 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import { jwtDecode } from 'jwt-decode';
 import "../../Admin/CSS/AdminDashboard.css";
-
-
+import clinic from '../../assets/clinic.jpg'
+import hotel from '../../assets/hotel.jpg'
+import training from '../../assets/training.jpg'
 function Facilities() {
   const [facilities, setFacilities] = useState([]);
   const [serviceProviderInfo, setServiceProviderInfo] = useState({});
@@ -241,11 +242,22 @@ function Facilities() {
         <div className="management-grid">
           {facilities.map((facility) => (
             <div key={facility.facilityId} className="management-card">
-              <img
-                src="/images/facility-placeholder.png"
+                            {facilityType==="VETERINARY_CLINIC"&& (<img
+                src={clinic}
                 alt="Facility"
                 style={{ width: "100%", height: "150px", objectFit: "cover", borderRadius: "8px" }}
-              />
+              />)}
+                {facilityType==="TRAINING_CENTER"&& (<img
+                src={training}
+                alt="Facility"
+                style={{ width: "100%", height: "150px", objectFit: "cover", borderRadius: "8px" }}
+              />)}
+                              {facilityType==="PET_HOTEL"&& (<img
+                src={hotel}
+                alt="Facility"
+                style={{ width: "100%", height: "150px", objectFit: "cover", borderRadius: "8px" }}
+              />)}
+
               <h4 className="management-dashboard-title">{facility.facilityName}</h4>
               <Link to={`facilityAppointment/${facility.facilityId}`} className="add-to-cart">
                 Manage Facility

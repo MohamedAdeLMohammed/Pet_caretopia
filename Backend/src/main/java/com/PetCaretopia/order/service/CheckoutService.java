@@ -48,9 +48,15 @@ public class CheckoutService {
         List<OrderItem> orderItems = new ArrayList<>();
 
         for (CartItem cartItem : cartItems) {
+            System.out.println("CartItem ID: " + cartItem.getId());
+
             Product product = cartItem.getProduct();
             product.decreaseStock(cartItem.getQuantity());
-
+            if (product == null) {
+                System.out.println("NULL PRODUCT in CartItem ID: " + cartItem.getId());
+            } else {
+                System.out.println("Product ID: " + product.getId() + ", Name: " + product.getName());
+            }
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setProduct(product);
@@ -59,6 +65,7 @@ public class CheckoutService {
 
             orderItems.add(orderItem);
             total = total.add(cartItem.getPrice().multiply(BigDecimal.valueOf(cartItem.getQuantity())));
+            System.out.println(cartItem.getProduct().getId());
         }
 
         order.setOrderItems(orderItems);

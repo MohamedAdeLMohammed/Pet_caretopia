@@ -36,6 +36,10 @@ function OrderSummary() {
           <div className="order-item" key={item.id}>
             
             <div>
+              <img
+              src={item.product.imageUrls?.[0] || "https://via.placeholder.com/150"}
+              alt={item.product.name || "Product Image"}
+            />
               <h4>{item.product?.name || "Product info "}</h4>
               <p>Qty: {item.quantity}</p>
               <p>Price: {item.price} EGP</p>
